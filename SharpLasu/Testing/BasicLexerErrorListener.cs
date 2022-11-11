@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Antlr4.Runtime;
 
-namespace Strumenta.Cslasu.Testing
+namespace Strumenta.Sharplasu.Testing
 {
     public class BasicLexerErrorListener : IAntlrErrorListener<int>
     {

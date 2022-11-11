@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Strumenta.Cslasu.Model
+namespace Strumenta.Sharplasu.Model
 {
     public static class PositionExtensions
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Strumenta.Cslasu.Validation
+namespace Strumenta.Sharplasu.Validation
 {
     public class Result<T>
     {

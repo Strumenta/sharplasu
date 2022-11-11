@@ -1,7 +1,7 @@
-# Cslasu - AST Library for CSharp
+# Sharplasu - AST Library for .NET Standard
 
-Cslasu supplies the infrastructure to build a custom, possibly mutable, Abstract Syntax Tree (AST) using CSharp.
+Sharplasu supplies the infrastructure to build a custom, possibly mutable, Abstract Syntax Tree (AST) using CSharp.
 
-Cslasu is part of the [StarLasu](https://github.com/Strumenta/StarLasu) family of libraries. The other libraries providesimilar support in other languages. Cslasu it is at an earlier stage of development compared to other Starlasu libraries
+Sharplasu is part of the [StarLasu](https://github.com/Strumenta/StarLasu) family of libraries. The other libraries provide similar support in other languages. Sharplasu it is at an earlier stage of development compared to other StarLasu libraries.
 
-Cslasu is integrated with ANTLR.
+Sharplasu is integrated with ANTLR.

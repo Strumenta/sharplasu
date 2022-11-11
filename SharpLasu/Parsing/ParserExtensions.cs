@@ -1,14 +1,16 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using Strumenta.Cslasu.Model;
+using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Validation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Strumenta.Cslasu.Parsing
+namespace Strumenta.Sharplasu.Parsing
 {
     public static class ParserExtensions
     {
@@ -56,6 +58,6 @@ namespace Strumenta.Cslasu.Parsing
                 }
             });
             return res;
-        }
+        }        
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Strumenta.Cslasu.Parsing
+namespace Strumenta.Sharplasu.Parsing
 {
     public abstract class ParseTreeElement
     {

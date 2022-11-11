@@ -1,5 +1,5 @@
 ﻿using Antlr4.Runtime;
-using Strumenta.Cslasu.Parsing;
+using Strumenta.Sharplasu.Parsing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace Strumenta.Cslasu.Model
+namespace Strumenta.Sharplasu.Model
 {
     [Serializable]
     public class Node
@@ -119,4 +119,6 @@ namespace Strumenta.Cslasu.Model
             return sb.ToString();
         }
     }
+
+    public class EmptyNode : Node { }
 }

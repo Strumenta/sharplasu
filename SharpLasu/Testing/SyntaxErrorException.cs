@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Antlr4.Runtime;
 
-namespace Strumenta.Cslasu.Testing
+namespace Strumenta.Sharplasu.Testing
 {
     public class SyntaxErrorException : Exception
     {

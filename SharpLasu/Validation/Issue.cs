@@ -1,9 +1,9 @@
-﻿using Strumenta.Cslasu.Model;
+﻿using Strumenta.Sharplasu.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Strumenta.Cslasu.Validation
+namespace Strumenta.Sharplasu.Validation
 {
     public enum IssueType
     {

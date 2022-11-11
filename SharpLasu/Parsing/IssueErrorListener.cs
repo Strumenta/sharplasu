@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Antlr4.Runtime;
-using Strumenta.Cslasu.Model;
-using Strumenta.Cslasu.Validation;
+using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Validation;
 
-namespace Strumenta.Cslasu.Parsing
+namespace Strumenta.Sharplasu.Parsing
 {
     public class IssueErrorListener : BaseErrorListener, IAntlrErrorListener<int>
     {
         private List<Issue> issues;
 
-        public IssueErrorListener(ref List<Issue> errors)
+        public IssueErrorListener(List<Issue> errors)
         {
             issues = errors;
         }

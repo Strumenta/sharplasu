@@ -1,14 +1,15 @@
-﻿using Strumenta.Cslasu.Model;
-using Strumenta.Cslasu.Testing;
-using Strumenta.Cslasu.Validation;
+﻿using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Testing;
+using Strumenta.Sharplasu.Tests.Models;
+using Strumenta.Sharplasu.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Strumenta.Cslasu.Tests
-{   
+namespace Strumenta.Sharplasu.Tests
+{
 
     [TestClass]
     public class NodeTests
@@ -24,8 +25,8 @@ namespace Strumenta.Cslasu.Tests
                 {
                     Description = "I stand here"
                 }
-            };            
-            List<Issue> issues = new List<Issue>();            
+            };
+            List<Issue> issues = new List<Issue>();
 
             Assert.AreEqual(1, one.Children.Count);
         }
@@ -42,7 +43,7 @@ namespace Strumenta.Cslasu.Tests
                     Description = "I stand here"
                 }
             };
-            List<Issue> issues = new List<Issue>();            
+            List<Issue> issues = new List<Issue>();
 
             Assert.AreEqual(
 @"TopNode

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Antlr4.Runtime;
-using Strumenta.Cslasu.Model;
+using Strumenta.Sharplasu.Model;
 
-namespace Strumenta.Cslasu.Parsing
+namespace Strumenta.Sharplasu.Parsing
 {
     public static class MappingExtensions
     {
