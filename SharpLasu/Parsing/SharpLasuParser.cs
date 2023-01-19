@@ -37,9 +37,6 @@ namespace Strumenta.Sharplasu.Parsing
         {
             var parsingResult = ParseStartRule(charStream);
 
-            if (!parsingResult.Correct)
-                return new Result<R>(parsingResult.Issues, null);
-
             var ast = ParseTreeToAst(parsingResult.Root, considerPosition, parsingResult.Issues);
 
             return new Result<R>(parsingResult.Issues, ast);
