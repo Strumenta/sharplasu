@@ -38,6 +38,7 @@ namespace Strumenta.Sharplasu.Parsing
             var parsingResult = ParseStartRule(charStream);
 
             var ast = ParseTreeToAst(parsingResult.Root, considerPosition, parsingResult.Issues);
+            VerifyASTTree(ast, parsingResult.Issues);
 
             return new Result<R>(parsingResult.Issues, ast);
         }
@@ -57,11 +58,6 @@ namespace Strumenta.Sharplasu.Parsing
             var root = InvokeRootRule(parser);
 
             VerifyParseTree(parser, errors, root);
-
-            if (errors.Count == 0)
-            {
-                VerifyASTTree(ParseTreeToAst(root, considerPosition, errors), errors);
-            }
 
             return root;
         }
