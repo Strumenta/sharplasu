@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "Sharplasu.Tests/Sharplasu.Tests.csproj",
+                "SharpLasu.Tests/Strumenta.SharpLasu.Tests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
