@@ -121,5 +121,28 @@ namespace Strumenta.Sharplasu.Model
         {
             return $"From ({Start.Line}, {Start.Column}) To ({End.Line}, {End.Column})";
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            
+            Position o = obj as Position;
+            return ((Start == null && o.Start == null) || Start.CompareTo(o.Start) == 0) &&
+                ((End == null && o.End == null) || End.CompareTo(o.End) == 0);
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + (Start == null ? 0 : Start.GetHashCode());
+                hash = hash * 23 + (End == null ? 0 : End.GetHashCode());
+                return hash;
+            }
+        }
     }
 }

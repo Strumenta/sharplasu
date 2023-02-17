@@ -1,7 +1,6 @@
 ﻿using Strumenta.Sharplasu.Model;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Strumenta.Sharplasu.Validation
 {
@@ -12,6 +11,7 @@ namespace Strumenta.Sharplasu.Validation
         SEMANTIC
     }
 
+    [Serializable]
     public class Issue
     {
         public IssueType IssueType { get; private set; }
@@ -44,5 +44,32 @@ namespace Strumenta.Sharplasu.Validation
         {
             return $"{IssueType} Issue: {Message} {Position} ";
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            
+            Issue o = obj as Issue;
+            return
+                IssueType.Equals(o.IssueType) &&
+                ((Message == null && o.Message == null) || Message.Equals(o.Message)) &&
+                ((Position == null && o.Position == null) || Position.Equals(o.Position));
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + IssueType.GetHashCode();
+                hash = hash * 23 + (Message == null ? 0 : Message.GetHashCode());
+                hash = hash * 23 + (Position == null ? 0 : Position.GetHashCode());
+                return hash;
+            }
+        }
+
     }
 }

@@ -27,6 +27,30 @@ namespace Strumenta.Sharplasu.Tests.Models
     internal class CompilationUnit : Node
     {
         public List<string> Statements { get; set; } = new List<string>();
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            CompilationUnit o = (obj as CompilationUnit)!;
+            return Statements.SequenceEqual(o.Statements);
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                foreach (var str in Statements)
+                {
+                    hash = hash * 23 + (str?.GetHashCode() ?? 0);
+                }
+                return hash;
+            }
+        }
     }
 
     internal class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>

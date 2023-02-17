@@ -5,15 +5,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Strumenta.Sharplasu.Model
 {
     [Serializable]
     public class Node
     {
-        [field: NonSerialized]
+        [field: NonSerialized][JsonIgnore]
         public ParserRuleContext ParseTreeNode { get; private set; } = null;
 
         public Node Parent { get; set; } = null;
@@ -33,6 +33,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
+        [JsonIgnore]
         public List<Node> Descendants
         {
             get
@@ -54,6 +55,7 @@ namespace Strumenta.Sharplasu.Model
             return Descendants.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T).ToList();
         }
 
+        [JsonIgnore]
         public List<Node> Ancestors
         {
             get
