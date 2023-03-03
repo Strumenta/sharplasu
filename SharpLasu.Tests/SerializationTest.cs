@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Strumenta.Sharplasu.Serialization;
+using Strumenta.Sharplasu.Serialization.Json;
 using Strumenta.Sharplasu.Tests.Models;
 using Strumenta.Sharplasu.Validation;
 
