@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace Strumenta.Sharplasu.Validation
 {
@@ -12,7 +12,7 @@ namespace Strumenta.Sharplasu.Validation
         public List<Issue> Issues { get; set; }
         public T Root { get; set; }
 
-        [JsonIgnore]
+        [JsonIgnore][XmlIgnore]
         public IEnumerable<Issue> LexicalErrors
         {
             get
@@ -21,7 +21,7 @@ namespace Strumenta.Sharplasu.Validation
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore][XmlIgnore]
         public IEnumerable<Issue> SyntacticErrors
         {
             get
@@ -30,7 +30,7 @@ namespace Strumenta.Sharplasu.Validation
             }
         }
 
-        [JsonIgnore]
+        [JsonIgnore][XmlIgnore]
         public bool Correct
         {
             get

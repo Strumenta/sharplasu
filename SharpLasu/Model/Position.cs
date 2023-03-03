@@ -50,14 +50,16 @@ namespace Strumenta.Sharplasu.Model
     [Serializable]
     public class Point : IComparable<Point>
     {
+        private Point() {}
+
         public Point(int line, int column)
         {
             Line = line;
             Column = column;
         }
 
-        public int Line { get; private set; }
-        public int Column { get; private set; }
+        public int Line { get; set; }
+        public int Column { get; set; }
 
         public override string ToString()
         {
@@ -108,8 +110,10 @@ namespace Strumenta.Sharplasu.Model
     [Serializable]
     public class Position
     {
-        public Point Start { get; private set; }
-        public Point End { get; private set; }
+        public Point Start { get; set; }
+        public Point End { get; set; }
+
+        private Position() {}
 
         public Position(Point start, Point end)
         {

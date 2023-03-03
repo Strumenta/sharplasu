@@ -14,9 +14,11 @@ namespace Strumenta.Sharplasu.Validation
     [Serializable]
     public class Issue
     {
-        public IssueType IssueType { get; private set; }
-        public string Message { get; private set; }
-        public Position Position { get; private set; }
+        public IssueType IssueType { get; set; }
+        public string Message { get; set; }
+        public Position Position { get; set; }
+
+        private Issue() {}
 
         public Issue(IssueType issueType, string message, Position position)
         {

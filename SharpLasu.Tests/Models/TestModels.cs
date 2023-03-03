@@ -10,7 +10,7 @@ using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Tests.Models
 {
-    internal class TopNode : Node
+    public class TopNode : Node
     {
         public int GoodStuff { get; init; }
         public int BadStuff { get; init; }
@@ -19,12 +19,13 @@ namespace Strumenta.Sharplasu.Tests.Models
 
     }
 
-    internal class SmallNode : Node
+    public class SmallNode : Node
     {
         public string Description { get; init; }
     }
 
-    internal class CompilationUnit : Node
+    [Serializable]
+    public class CompilationUnit : Node
     {
         public List<string> Statements { get; set; } = new List<string>();
 
@@ -53,7 +54,7 @@ namespace Strumenta.Sharplasu.Tests.Models
         }
     }
 
-    internal class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>
+    public class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>
     {
         public override Lexer InstantiateLexer(ICharStream charStream)
         {

@@ -1,10 +1,24 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Strumenta.Sharplasu.Serialization.Json;
+using Strumenta.Sharplasu.Serialization.Xml;
 using Strumenta.Sharplasu.Tests.Models;
 using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Tests {
+
+    [TestClass]
+    public class XmlTest
+    {
+        [TestMethod]
+        public void TestSerializationAndBack() {
+            var parser = new ExampleSharpLasuParser();
+            var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
+            var serializedResult = new XmlParseResultSerializer().serializeResult(tree);
+            var deserializedResult = new XmlParseResultDeserializer().deserializeResult<CompilationUnit>(serializedResult);
+            Assert.AreEqual(tree, deserializedResult);
+        }
+    }
 
     [TestClass]
     public class JsonTest
