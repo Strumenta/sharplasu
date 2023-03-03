@@ -89,6 +89,8 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
+        public Node() {}
+
         public Node(Position specifiedPosition = null, Node parent = null, ParserRuleContext ruleContext = null)
         {
             ParseTreeNode = ruleContext;

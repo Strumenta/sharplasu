@@ -13,8 +13,8 @@ namespace Strumenta.Sharplasu.Tests {
         public void TestSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
             var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
-            var serializedResult = new JsonParseResultSerializer().serialize(tree);
-            var deserializedResult = new JsonParseResultDeserializer().deserialize<CompilationUnit>(serializedResult);
+            var serializedResult = new JsonParseResultSerializer().serializeResult(tree);
+            var deserializedResult = new JsonParseResultDeserializer().deserializeResult<CompilationUnit>(serializedResult);
             Assert.AreEqual(tree, deserializedResult);
         }
 
@@ -53,7 +53,7 @@ namespace Strumenta.Sharplasu.Tests {
     }]
 }";
 
-            var deserializedResult = new JsonParseResultDeserializer().deserialize<CompilationUnit>(json);
+            var deserializedResult = new JsonParseResultDeserializer().deserializeResult<CompilationUnit>(json);
             Assert.IsInstanceOfType(deserializedResult, typeof(Result<CompilationUnit>));
             Assert.AreEqual(2, deserializedResult.Issues.Count);
             Assert.AreEqual(

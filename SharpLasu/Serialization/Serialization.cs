@@ -6,11 +6,13 @@ using System.Text.Json.Serialization;
 namespace Strumenta.Sharplasu.Serialization
 {
     public interface ParseResultSerializer {
-        string serialize<T>(Result<T> parseResult) where T : Node;
+        string serializeResult<T>(Result<T> parseResult) where T : Node;
+        string serializeTree<T>(T tree) where T : Node;
     }
 
     public interface ParseResultDeserializer {
-        Result<T> deserialize<T>(string serializedParseResult) where T : Node;
+        Result<T> deserializeResult<T>(string serializedParseResult) where T : Node;
+        T deserializeTree<T>(string serializedTree) where T : Node;
     }
 
     public class JsonParseResultSerialization {
@@ -27,9 +29,14 @@ namespace Strumenta.Sharplasu.Serialization
     {
         public JsonParseResultSerializer(bool prettyPrint = true) : base(prettyPrint) {}
 
-        public string serialize<T>(Result<T> parseResult) where T : Node
+        public string serializeResult<T>(Result<T> parseResult) where T : Node
         {
             return JsonSerializer.Serialize(parseResult, Options);
+        }
+
+        public string serializeTree<T>(T tree) where T : Node
+        {
+            return JsonSerializer.Serialize(tree, Options);
         }
     }
 
@@ -37,9 +44,14 @@ namespace Strumenta.Sharplasu.Serialization
     {
         public JsonParseResultDeserializer(bool prettyPrint = true) : base(prettyPrint) {}
 
-        public Result<T> deserialize<T>(string serializedParseResult) where T : Node
+        public Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {
             return JsonSerializer.Deserialize<Result<T>>(serializedParseResult, Options)!;
+        }
+
+        public T deserializeTree<T>(string serializedTree) where T : Node
+        {
+            return JsonSerializer.Deserialize<T>(serializedTree, Options);
         }
     }
 }

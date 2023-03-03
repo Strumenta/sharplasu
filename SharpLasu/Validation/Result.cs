@@ -10,7 +10,7 @@ namespace Strumenta.Sharplasu.Validation
     public class Result<T>
     {
         public List<Issue> Issues { get; set; }
-        public T Root { get; protected set; }
+        public T Root { get; set; }
 
         [JsonIgnore]
         public IEnumerable<Issue> LexicalErrors
@@ -58,6 +58,9 @@ namespace Strumenta.Sharplasu.Validation
             return (
                 (Issues != null && o.Issues != null && Enumerable.SequenceEqual(Issues, o.Issues)) ||
                 (Issues == null && o.Issues == null)
+            ) && (
+                (Root != null && o.Root != null && Root.Equals(o.Root)) ||
+                (Root == null && o.Root == null)
             );
         }
         
