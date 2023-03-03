@@ -16,6 +16,7 @@ namespace Strumenta.Sharplasu.Model
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         public ParserRuleContext ParseTreeNode { get; private set; } = null;
 
+        [field: NonSerialized][JsonIgnore][XmlIgnore]
         public Node Parent { get; set; } = null;
 
         private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors" };

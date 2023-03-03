@@ -9,7 +9,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
 {
     public class XmlParseResultSerializer : ParseResultSerializer
     {
-        public string serializeResult<T>(Result<T> parseResult) where T : Node
+        public virtual string serializeResult<T>(Result<T> parseResult) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(Result<T>), new XmlRootAttribute("Result"));
             var stringBuilder = new StringBuilder();
@@ -20,7 +20,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
             return stringBuilder.ToString();
         }
 
-        public string serializeTree<T>(T tree) where T : Node
+        public virtual string serializeTree<T>(T tree) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
             var stringBuilder = new StringBuilder();
@@ -34,7 +34,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
 
     public class XmlParseResultDeserializer : ParseResultDeserializer
     {
-        public Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
+        public virtual Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(Result<T>), new XmlRootAttribute("Result"));
             using (var reader = new StringReader(serializedParseResult))
@@ -43,7 +43,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
             }
         }
 
-        public T deserializeTree<T>(string serializedTree) where T : Node
+        public virtual T deserializeTree<T>(string serializedTree) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
             using (var reader = new StringReader(serializedTree))
