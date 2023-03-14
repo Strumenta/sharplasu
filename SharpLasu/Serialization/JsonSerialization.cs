@@ -15,24 +15,24 @@ namespace Strumenta.Sharplasu.Serialization.Json
         }
     }
 
-    public class JsonParseResultSerializer : JsonParseResultSerialization, ParseResultSerializer
+    public class JsonGenerator : JsonParseResultSerialization, ParseResultSerializer
     {
-        public JsonParseResultSerializer(bool prettyPrint = true) : base(prettyPrint) {}
+        public JsonGenerator(bool prettyPrint = true) : base(prettyPrint) {}
 
-        public virtual string serializeResult<T>(Result<T> parseResult) where T : Node
+        public virtual string generateString<T>(Result<T> parseResult) where T : Node
         {
             return JsonSerializer.Serialize(parseResult, Options);
         }
 
-        public virtual string serializeTree<T>(T tree) where T : Node
+        public virtual string generateString<T>(T tree) where T : Node
         {
             return JsonSerializer.Serialize(tree, Options);
         }
     }
 
-    public class JsonParseResultDeserializer : JsonParseResultSerialization, ParseResultDeserializer
+    public class JsonDeserializer : JsonParseResultSerialization, ParseResultDeserializer
     {
-        public JsonParseResultDeserializer(bool prettyPrint = true) : base(prettyPrint) {}
+        public JsonDeserializer(bool prettyPrint = true) : base(prettyPrint) {}
 
         public virtual Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {

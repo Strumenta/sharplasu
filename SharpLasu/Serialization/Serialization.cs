@@ -4,8 +4,8 @@ using Strumenta.Sharplasu.Model;
 namespace Strumenta.Sharplasu.Serialization
 {
     public interface ParseResultSerializer {
-        string serializeResult<T>(Result<T> parseResult) where T : Node;
-        string serializeTree<T>(T tree) where T : Node;
+        string generateString<T>(Result<T> parseResult) where T : Node;
+        string generateString<T>(T tree) where T : Node;
     }
 
     public interface ParseResultDeserializer {

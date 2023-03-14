@@ -7,9 +7,9 @@ using Strumenta.Sharplasu.Model;
 
 namespace Strumenta.Sharplasu.Serialization.Xml
 {
-    public class XmlParseResultSerializer : ParseResultSerializer
+    public class XmlGenerator : ParseResultSerializer
     {
-        public virtual string serializeResult<T>(Result<T> parseResult) where T : Node
+        public virtual string generateString<T>(Result<T> parseResult) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(Result<T>), new XmlRootAttribute("Result"));
             var stringBuilder = new StringBuilder();
@@ -20,7 +20,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
             return stringBuilder.ToString();
         }
 
-        public virtual string serializeTree<T>(T tree) where T : Node
+        public virtual string generateString<T>(T tree) where T : Node
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
             var stringBuilder = new StringBuilder();
@@ -32,7 +32,7 @@ namespace Strumenta.Sharplasu.Serialization.Xml
         }
     }
 
-    public class XmlParseResultDeserializer : ParseResultDeserializer
+    public class XmlDeserializer : ParseResultDeserializer
     {
         public virtual Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {

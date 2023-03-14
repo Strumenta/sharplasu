@@ -14,8 +14,8 @@ namespace Strumenta.Sharplasu.Tests {
         public void TestSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
             var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
-            var serializedResult = new XmlParseResultSerializer().serializeResult(tree);
-            var deserializedResult = new XmlParseResultDeserializer().deserializeResult<CompilationUnit>(serializedResult);
+            var serializedResult = new XmlGenerator().generateString(tree);
+            var deserializedResult = new XmlDeserializer().deserializeResult<CompilationUnit>(serializedResult);
             Assert.AreEqual(tree, deserializedResult);
         }
     }
@@ -27,8 +27,8 @@ namespace Strumenta.Sharplasu.Tests {
         public void TestSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
             var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
-            var serializedResult = new JsonParseResultSerializer().serializeResult(tree);
-            var deserializedResult = new JsonParseResultDeserializer().deserializeResult<CompilationUnit>(serializedResult);
+            var serializedResult = new JsonGenerator().generateString(tree);
+            var deserializedResult = new JsonDeserializer().deserializeResult<CompilationUnit>(serializedResult);
             Assert.AreEqual(tree, deserializedResult);
         }
 
@@ -67,7 +67,7 @@ namespace Strumenta.Sharplasu.Tests {
     }]
 }";
 
-            var deserializedResult = new JsonParseResultDeserializer().deserializeResult<CompilationUnit>(json);
+            var deserializedResult = new JsonDeserializer().deserializeResult<CompilationUnit>(json);
             Assert.IsInstanceOfType(deserializedResult, typeof(Result<CompilationUnit>));
             Assert.AreEqual(2, deserializedResult.Issues.Count);
             Assert.AreEqual(
