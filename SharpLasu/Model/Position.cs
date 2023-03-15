@@ -50,14 +50,16 @@ namespace Strumenta.Sharplasu.Model
     [Serializable]
     public class Point : IComparable<Point>
     {
+        private Point() {}
+
         public Point(int line, int column)
         {
             Line = line;
             Column = column;
         }
 
-        public int Line { get; private set; }
-        public int Column { get; private set; }
+        public int Line { get; set; }
+        public int Column { get; set; }
 
         public override string ToString()
         {
@@ -108,8 +110,10 @@ namespace Strumenta.Sharplasu.Model
     [Serializable]
     public class Position
     {
-        public Point Start { get; private set; }
-        public Point End { get; private set; }
+        public Point Start { get; set; }
+        public Point End { get; set; }
+
+        private Position() {}
 
         public Position(Point start, Point end)
         {
@@ -120,6 +124,29 @@ namespace Strumenta.Sharplasu.Model
         public override string ToString()
         {
             return $"From ({Start.Line}, {Start.Column}) To ({End.Line}, {End.Column})";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            
+            Position o = obj as Position;
+            return ((Start == null && o.Start == null) || Start.CompareTo(o.Start) == 0) &&
+                ((End == null && o.End == null) || End.CompareTo(o.End) == 0);
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + (Start == null ? 0 : Start.GetHashCode());
+                hash = hash * 23 + (End == null ? 0 : End.GetHashCode());
+                return hash;
+            }
         }
     }
 }
