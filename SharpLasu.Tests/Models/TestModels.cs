@@ -10,7 +10,7 @@ using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Tests.Models
 {
-    internal class TopNode : Node
+    public class TopNode : Node
     {
         public int GoodStuff { get; init; }
         public int BadStuff { get; init; }
@@ -19,17 +19,42 @@ namespace Strumenta.Sharplasu.Tests.Models
 
     }
 
-    internal class SmallNode : Node
+    public class SmallNode : Node
     {
         public string Description { get; init; }
     }
 
-    internal class CompilationUnit : Node
+    [Serializable]
+    public class CompilationUnit : Node
     {
         public List<string> Statements { get; set; } = new List<string>();
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            CompilationUnit o = (obj as CompilationUnit)!;
+            return Statements.SequenceEqual(o.Statements);
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                foreach (var str in Statements)
+                {
+                    hash = hash * 23 + (str?.GetHashCode() ?? 0);
+                }
+                return hash;
+            }
+        }
     }
 
-    internal class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>
+    public class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>
     {
         public override Lexer InstantiateLexer(ICharStream charStream)
         {

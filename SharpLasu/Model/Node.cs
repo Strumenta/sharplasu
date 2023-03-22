@@ -1,21 +1,22 @@
 ﻿using Antlr4.Runtime;
 using Strumenta.Sharplasu.Parsing;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace Strumenta.Sharplasu.Model
 {
     [Serializable]
     public class Node
     {
-        [field: NonSerialized]
+        [field: NonSerialized][JsonIgnore][XmlIgnore]
         public ParserRuleContext ParseTreeNode { get; private set; } = null;
 
+        [field: NonSerialized][JsonIgnore][XmlIgnore]
         public Node Parent { get; set; } = null;
 
         private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors" };
@@ -33,6 +34,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
+        [JsonIgnore][XmlIgnore]
         public List<Node> Descendants
         {
             get
@@ -54,6 +56,7 @@ namespace Strumenta.Sharplasu.Model
             return Descendants.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T).ToList();
         }
 
+        [JsonIgnore][XmlIgnore]
         public List<Node> Ancestors
         {
             get
@@ -86,6 +89,8 @@ namespace Strumenta.Sharplasu.Model
                 return specifiedPosition ?? ParseTreeNode?.Position();
             }
         }
+
+        public Node() {}
 
         public Node(Position specifiedPosition = null, Node parent = null, ParserRuleContext ruleContext = null)
         {
