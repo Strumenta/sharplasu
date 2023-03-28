@@ -59,5 +59,47 @@ namespace Strumenta.Sharplasu.Tests
                           actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath3) ||
                           actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath4));
         }
+
+        [TestMethod]
+        public void TestWalkLeavesFirst()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+
+            var expectedNodeTypesPath = new List<System.Type>
+            {
+                typeof(BooleanLiteral),
+                typeof(DisplayStatement),
+                typeof(Identifier),
+                typeof(StringLiteral),
+                typeof(SetStatement),
+                typeof(CompilationUnit)
+            };
+
+            var expectedNodeTypesPath2 = new List<System.Type>
+            {
+                typeof(Identifier),
+                typeof(StringLiteral),
+                typeof(SetStatement),
+                typeof(BooleanLiteral),
+                typeof(DisplayStatement),
+                typeof(CompilationUnit)
+            };
+
+            var expectedNodeTypesPath3 = new List<Type>
+            {
+                typeof(StringLiteral),
+                typeof(Identifier),
+                typeof(SetStatement),
+                typeof(BooleanLiteral),
+                typeof(DisplayStatement),
+                typeof(CompilationUnit)
+            };
+
+            var actualNodeTypesPath = cu.WalkLeavesFirst().Select(node => node.GetType()).ToList();
+
+            Assert.IsTrue(actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath) ||
+                          actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath2) ||
+                          actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath3));
+        }
     }
 }

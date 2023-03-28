@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Strumenta.Sharplasu.Model;
 
 namespace Strumenta.Sharplasu.Traversing
@@ -21,6 +24,68 @@ namespace ExtensionMethods
                 var next = stack.Pop();
                 next.Children.ForEach(child => stack.Push(child));
                 yield return next;
+            }
+        }
+
+        /**
+         * Performs a post-order (or leaves-first) node traversal starting with a given node.
+         */
+        public static IEnumerable<Node> WalkLeavesFirst(this Node node)
+        {
+            var nodesStack = new Stack<List<Node>>();
+            var cursorStack = new Stack<int>();
+            var done = false;
+
+            Node NextFromLevel()
+            {
+                var nodes = nodesStack.Peek();
+                var cursor = cursorStack.Pop();
+                cursorStack.Push(cursor + 1);
+                return nodes[cursor];
+            }
+
+            void FillStackToLeaf(Node node)
+            {
+                var currentNode = node;
+                while (true)
+                {
+                    var childNodes = currentNode.Children;
+                    if (childNodes.Count == 0)
+                        break;
+                    nodesStack.Push(childNodes);
+                    cursorStack.Push(0);
+                    currentNode = childNodes[0];
+                }
+            }
+            
+            FillStackToLeaf(node);
+
+            while (!done)
+            {
+                var nodes = nodesStack.Peek();
+                var cursor = cursorStack.Peek();
+                var levelHasNext = cursor < nodes.Count;
+                if (levelHasNext)
+                {
+                    var n = nodes[cursor];
+                    FillStackToLeaf(n);
+                    yield return NextFromLevel();
+                }
+                else
+                {
+                    nodesStack.Pop();
+                    cursorStack.Pop();
+                    var hasNext = nodesStack.Count > 0;
+                    if (hasNext)
+                    {
+                        yield return NextFromLevel();
+                    }
+                    else
+                    {
+                        done = true;
+                        yield return node;
+                    }
+                }
             }
         }
     }
