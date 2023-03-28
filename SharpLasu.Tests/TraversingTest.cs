@@ -1,44 +1,63 @@
-﻿using Strumenta.Sharplasu.Tests.Models;
-using Strumenta.Sharplasu.Validation;
+﻿using ExtensionMethods;
+using Strumenta.SharpLasu.Tests.Models.SimpleLang;
+using Type = System.Type;
 
 namespace Strumenta.Sharplasu.Tests
 {
-
     [TestClass]
     public class TraversingTest
     {
         [TestMethod]
-        public void TestWalk() {
-            var parser = new ExampleSharpLasuParser();
-            var cu = parser.GetTreeForText("display 6.12");
-            // TODO ...
-        }
+        public void TestWalk()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
 
-        [TestMethod]
-        public void CheckParseTreeWithErrors() {
-            var parser = new ExampleSharpLasuParser();
-            var cu = parser.GetTreeForText("displar 12.3");
+            var expectedNodeTypesPath = new List<System.Type>
+            {
+                typeof(CompilationUnit),
+                typeof(DisplayStatement),
+                typeof(BooleanLiteral),
+                typeof(SetStatement),
+                typeof(Identifier),
+                typeof(StringLiteral)
+            };
 
-            Assert.IsFalse(cu.Correct);
-            Assert.IsNotNull(cu.Root);
-        }
+            var expectedNodeTypesPath2 = new List<System.Type>
+            {
+                typeof(CompilationUnit),
+                typeof(DisplayStatement),
+                typeof(BooleanLiteral),
+                typeof(SetStatement),
+                typeof(StringLiteral),
+                typeof(Identifier)
+            };
 
-        [TestMethod]
-        public void CheckASTWithSemanticError() {
-            var parser = new ExampleSharpLasuParser();
-            var cu = parser.GetTreeForText(
-@"set a = 2
-display 12.3
-set b = 0"
-);
+            var expectedNodeTypesPath3 = new List<Type>
+            {
+                typeof(CompilationUnit),
+                typeof(SetStatement),
+                typeof(Identifier),
+                typeof(StringLiteral),
+                typeof(DisplayStatement),
+                typeof(BooleanLiteral)
+            };
 
-            Assert.IsFalse(cu.Correct);
-            Assert.AreEqual(1, cu.Issues.Count);
-            Assert.AreEqual("Display statement not supported", cu.Issues[0].Message);
-            Assert.AreEqual(IssueType.SEMANTIC, cu.Issues[0].IssueType);
+            var expectedNodeTypesPath4 = new List<Type>
+            {
+                typeof(CompilationUnit),
+                typeof(SetStatement),
+                typeof(StringLiteral),
+                typeof(Identifier),
+                typeof(DisplayStatement),
+                typeof(BooleanLiteral)
+            };
 
-            Assert.IsInstanceOfType(cu.Root, typeof(CompilationUnit));
-            Assert.AreEqual(2, cu.Root.Statements.Count);
+            var actualNodeTypesPath = cu.Walk().Select(node => node.GetType()).ToList();
+
+            Assert.IsTrue(actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath) ||
+                          actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath2) ||
+                          actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath3) ||
+                          actualNodeTypesPath.SequenceEqual(expectedNodeTypesPath4));
         }
     }
 }

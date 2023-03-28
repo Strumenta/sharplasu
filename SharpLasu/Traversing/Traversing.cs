@@ -12,14 +12,12 @@ namespace ExtensionMethods
         /**
          * Traverse the entire tree, deep first, starting from this Node
          */
-        public static IEnumerable<Node> walk(this Node node) {
-            Stack<Node> stack = new Stack<Node>();
+        public static IEnumerable<Node> Walk(this Node node) {
+            var stack = new Stack<Node>();
             stack.Push(node);
 
-            if (stack.Count == 0) {
-                yield return null;
-            }
-            else {
+            while (stack.Count > 0)
+            {
                 var next = stack.Pop();
                 next.Children.ForEach(child => stack.Push(child));
                 yield return next;
