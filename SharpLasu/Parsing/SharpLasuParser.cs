@@ -28,27 +28,27 @@ namespace Strumenta.Sharplasu.Parsing
             return root.ToParseTree(parser.Vocabulary).MultiLineString();
         }
 
-        public Result<R> GetTreeForText(string text, bool considerPosition = true)
+        public ParsingResult<R> GetTreeForText(string text, bool considerPosition = true)
         {
             return GetTreeForCharStream(CharStreams.fromString(text), considerPosition);
         }
 
-        public Result<R> GetTreeForCharStream(ICharStream charStream, bool considerPosition = true)
+        public ParsingResult<R> GetTreeForCharStream(ICharStream charStream, bool considerPosition = true)
         {
             var parsingResult = ParseStartRule(charStream);
 
             var ast = ParseTreeToAst(parsingResult.Root, considerPosition, parsingResult.Issues);
             VerifyASTTree(ast, parsingResult.Issues);
 
-            return new Result<R>(parsingResult.Issues, ast);
+            return new ParsingResult<R>(parsingResult.Issues, ast);
         }
 
-        private Result<C> ParseStartRule(ICharStream charStream)
+        private ParsingResult<C> ParseStartRule(ICharStream charStream)
         {
             List<Issue> errors = new List<Issue>();
             C root = Parse(charStream, errors);
 
-            return new Result<C>(errors, root);
+            return new ParsingResult<C>(errors, root);
         }
 
         private C Parse(ICharStream charStream, List<Issue> errors, bool considerPosition = true)

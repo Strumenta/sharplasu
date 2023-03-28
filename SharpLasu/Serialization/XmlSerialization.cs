@@ -9,9 +9,9 @@ namespace Strumenta.Sharplasu.Serialization.Xml
 {
     public class XmlGenerator : ParseResultSerializer
     {
-        public virtual string generateString<T>(Result<T> parseResult) where T : Node
+        public virtual string generateString<T>(ParsingResult<T> parseResult) where T : Node
         {
-            var xmlSerializer = new XmlSerializer(typeof(Result<T>), new XmlRootAttribute("Result"));
+            var xmlSerializer = new XmlSerializer(typeof(ParsingResult<T>), new XmlRootAttribute("Result"));
             var stringBuilder = new StringBuilder();
             using (var writer = XmlWriter.Create(stringBuilder))
             {
@@ -34,12 +34,12 @@ namespace Strumenta.Sharplasu.Serialization.Xml
 
     public class XmlDeserializer : ParseResultDeserializer
     {
-        public virtual Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
+        public virtual ParsingResult<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {
-            var xmlSerializer = new XmlSerializer(typeof(Result<T>), new XmlRootAttribute("Result"));
+            var xmlSerializer = new XmlSerializer(typeof(ParsingResult<T>), new XmlRootAttribute("Result"));
             using (var reader = new StringReader(serializedParseResult))
             {
-                return (Result<T>)xmlSerializer.Deserialize(reader);
+                return (ParsingResult<T>)xmlSerializer.Deserialize(reader);
             }
         }
 
