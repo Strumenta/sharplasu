@@ -88,5 +88,31 @@ namespace ExtensionMethods
                 }
             }
         }
+
+        /**
+         * @return the sequence of nodes from this.parent all the way up to the root node.
+         * For this to work, assignParents() must have been called.
+         */
+        public static IEnumerable<Node> WalkAncestors(this Node node)
+        {
+            var currentNode = node;
+            while (currentNode.Parent != null)
+            {
+                currentNode = currentNode.Parent;
+                yield return currentNode;
+            }
+        }
+
+        /**
+         * @return all direct children of this node.
+         */
+        public static IEnumerable<Node> WalkChildren(this Node node)
+        {
+            // TODO: check this implementation against the one in Kolasu
+            foreach (var child in node.Children)
+            {
+                yield return child;
+            }
+        }
     }
 }

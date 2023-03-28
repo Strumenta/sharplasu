@@ -1,10 +1,12 @@
+using ExtensionMethods;
+
 namespace Strumenta.SharpLasu.Tests.Models.SimpleLang;
 
 public static class Models
 {
     public static CompilationUnit GetCompilationUnit()
     {
-        return new CompilationUnit
+        var cu = new CompilationUnit
         {
             Statements = new List<Statement>
             {
@@ -22,5 +24,7 @@ public static class Models
                 }
             }
         };
+        cu.AssignParents();
+        return cu;
     }
 }
