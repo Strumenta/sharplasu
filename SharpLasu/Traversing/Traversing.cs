@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Strumenta.Sharplasu.Model;
@@ -113,6 +112,31 @@ namespace ExtensionMethods
             {
                 yield return child;
             }
+        }
+
+        /**
+         * @param walker a function that generates a sequence of nodes. By default this is the depth-first "walk" method.
+         * For post-order traversal, take "walkLeavesFirst"
+         * @return walks the whole AST starting from the childnodes of this node.
+         */
+        public static IEnumerable<Node> WalkDescendants(this Node node, Func<Node, IEnumerable<Node>> walker)
+        {
+            return walker.Invoke(node).Where(n => n != node);
+        }
+
+        public static IEnumerable<Node> WalkDescendants(this Node node)
+        {
+            return WalkDescendants(node, Walk);
+        }
+
+        public static IEnumerable<Node> WalkDescendants(this Node node, Type type, Func<Node, IEnumerable<Node>> walker)
+        {
+            return WalkDescendants(node, walker).Where(n => n.GetType() == type);
+        }
+
+        public static IEnumerable<Node> WalkDescendants(this Node node, Type type)
+        {
+            return WalkDescendants(node, type, Walk);
         }
     }
 }

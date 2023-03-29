@@ -107,6 +107,52 @@ namespace Strumenta.Sharplasu.Tests
             throw new NotImplementedException();
         }
 
+        [TestMethod]
+        public void TestWalkDescendants()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            TestSequences(
+                MapNodesToTypes(cu.WalkDescendants()),
+                new List<System.Type>
+                {
+                    typeof(DisplayStatement),
+                    typeof(BooleanLiteral),
+                    typeof(SetStatement),
+                    typeof(Identifier),
+                    typeof(StringLiteral)
+                },
+                new List<System.Type>
+                {
+                    typeof(DisplayStatement),
+                    typeof(BooleanLiteral),
+                    typeof(SetStatement),
+                    typeof(StringLiteral),
+                    typeof(Identifier)
+                },
+                new List<Type>
+                {
+                    typeof(SetStatement),
+                    typeof(Identifier),
+                    typeof(StringLiteral),
+                    typeof(DisplayStatement),
+                    typeof(BooleanLiteral)
+                },
+                new List<Type>
+                {
+                    typeof(SetStatement),
+                    typeof(StringLiteral),
+                    typeof(Identifier),
+                    typeof(DisplayStatement),
+                    typeof(BooleanLiteral)
+                });
+            TestSequences(
+                MapNodesToTypes(cu.WalkDescendants(typeof(BooleanLiteral))),
+                new List<Type>
+                {
+                    typeof(BooleanLiteral),
+                });
+        }
+
         private List<Type> MapNodesToTypes(IEnumerable<Node> nodeSequence)
         {
             return nodeSequence.Select(node => node.GetType()).ToList();
