@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Strumenta.Sharplasu.Model;
@@ -131,7 +132,7 @@ namespace ExtensionMethods
 
         public static IEnumerable<Node> WalkDescendants(this Node node, Type type, Func<Node, IEnumerable<Node>> walker)
         {
-            return WalkDescendants(node, walker).Where(n => n.GetType() == type);
+            return WalkDescendants(node, walker).Where(type.IsInstanceOfType);
         }
 
         public static IEnumerable<Node> WalkDescendants(this Node node, Type type)
