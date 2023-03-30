@@ -174,6 +174,30 @@ namespace Strumenta.Sharplasu.Tests
             return nodeSequence.Select(node => node.GetType()).ToList();
         }
 
+        [TestMethod]
+        public void TestSearchByType()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            TestSequences(
+                MapNodesToTypes(cu.SearchByType<Expression>()),
+                new List<Type>
+                {
+                    typeof(BooleanLiteral),
+                    typeof(StringLiteral)
+                },
+                new List<Type>
+                {
+                    typeof(StringLiteral),
+                    typeof(BooleanLiteral)
+                });
+            TestSequences(
+                MapNodesToTypes(cu.SearchByType<CompilationUnit>()),
+                new List<Type>
+                {
+                    typeof(CompilationUnit)
+                });
+        }
+
         private void TestSequences<T>(IEnumerable<T> actualSequence, params IEnumerable<T>[] expectedSequences)
         {
             Assert.IsTrue(

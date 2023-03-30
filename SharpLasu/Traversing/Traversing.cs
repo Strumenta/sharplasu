@@ -151,5 +151,15 @@ namespace ExtensionMethods
         {
             return (T) node.WalkAncestors().FirstOrDefault(n => n is T);
         }
+
+        public static IEnumerable<T> SearchByType<T>(this Node node, Func<Node, IEnumerable<Node>> walker)
+        {
+            return walker.Invoke(node).Where(typeof(T).IsInstanceOfType).Cast<T>();
+        }
+
+        public static IEnumerable<T> SearchByType<T>(this Node node)
+        {
+            return node.SearchByType<T>(Walk);
+        }
     }
 }
