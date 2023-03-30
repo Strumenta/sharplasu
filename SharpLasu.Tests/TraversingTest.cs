@@ -104,7 +104,19 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkChildren()
         {
-            throw new NotImplementedException();
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            TestSequences(
+                MapNodesToTypes(cu.WalkChildren()),
+                new List<Type>
+                {
+                    typeof(DisplayStatement),
+                    typeof(SetStatement),
+                },
+                new List<Type>
+                {
+                    typeof(SetStatement),
+                    typeof(DisplayStatement),
+                });
         }
 
         [TestMethod]

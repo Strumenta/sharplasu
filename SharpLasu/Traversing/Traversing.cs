@@ -108,7 +108,6 @@ namespace ExtensionMethods
          */
         public static IEnumerable<Node> WalkChildren(this Node node)
         {
-            // TODO: check this implementation against the one in Kolasu
             foreach (var child in node.Children)
             {
                 yield return child;
