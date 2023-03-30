@@ -161,5 +161,15 @@ namespace ExtensionMethods
         {
             return node.SearchByType<T>(Walk);
         }
+
+        public static List<T> CollectByType<T>(this Node node, Func<Node, IEnumerable<Node>> walker)
+        {
+            return walker.Invoke(node).Where(typeof(T).IsInstanceOfType).Cast<T>().ToList();
+        }
+
+        public static List<T> CollectByType<T>(this Node node)
+        {
+            return node.CollectByType<T>(Walk);
+        }
     }
 }

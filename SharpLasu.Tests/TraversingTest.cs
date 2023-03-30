@@ -198,6 +198,30 @@ namespace Strumenta.Sharplasu.Tests
                 });
         }
 
+        [TestMethod]
+        public void TestCollectByType()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            TestSequences(
+                MapNodesToTypes(cu.CollectByType<Expression>()),
+                new List<Type>
+                {
+                    typeof(BooleanLiteral),
+                    typeof(StringLiteral)
+                },
+                new List<Type>
+                {
+                    typeof(StringLiteral),
+                    typeof(BooleanLiteral)
+                });
+            TestSequences(
+                MapNodesToTypes(cu.CollectByType<CompilationUnit>()),
+                new List<Type>
+                {
+                    typeof(CompilationUnit)
+                });
+        }
+
         private void TestSequences<T>(IEnumerable<T> actualSequence, params IEnumerable<T>[] expectedSequences)
         {
             Assert.IsTrue(
