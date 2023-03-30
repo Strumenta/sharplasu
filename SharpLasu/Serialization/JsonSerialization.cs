@@ -19,7 +19,7 @@ namespace Strumenta.Sharplasu.Serialization.Json
     {
         public JsonGenerator(bool prettyPrint = true) : base(prettyPrint) {}
 
-        public virtual string generateString<T>(Result<T> parseResult) where T : Node
+        public virtual string generateString<T>(ParsingResult<T> parseResult) where T : Node
         {
             return JsonSerializer.Serialize(parseResult, Options);
         }
@@ -34,9 +34,9 @@ namespace Strumenta.Sharplasu.Serialization.Json
     {
         public JsonDeserializer(bool prettyPrint = true) : base(prettyPrint) {}
 
-        public virtual Result<T> deserializeResult<T>(string serializedParseResult) where T : Node
+        public virtual ParsingResult<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {
-            return JsonSerializer.Deserialize<Result<T>>(serializedParseResult, Options)!;
+            return JsonSerializer.Deserialize<ParsingResult<T>>(serializedParseResult, Options)!;
         }
 
         public virtual T deserializeTree<T>(string serializedTree) where T : Node

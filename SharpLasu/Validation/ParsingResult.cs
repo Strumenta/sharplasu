@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace Strumenta.Sharplasu.Validation
 {
     [Serializable]
-    public class Result<T>
+    public class ParsingResult<T>
     {
         public List<Issue> Issues { get; set; }
         public T Root { get; set; }
@@ -39,9 +39,9 @@ namespace Strumenta.Sharplasu.Validation
             }
         }
 
-        public Result() {}
+        public ParsingResult() {}
 
-        public Result(List<Issue> errors, T root)
+        public ParsingResult(List<Issue> errors, T root)
         {
             Issues = errors;
             Root = root;
@@ -54,7 +54,7 @@ namespace Strumenta.Sharplasu.Validation
                 return false;
             }
             
-            Result<T> o = obj as Result<T>;
+            ParsingResult<T> o = obj as ParsingResult<T>;
             return (
                 (Issues != null && o.Issues != null && Enumerable.SequenceEqual(Issues, o.Issues)) ||
                 (Issues == null && o.Issues == null)
