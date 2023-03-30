@@ -373,5 +373,5 @@ FodyWeavers.xsd
 # Ignore all local history of files
 **/.history
 
-# IntelliJ Rider project files
+# IDEA project files
 .idea
