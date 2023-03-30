@@ -68,7 +68,7 @@ namespace Strumenta.Sharplasu.Tests {
 }";
 
             var deserializedResult = new JsonDeserializer().deserializeResult<CompilationUnit>(json);
-            Assert.IsInstanceOfType(deserializedResult, typeof(Result<CompilationUnit>));
+            Assert.IsInstanceOfType(deserializedResult, typeof(ParsingResult<CompilationUnit>));
             Assert.AreEqual(2, deserializedResult.Issues.Count);
             Assert.AreEqual(
                 new Issue(IssueType.LEXICAL, "This is an example of a lexical error", null),
