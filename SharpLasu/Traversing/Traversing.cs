@@ -139,5 +139,17 @@ namespace ExtensionMethods
         {
             return WalkDescendants(node, type, Walk);
         }
+
+        /**
+         * Note that type T is not strictly forced to be a Node. This is intended to support
+         * interfaces like `Statement` or `Expression`. However, being an ancestor the returned
+         * value is guaranteed to be a Node, as only Node instances can be part of the hierarchy.
+         *
+         * @return the nearest ancestor of this node that is an instance of klass.
+         */
+        public static T FindAncestorOfType<T>(this Node node) where T : Node
+        {
+            return (T) node.WalkAncestors().FirstOrDefault(n => n is T);
+        }
     }
 }

@@ -159,6 +159,16 @@ namespace Strumenta.Sharplasu.Tests
                 });
         }
 
+        [TestMethod]
+        public void TestFindAncestorOfType()
+        {
+            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var identifier = cu.Descendants.First(n => n.GetType() == typeof(Identifier));
+            Assert.IsInstanceOfType(identifier.FindAncestorOfType<CompilationUnit>(), typeof(CompilationUnit));
+            Assert.IsInstanceOfType(identifier.FindAncestorOfType<SetStatement>(), typeof(SetStatement));
+            Assert.IsNull(identifier.FindAncestorOfType<DisplayStatement>());
+        }
+
         private List<Type> MapNodesToTypes(IEnumerable<Node> nodeSequence)
         {
             return nodeSequence.Select(node => node.GetType()).ToList();
