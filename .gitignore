@@ -372,3 +372,6 @@ FodyWeavers.xsd
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 **/.history
+
+# IDEA project files
+.idea
