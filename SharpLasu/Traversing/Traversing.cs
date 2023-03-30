@@ -130,14 +130,14 @@ namespace ExtensionMethods
             return WalkDescendants(node, Walk);
         }
 
-        public static IEnumerable<Node> WalkDescendants(this Node node, Type type, Func<Node, IEnumerable<Node>> walker)
+        public static IEnumerable<Node> WalkDescendants<T>(this Node node, Func<Node, IEnumerable<Node>> walker)
         {
-            return WalkDescendants(node, walker).Where(type.IsInstanceOfType);
+            return WalkDescendants(node, walker).Where(typeof(T).IsInstanceOfType);
         }
 
-        public static IEnumerable<Node> WalkDescendants(this Node node, Type type)
+        public static IEnumerable<Node> WalkDescendants<T>(this Node node)
         {
-            return WalkDescendants(node, type, Walk);
+            return WalkDescendants<T>(node, Walk);
         }
 
         /**

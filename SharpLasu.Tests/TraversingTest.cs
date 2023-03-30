@@ -146,7 +146,7 @@ namespace Strumenta.Sharplasu.Tests
                     typeof(BooleanLiteral)
                 });
             TestSequences(
-                MapNodesToTypes(cu.WalkDescendants(typeof(Expression))),
+                MapNodesToTypes(cu.WalkDescendants<Expression>()),
                 new List<Type>
                 {
                     typeof(BooleanLiteral),
