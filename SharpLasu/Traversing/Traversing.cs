@@ -44,9 +44,9 @@ namespace ExtensionMethods
                 return nodes[cursor];
             }
 
-            void FillStackToLeaf(Node node)
+            void FillStackToLeaf(Node n)
             {
-                var currentNode = node;
+                var currentNode = n;
                 while (true)
                 {
                     var childNodes = currentNode.Children;

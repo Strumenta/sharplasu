@@ -36,7 +36,7 @@ namespace Strumenta.Sharplasu.Serialization.Json
 
         public virtual ParsingResult<T> deserializeResult<T>(string serializedParseResult) where T : Node
         {
-            return JsonSerializer.Deserialize<ParsingResult<T>>(serializedParseResult, Options)!;
+            return JsonSerializer.Deserialize<ParsingResult<T>>(serializedParseResult, Options);
         }
 
         public virtual T deserializeTree<T>(string serializedTree) where T : Node
