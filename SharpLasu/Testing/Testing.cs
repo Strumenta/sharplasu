@@ -113,19 +113,3 @@ namespace Strumenta.Sharplasu.Testing
         }
     }
 }
-
-namespace ExtensionMethods
-{
-    public static class TestingExtensions
-    {
-        public static bool IsANode(this Type type)
-        {
-            return typeof(Node).IsAssignableFrom(type);
-        }
-
-        public static bool ProvidesNodes(this Type type)
-        {
-            return type.IsANode();
-        }
-    }
-}
