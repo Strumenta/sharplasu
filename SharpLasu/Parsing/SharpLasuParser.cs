@@ -129,6 +129,25 @@ namespace Strumenta.Sharplasu.Parsing
         /**
         * Transforms a parse tree into an AST (second parsing stage).
         */
-        protected abstract R ParseTreeToAst(C parseTreeRoot, bool considerPosition = true, List<Issue> issues = null);        
+        protected abstract R ParseTreeToAst(C parseTreeRoot, bool considerPosition = true, List<Issue> issues = null);
+
+        public FirstStageParsingResult<C> ParseFirstStage(ICharStream inputStream)
+        {
+            var issues = new List<Issue>();
+            var parser = CreateParser(inputStream, issues);
+            var root = InvokeRootRule(parser);
+            if (root != null)
+                VerifyParseTree(parser, issues, root);
+            return new FirstStageParsingResult<C>(
+                issues,
+                root,
+                null,
+                null);
+        }
+
+        public FirstStageParsingResult<C> ParseFirstStage(string input)
+        {
+            return ParseFirstStage(CharStreams.fromString(input));
+        }
     }
 }
