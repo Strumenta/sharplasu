@@ -119,7 +119,7 @@ namespace Strumenta.Sharplasu.Parsing
          * parse only a portion of the input or a subset of the language, you have to override this method to invoke the
          * correct entry point.
         */
-        protected C InvokeRootRule(P parser)
+        protected virtual C InvokeRootRule(P parser)
         {
             var entryPoint = parser.GetType().GetMethod(parser.RuleNames[0]);
             return entryPoint?.Invoke(parser, null) as C;
