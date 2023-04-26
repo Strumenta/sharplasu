@@ -2,7 +2,7 @@ using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Testing;
 using Strumenta.SharpLasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Validation;
-using static Strumenta.Sharplasu.Testing.Testing;
+using static Strumenta.Sharplasu.Testing.Asserts;
 
 namespace Strumenta.Sharplasu.Tests;
 
