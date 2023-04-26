@@ -119,7 +119,7 @@ namespace Strumenta.Sharplasu.Parsing
          * parse only a portion of the input or a subset of the language, you have to override this method to invoke the
          * correct entry point.
         */
-        protected C InvokeRootRule(P parser)
+        protected virtual C InvokeRootRule(P parser)
         {
             var entryPoint = parser.GetType().GetMethod(parser.RuleNames[0]);
             return entryPoint?.Invoke(parser, null) as C;
@@ -129,6 +129,25 @@ namespace Strumenta.Sharplasu.Parsing
         /**
         * Transforms a parse tree into an AST (second parsing stage).
         */
-        protected abstract R ParseTreeToAst(C parseTreeRoot, bool considerPosition = true, List<Issue> issues = null);        
+        protected abstract R ParseTreeToAst(C parseTreeRoot, bool considerPosition = true, List<Issue> issues = null);
+
+        public FirstStageParsingResult<C> ParseFirstStage(ICharStream inputStream)
+        {
+            var issues = new List<Issue>();
+            var parser = CreateParser(inputStream, issues);
+            var root = InvokeRootRule(parser);
+            if (root != null)
+                VerifyParseTree(parser, issues, root);
+            return new FirstStageParsingResult<C>(
+                issues,
+                root,
+                null,
+                null);
+        }
+
+        public FirstStageParsingResult<C> ParseFirstStage(string input)
+        {
+            return ParseFirstStage(CharStreams.fromString(input));
+        }
     }
 }
