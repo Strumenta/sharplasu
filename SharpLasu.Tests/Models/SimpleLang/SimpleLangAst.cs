@@ -66,7 +66,7 @@ public class DecLiteral : LiteralExpression {}
 public class StringLiteral : LiteralExpression {}
 public class BooleanLiteral: LiteralExpression {}
 
-public abstract class BinaryExpression
+public abstract class BinaryExpression: Expression
 {
     public Expression Left { get; init; }
     public Expression Right { get; init; }
