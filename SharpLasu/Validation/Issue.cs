@@ -11,12 +11,20 @@ namespace Strumenta.Sharplasu.Validation
         SEMANTIC
     }
 
+    public enum IssueSeverity
+    {
+        Error,
+        Warning,
+        Info
+    }
+
     [Serializable]
     public class Issue
     {
         public IssueType IssueType { get; set; }
         public string Message { get; set; }
         public Position Position { get; set; }
+        public IssueSeverity Severity { get; set; }
 
         private Issue() {}
 
