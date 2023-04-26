@@ -28,11 +28,12 @@ namespace Strumenta.Sharplasu.Validation
 
         private Issue() {}
 
-        public Issue(IssueType issueType, string message, Position position)
+        public Issue(IssueType issueType, string message, Position position, IssueSeverity issueSeverity = IssueSeverity.Error)
         {
             IssueType = issueType;
             Message = message;
             Position = position;
+            Severity = issueSeverity;
         }
 
         public static Issue Lexical(string message, Position position)
