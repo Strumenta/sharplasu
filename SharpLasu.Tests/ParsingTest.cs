@@ -27,9 +27,9 @@ namespace Strumenta.Sharplasu.Tests {
             Assert.IsFalse(parsingResult.Correct);
             Assert.AreEqual(2, parsingResult.Issues.Count);
             Assert.AreEqual(IssueType.SYNTACTIC, parsingResult.Issues[0].IssueType);
-            Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[0].Severity);
+            Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[0].IssueSeverity);
             Assert.AreEqual(IssueType.SYNTACTIC, parsingResult.Issues[1].IssueType);
-            Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[1].Severity);
+            Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[1].IssueSeverity);
         }
     }
 }
