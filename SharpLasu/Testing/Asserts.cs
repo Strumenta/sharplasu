@@ -29,7 +29,7 @@ namespace Strumenta.Sharplasu.Testing
         }
     }
     
-    public static class Testing
+    public static class Asserts
     {
         public static void AssertParsingResultsAreEqual<T>(
             ParsingResult<T> expected, ParsingResult<T> actual,
