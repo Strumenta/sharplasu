@@ -26,7 +26,7 @@ namespace Strumenta.Sharplasu.Parsing
         {
             get
             {
-                return Issues.All(issue => issue.Severity == IssueSeverity.Info);
+                return Issues.All(issue => issue.IssueSeverity == IssueSeverity.Info);
             }
         }
 
