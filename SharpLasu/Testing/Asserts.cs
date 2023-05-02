@@ -1,14 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using ExtensionMethods;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Testing
 {
+    public class IgnoreChildren<N> : List<N> where N : Node {}
     public class ASTDifferenceException : Exception
     {
         public string Context { get; }
@@ -28,7 +26,7 @@ namespace Strumenta.Sharplasu.Testing
             Actual = actual;
         }
     }
-    
+
     public static class Asserts
     {
         public static void AssertParsingResultsAreEqual<T>(
@@ -44,10 +42,10 @@ namespace Strumenta.Sharplasu.Testing
                     (expected.Root != null && actual.Root != null)))
                 throw new ASTDifferenceException(context, expected.Root, actual.Root,
                     $"Expected root {expected.Root}, actual {actual.Root}");
-            
+
             AssertASTsAreEqual(expected.Root, actual.Root, context, considerPosition);
         }
-        
+
         public static void AssertASTsAreEqual<TNode>(
             Node expected,
             ParsingResult<TNode> actual,
@@ -56,10 +54,10 @@ namespace Strumenta.Sharplasu.Testing
         {
             if (actual.Issues.Count > 0)
                 throw new ASTDifferenceException(context, expected, actual, actual.Issues.ToString());
-            
+
             AssertASTsAreEqual(expected, actual.Root, context, considerPosition);
         }
-        
+
         public static void AssertASTsAreEqual(
             Node expected,
             Node actual,
@@ -75,18 +73,23 @@ namespace Strumenta.Sharplasu.Testing
                 throw new ASTDifferenceException(context, expected.SpecifiedPosition, actual.SpecifiedPosition,
                     $"{context}.position");
 
-            foreach (var propertyInfo in expected.GetType().GetProperties())
+            foreach (var propertyInfo in expected.NotDerivedProperties)
             {
                 var actualPropertyValue = propertyInfo.GetValue(actual);
                 var expectedPropertyValue = propertyInfo.GetValue(expected);
-                
+
                 if (expectedPropertyValue == null || actualPropertyValue == null) continue;
+
+                if (expectedPropertyValue.GetType().IsGenericType &&
+                     expectedPropertyValue.GetType().GetGenericTypeDefinition() == typeof(IgnoreChildren<>))
+                    continue;
 
                 if (expectedPropertyValue is Node expectedNode && actualPropertyValue is Node actualNode)
                 {
                     AssertASTsAreEqual(expectedNode, actualNode, context, considerPosition);
                 }
-                else if (expectedPropertyValue is IEnumerable<object> expectedIEnumerable && actualPropertyValue is IEnumerable<object> actualIEnumerable)
+                else if (expectedPropertyValue is IEnumerable<object> expectedIEnumerable &&
+                         actualPropertyValue is IEnumerable<object> actualIEnumerable)
                 {
                     if (expectedIEnumerable.Count() != actualIEnumerable.Count())
                         throw new ASTDifferenceException(context, expectedIEnumerable, actualIEnumerable,
