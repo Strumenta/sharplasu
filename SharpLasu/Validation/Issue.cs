@@ -1,6 +1,5 @@
 ﻿using Strumenta.Sharplasu.Model;
 using System;
-using System.Text.Json.Serialization;
 
 namespace Strumenta.Sharplasu.Validation
 {
@@ -24,7 +23,7 @@ namespace Strumenta.Sharplasu.Validation
         public IssueType IssueType { get; set; }
         public string Message { get; set; }
         public Position Position { get; set; }
-        public IssueSeverity Severity { get; set; }
+        public IssueSeverity IssueSeverity { get; set; }
 
         private Issue() {}
 
@@ -33,7 +32,7 @@ namespace Strumenta.Sharplasu.Validation
             IssueType = issueType;
             Message = message;
             Position = position;
-            Severity = issueSeverity;
+            IssueSeverity = issueSeverity;
         }
 
         public static Issue Lexical(string message, Position position)
@@ -53,7 +52,7 @@ namespace Strumenta.Sharplasu.Validation
 
         public override string ToString()
         {
-            return $"{IssueType} Issue: {Message} {Position} ";
+            return $"[{IssueSeverity}] {IssueType} Issue: {Message} {Position} ";
         }
 
         public override bool Equals(object obj)

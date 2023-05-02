@@ -59,11 +59,13 @@ namespace Strumenta.Sharplasu.Tests {
     ""Issues"" : [{
         ""IssueType"" : 0,
         ""Message"" : ""This is an example of a lexical error"",
-        ""Position"" : null
+        ""Position"" : null,
+        ""IssueSeverity"" : 0
     }, {
         ""IssueType"" : 1,
         ""Message"" : ""This is an example of a syntactic error"",
-        ""Position"" : null
+        ""Position"" : null,
+        ""IssueSeverity"" : 2
     }]
 }";
 
@@ -74,7 +76,7 @@ namespace Strumenta.Sharplasu.Tests {
                 new Issue(IssueType.LEXICAL, "This is an example of a lexical error", null),
                 deserializedResult.Issues[0]);
             Assert.AreEqual(
-                new Issue(IssueType.SYNTACTIC, "This is an example of a syntactic error", null),
+                new Issue(IssueType.SYNTACTIC, "This is an example of a syntactic error", null, IssueSeverity.Info),
                 deserializedResult.Issues[1]);
         }
     }
