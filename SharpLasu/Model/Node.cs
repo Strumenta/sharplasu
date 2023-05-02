@@ -19,7 +19,16 @@ namespace Strumenta.Sharplasu.Model
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         public Node Parent { get; set; } = null;
 
-        private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors" };
+        private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors",
+            "DerivedProperties", "NotDerivedProperties" };
+        
+        [JsonIgnore][XmlIgnore]
+        public IEnumerable<PropertyInfo> DerivedProperties => GetType().GetProperties().Where(p => ignore.Contains(p.Name));
+
+        [JsonIgnore]
+        [XmlIgnore]
+        public IEnumerable<PropertyInfo> NotDerivedProperties =>
+            GetType().GetProperties().Where(p => !ignore.Contains(p.Name));
 
         public List<Node> Children
         {

@@ -267,4 +267,28 @@ public class Testing
 
         Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
+
+    [TestMethod]
+    public void TestTwoDifferentNodesWithIgnoreChildren()
+    {
+        AssertASTsAreEqual(
+            new CompilationUnit
+            {
+                Statements = new IgnoreChildren<Statement>()
+            },
+            new CompilationUnit
+            {
+                Statements = new List<Statement>
+                {
+                    new DisplayStatement
+                    {
+                        Expression = new StringLiteral { Value = "foo" }
+                    },
+                    new SetStatement
+                    {
+                        Expression = new StringLiteral { Value = "bar" }
+                    }
+                }
+            });
+    }
 }
