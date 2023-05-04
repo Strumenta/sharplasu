@@ -14,7 +14,7 @@ namespace Strumenta.Sharplasu.Tests
             var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.Walk()),
-                new List<System.Type>
+                new List<Type>
                 {
                     typeof(CompilationUnit),
                     typeof(DisplayStatement),
@@ -22,33 +22,6 @@ namespace Strumenta.Sharplasu.Tests
                     typeof(SetStatement),
                     typeof(Identifier),
                     typeof(StringLiteral)
-                },
-                new List<System.Type>
-                {
-                    typeof(CompilationUnit),
-                    typeof(DisplayStatement),
-                    typeof(BooleanLiteral),
-                    typeof(SetStatement),
-                    typeof(StringLiteral),
-                    typeof(Identifier)
-                },
-                new List<Type>
-                {
-                    typeof(CompilationUnit),
-                    typeof(SetStatement),
-                    typeof(Identifier),
-                    typeof(StringLiteral),
-                    typeof(DisplayStatement),
-                    typeof(BooleanLiteral)
-                },
-                new List<Type>
-                {
-                    typeof(CompilationUnit),
-                    typeof(SetStatement),
-                    typeof(StringLiteral),
-                    typeof(Identifier),
-                    typeof(DisplayStatement),
-                    typeof(BooleanLiteral)
                 });
         }
 
