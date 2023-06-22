@@ -108,7 +108,7 @@ namespace Strumenta.Sharplasu.Model
     }
 
     [Serializable]
-    public class Position
+    public class Position : IComparable<Position>
     {
         public Point Start { get; set; }
         public Point End { get; set; }
@@ -146,6 +146,19 @@ namespace Strumenta.Sharplasu.Model
                 hash = hash * 23 + (Start == null ? 0 : Start.GetHashCode());
                 hash = hash * 23 + (End == null ? 0 : End.GetHashCode());
                 return hash;
+            }
+        }
+
+        public int CompareTo(Position other)
+        {
+            var cmp = Start.CompareTo(other.Start);
+            if (cmp == 0)
+            {
+                return End.CompareTo(other.End);
+            }
+            else
+            {
+                return cmp;
             }
         }
     }
