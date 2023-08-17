@@ -35,17 +35,17 @@ namespace Strumenta.Sharplasu.Validation
             IssueSeverity = issueSeverity;
         }
 
-        public static Issue Lexical(string message, Position position)
+        public static Issue Lexical(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
             return new Issue(IssueType.LEXICAL, message, position);
         }
 
-        public static Issue Syntactic(string message, Position position)
+        public static Issue Syntactic(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
             return new Issue(IssueType.SYNTACTIC, message, position);
         }
 
-        public static Issue Semantic(string message, Position position)
+        public static Issue Semantic(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
             return new Issue(IssueType.SEMANTIC, message, position);
         }
