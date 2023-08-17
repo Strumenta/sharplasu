@@ -39,7 +39,16 @@ namespace Strumenta.SharpLasu.Model
     public class LinkAttribute : System.Attribute
     {
         public LinkAttribute() { }
-    }    
+    }
+
+    /**
+     * Use this to mark something that does not inherit from Node as a node, so it will be included in the AST.
+     */
+    [AttributeUsage(AttributeTargets.Class)]
+    public class NodeTypeAttribute : System.Attribute
+    {
+        public NodeTypeAttribute() { }
+    }
 
     public interface Origin
     {
