@@ -94,6 +94,7 @@ namespace Strumenta.Sharplasu.Model
 
         protected Position specifiedPosition = null;
 
+        [Internal]
         public Position SpecifiedPosition
         {
             get
@@ -102,6 +103,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
+        [Internal]
         public Position Position
         {
             get
@@ -113,6 +115,8 @@ namespace Strumenta.Sharplasu.Model
                 specifiedPosition = value;
             }
         }
+
+        [Internal]
         public string SourceText 
         { 
             get
@@ -122,6 +126,7 @@ namespace Strumenta.Sharplasu.Model
             set => throw new NotImplementedException(); 
         }
 
+        [Internal]
         public Source Source => Origin?.Source;
 
         public Node() : this(null, null, null) {}
