@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Strumenta.Sharplasu.Model
@@ -113,12 +114,15 @@ namespace Strumenta.Sharplasu.Model
         public Point Start { get; set; }
         public Point End { get; set; }
 
+        public Source Source { get; set; } = null;
+
         private Position() {}
 
-        public Position(Point start, Point end)
+        public Position(Point start, Point end, Source source = null)
         {
             Start = start;
             End = end;
+            Source = source;
         }
 
         public override string ToString()
@@ -149,4 +153,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
     }
+
+    [Serializable]
+    public abstract class Source { }
 }

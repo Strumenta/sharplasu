@@ -1,5 +1,7 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Strumenta.Sharplasu.Parsing;
+using Strumenta.SharpLasu.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +13,18 @@ using System.Xml.Serialization;
 namespace Strumenta.Sharplasu.Model
 {
     [Serializable]
-    public class Node
+    public class Node : Origin
     {
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         public ParserRuleContext ParseTreeNode { get; private set; } = null;
 
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         public Node Parent { get; set; } = null;
+        public Origin Origin { get; set; } = null;
 
         private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors",
             "DerivedProperties", "NotDerivedProperties" };
-        
+
         [JsonIgnore][XmlIgnore]
         public IEnumerable<PropertyInfo> DerivedProperties => GetType().GetProperties().Where(p => ignore.Contains(p.Name));
 
@@ -33,7 +36,7 @@ namespace Strumenta.Sharplasu.Model
         public List<Node> Children
         {
             get
-            {                
+            {
 
                 List<Node> properties = GetType().GetProperties().Where(x => typeof(Node).IsAssignableFrom(x.PropertyType) && !ignore.Contains(x.Name) && x.GetValue(this) != null).Select(x => x.GetValue(this) as Node).ToList();
 
@@ -99,7 +102,37 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
+        public Position Position
+        {
+            get
+            {
+                return SpecifiedPosition ?? Origin.Position;
+            }
+            set 
+            {
+                specifiedPosition = value;
+            }
+        }
+        public string SourceText 
+        { 
+            get
+            {
+                return Origin?.SourceText;
+            }
+            set => throw new NotImplementedException(); 
+        }
+
+        public Source Source => Origin?.Source;
+
         public Node() : this(null, null, null) {}
+
+        public Node(Origin origin) : this()
+        {
+            if (origin != null)
+            {
+                this.Origin = origin;
+            }
+        }
 
         public Node(Position specifiedPosition = null, Node parent = null, ParserRuleContext ruleContext = null)
         {
@@ -134,5 +167,5 @@ namespace Strumenta.Sharplasu.Model
         }
     }
 
-    public class EmptyNode : Node { }
+    public class EmptyNode : Node { }  
 }
