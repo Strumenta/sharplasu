@@ -66,7 +66,7 @@ namespace Strumenta.SharpLasu.Model
         public Source Source => Position?.Source;
     }
 
-    public static class NodeExtensions
+    public static class ModelExtensions
     {
         public static N WithOrigin<N> (this N node, Origin origin) where N : Node 
         {
@@ -90,6 +90,16 @@ namespace Strumenta.SharpLasu.Model
                 .Where(it => it.GetCustomAttribute(typeof(LinkAttribute)) == null)
                 .Select(x => x)
                 .ToList();
-        }       
+        }
+
+        public static List<Type> Superclasses(this Type type)
+        {
+            // We do not merge these statements into one because AddRange returns void
+            // so we would have to do it by initializing superclasses with the Interfaces
+            // but that would result in the base types having the wrong order
+            var superclasses = new List<Type>() { type.BaseType };
+            superclasses.AddRange(type.GetInterfaces());
+            return superclasses;
+        }
     }
 }

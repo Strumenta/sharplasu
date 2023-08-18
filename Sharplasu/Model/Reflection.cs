@@ -87,5 +87,26 @@ namespace Strumenta.SharpLasu.Model
         {
             return type.CustomAttributes.Any(it => it.AttributeType.Name == "NodeTypeAttribute");
         }
+
+        public static bool IsAList(this Object obj)
+        {
+            return obj.GetType().GetInterfaces().Any(
+                        i => i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == typeof(IList<>));
+        }
+
+        public static bool IsACollection(this Object obj)
+        {
+            return obj.GetType().GetInterfaces().Any(
+                        i => i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        }
+
+        public static bool IsACollection(this Type type)
+        {
+            return type.GetInterfaces().Any(
+                        i => i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        }
     }
 }

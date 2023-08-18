@@ -3,14 +3,15 @@ using Strumenta.Sharplasu.Validation;
 using Strumenta.SharpLasu.Model;
 using Strumenta.SharpLasu.Transformation;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
-using static Antlr4.Runtime.Atn.SemanticContext;
+using Antlr4.Runtime.Tree;
 
 namespace Strumenta.SharpLasu.Transformation
 {
@@ -37,7 +38,7 @@ namespace Strumenta.SharpLasu.Transformation
     [AttributeUsage(AttributeTargets.Class)]
     public class MappedAttribute : System.Attribute
     {
-        private string Path;
+        public string Path { get; set; }
         
         public MappedAttribute(string path = "")
         {
@@ -63,15 +64,15 @@ namespace Strumenta.SharpLasu.Transformation
         /**
         * Sentinel value used to represent the information that a given property is not a child node.
         */
-        private static ChildNodeFactory<Object, Object, Object> NO_CHILD_NODE = new ChildNodeFactory<Object, Object, Object>("", (x) => x, (y, z) => { });
+        internal static ChildNodeFactory<Object, Object, Object> NO_CHILD_NODE = new ChildNodeFactory<Object, Object, Object>("", (x) => x, (y, z) => { });
 
-        private static AbsentParameterValue AbsentParameterValue = new AbsentParameterValue();
+        internal static AbsentParameterValue AbsentParameterValue = new AbsentParameterValue();
 
-        /*private static ChildNodeFactory<Source, Target, Child> GetChildNodeFactory<Source, Target, Child>(
-            this NodeFactory<Object, Node> nodeFactory,
-            TypeInfo nodeClass,
+        internal static ChildNodeFactory<Source, Target, Child> GetChildNodeFactory<Source, Target, Child, A, B>(
+            this NodeFactory<A, B> nodeFactory,
+            Type nodeClass,
             string parameterName
-        )
+        ) where B: Node
         {
             var childKey = nodeClass.FullName + "#" + parameterName;
             var childNodeFactory = nodeFactory.Children[childKey];
@@ -80,7 +81,7 @@ namespace Strumenta.SharpLasu.Transformation
                 childNodeFactory = nodeFactory.Children[parameterName];
             }
             return childNodeFactory as ChildNodeFactory<Source, Target, Child>;
-        }*/
+        }
     }
 
     /**
@@ -292,10 +293,10 @@ namespace Strumenta.SharpLasu.Transformation
             }
         }
 
-        private ChildNodeFactory<ChildSource, Target, Child> GetChildNodeFactory<ChildSource, Target, Child>(           
+        /*internal ChildNodeFactory<ChildSource, Target, Child> GetChildNodeFactory<ChildSource, Target, Child>(           
            TypeInfo nodeClass,
            string parameterName
-       )
+        )
         {
             var childKey = nodeClass.FullName + "#" + parameterName;
             var childNodeFactory = this.Children[childKey];
@@ -304,7 +305,7 @@ namespace Strumenta.SharpLasu.Transformation
                 childNodeFactory = this.Children[parameterName];
             }
             return childNodeFactory as ChildNodeFactory<ChildSource, Target, Child>;
-        }
+        }*/
     }
 
     /**
@@ -312,9 +313,9 @@ namespace Strumenta.SharpLasu.Transformation
     */
     public class ChildNodeFactory<Source, Target, Child>
     {
-        private string Name { get; set; }
-        private Func<Source, Object> Get { get; set; }
-        private Action<Target, Child> Setter { get; set; }
+        public string Name { get; set; }
+        public Func<Source, Object> Get { get; set; }
+        public Action<Target, Child> Setter { get; set; }
 
         public ChildNodeFactory(string name, Func<Source, Object> get, Action<Target, Child> setter)
         {
@@ -406,7 +407,7 @@ namespace Strumenta.SharpLasu.Transformation
                     factory.Finalizer(node);
                     node.Parent = parent;
                 });
-            } 
+            }
             else
             {
                 if (AllowGenericNode)
@@ -415,7 +416,7 @@ namespace Strumenta.SharpLasu.Transformation
                     nodes = new List<Node>() { new GenericNode(parent).WithOrigin(origin) };
                     Issues.Add(
                         Issue.Semantic(
-                            $"Source node not mapped: {source.GetType().FullName}",                            
+                            $"Source node not mapped: {source.GetType().FullName}",
                             origin?.Position,
                             IssueSeverity.Warning
                         )
@@ -429,26 +430,45 @@ namespace Strumenta.SharpLasu.Transformation
             return nodes;
         }
 
-        protected NodeFactory<S, T> GetNodeFactory<S, T>(Type kclass) 
-            where T : Node
-        {
-            return null;
-        }
-
-        protected List<Node> MakeNodes<S, T>             
-            (
-                NodeFactory<S, T> factory,
-                S source,
-                bool allowGenericNode = true
-            ) 
-            where T : Node
-        { 
-            return null; 
-        }
-
         private void SetChildren(NodeFactory<Object, Node> factory, Object source, Node node)
         {
-
+            node.GetType().ProcessProperties(
+                new HashSet<string>(),
+                pd =>
+                {
+                    var childKey = node.GetType().FullName + "#" + pd.Name;
+                    var childNodeFactory = factory.GetChildNodeFactory<Object, Object, Object, Object, Node>(node.GetType(), pd.Name);
+                    if (childNodeFactory != null)
+                    {
+                        if (childNodeFactory != Transformation.NO_CHILD_NODE)
+                        {
+                            SetChild(childNodeFactory, source, node, pd);
+                        }
+                    }
+                    else
+                    {
+                        var targetProp = node.GetType().GetProperties().Where(it => it.Name == pd.Name).FirstOrDefault();
+                        MappedAttribute mapped = targetProp?.GetCustomAttribute(typeof(MappedAttribute)) as MappedAttribute;
+                        if (targetProp.CanWrite && mapped != null)
+                        {
+                            string path = mapped.Path;
+                            if(String.IsNullOrEmpty(path))
+                                path = targetProp.Name;
+                            childNodeFactory = new ChildNodeFactory<Object, Object, Object>(
+                                childKey, factory.Getter(path), (Object obj, Object value) => {
+                                    targetProp.GetSetMethod().Invoke(obj, new object[] { value });
+                                }
+                            );
+                            factory.Children[childKey] = childNodeFactory;
+                            SetChild(childNodeFactory, source, node, pd);
+                        }
+                        else
+                        {
+                            factory.Children[childKey] = Transformation.NO_CHILD_NODE;
+                        }
+                    }
+                }
+            );
         }
 
         protected Origin AsOrigin(Object source)
@@ -457,6 +477,325 @@ namespace Strumenta.SharpLasu.Transformation
                 return source as Origin;
             else
                 return null;
-        }               
+        }
+
+        protected void SetChild(
+            ChildNodeFactory<Object, Object, Object> childNodeFactory,
+            Object source,
+            Node node,
+            PropertyTypeDescription pd
+        )
+        {
+            var childFactory = childNodeFactory as ChildNodeFactory<Object, Object, Object>;
+            var childrenSource = childFactory.Get(GetSource(node, source));
+            Object child;
+            if (pd.Multiple)
+            {
+                child = (childrenSource as List<object>)
+                    .Select(it => TransformIntoNodes(it, node)).ToList()
+                    .SelectMany(it => it);
+            }
+            else
+            {
+                child = Transform(childrenSource, node);
+            }
+            try
+            {
+                childNodeFactory.Set(node, child);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Could not set child {childNodeFactory}", ex);
+            }
+        }
+
+        protected Object GetSource(Node node, Object source)
+        {
+            return source;
+        }
+
+        protected List<Node> MakeNodes<S, T>
+            (
+                NodeFactory<S, T> factory,
+                S source,
+                bool allowGenericNode = true
+            )
+            where T : Node
+        {
+            List<Node> nodes;
+            try
+            {
+                nodes = factory.Constructor(source, this, factory) as List<Node>;
+            }
+            catch (Exception ex)
+            {
+                if (allowGenericNode)
+                    nodes = new List<Node>() { new GenericErrorNode(ex) };
+                else
+                    throw ex;
+            }
+            nodes.ForEach(node =>
+            {
+                if (node.Origin == null)
+                {
+                    node.WithOrigin(AsOrigin(source));
+                }
+
+            });            
+            return nodes;
+        }
+
+        protected NodeFactory<S, T> GetNodeFactory<S, T>(Type kClass)
+            where T : Node
+        {
+            var factory = Factories[kClass];
+            if (factory != null)
+            {
+                return factory as NodeFactory<S, T>;
+            }
+            else
+            {
+                if (kClass == typeof(Object))
+                {
+                    return null;
+                }
+                foreach (var superclass in kClass.Superclasses())
+                {
+                    var nodeFactory = GetNodeFactory<S, T>(superclass);
+                    if (nodeFactory != null)
+                        return nodeFactory;
+                }
+            }
+            return null;
+        }
+
+        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+            Type kClass, 
+            Func<S, ASTTransformer, NodeFactory<S, T>, T> factory
+        )
+         where T : Node
+        {
+            var nodeFactory = NodeFactory<S, T>.Single(factory, null, null);
+            Factories[kClass] = nodeFactory as NodeFactory<Object, Node>;
+            return nodeFactory;
+        }
+
+        public NodeFactory<S, T> RegisterMultipleNodeFactory<S, T>(
+            Type kClass,
+            Func<S, ASTTransformer, NodeFactory<S, T>, List<T>> factory
+        )
+         where T : Node
+        {
+            var nodeFactory = new NodeFactory<S, T>(factory, null, null);
+            Factories[kClass] = nodeFactory as NodeFactory<Object, Node>;
+            return nodeFactory;
+        }
+
+        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+            Type kClass,
+            Func<S, ASTTransformer, T> factory
+        )
+         where T : Node
+        {
+            return RegisterNodeFactory<S, T>(kClass, (source, transformer, _) => factory(source, transformer));            
+        }
+
+        //inline fun <reified S : Any, T : Node> registerNodeFactory(
+        //crossinline factory: S.(ASTTransformer) -> T?
+        //): NodeFactory<S, T> = registerNodeFactory(S::class) { source, transformer, _ -> source.factory(transformer)}
+        //public NodeFactory<S, T> RegisterNodeFactory<S, T>(            
+        //    Func<S, ASTTransformer, T> factory
+        //)
+        // where T : Node
+        //{
+        //    return RegisterNodeFactory<S, T>(typeof(S), (source, transformer, _) => factory(source, transformer));
+        //}
+
+        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+            Type kClass,
+            Func<S, T> factory
+        )
+         where T : Node
+        {
+            return RegisterNodeFactory<S, T>(kClass, (input, _, empty) => factory(input));
+        }
+
+        public NodeFactory<S, T> RegisterMultipleNodeFactory<S, T>(
+            Type kClass,
+            Func<S, List<T>> factory
+        )
+         where T : Node
+        {
+            return RegisterMultipleNodeFactory<S, T>(kClass, (input, _, empty) => factory(input));
+        }
+
+        public NodeFactory<S, T> RegisterNodeFactory<S, T>()
+         where T : Node
+        {
+            return RegisterNodeFactory<S, T>(typeof(S), typeof(T));
+        }
+
+        public NodeFactory<S, Node> NotTranslatedDirectly<S, T>()
+            where T : Node
+        {
+            throw new InvalidOperationException($"A Node of this type (${this.GetType().FullName}) should never be translated directly. " +
+                "It is expected that the container will not delegate the translation of this node but it will " +
+                "handle it directly");
+        }
+
+        internal ParameterValue GetConstructorParameterValue<S, T>(NodeFactory<S, T> thisFactory, Type target, S source, ParameterInfo kParameter)
+            where T : Node
+        {
+            try
+            {
+                var childNodeFactory = thisFactory.GetChildNodeFactory<object, T, object, S, T>(target, kParameter.Name);
+                if (childNodeFactory == null)
+                {
+                    if (kParameter.IsOptional)
+                        return new AbsentParameterValue();
+                    
+                    throw new InvalidOperationException($"We do not know how to produce parameter {kParameter.Name} for {target}");
+                }
+                else
+                {
+                    var childSource = childNodeFactory.Get.Invoke(source);
+                    if(childSource == null)
+                    {
+                        return new AbsentParameterValue();
+                    }
+                    else if (childSource.IsAList())
+                    {                        
+                        return new PresentParameterValue(
+                                (childSource as IEnumerable<object>).SelectMany(it => TransformIntoNodes(it).ToList())
+                            );
+                    }
+                    else if (childSource is string)
+                    {
+                        return new PresentParameterValue(childSource as String);
+                    }
+                    else
+                    {
+                        if(kParameter.ParameterType == typeof(string) && childSource is IParseTree)
+                        {
+                            return new PresentParameterValue((childSource as IParseTree).GetText());
+                        }
+                        else if( kParameter.ParameterType.IsACollection())
+                        {
+                            return new PresentParameterValue(TransformIntoNodes(childSource));
+                        }
+                        else
+                        {
+                            return new PresentParameterValue(Transform(childSource));
+                        }
+                    }
+                }
+            }      
+            catch ( Exception t )
+            {
+                throw new InvalidOperationException($"Issue while populating parameter {kParameter.Name} in " +
+                                $"constructor {target.FullName}.{target.PreferredConstructor()}",
+                            t);
+            }
+        }
+
+        public NodeFactory<S, T> RegisterNodeFactory<S, T>(Type source, Type target)
+         where T : Node
+        {
+            RegisterKnownClass(target);
+            // We are looking for any constructor with does not take parameters or have default
+            // values for all its parameters
+            var emptyLikeConstructor = target.GetConstructors()
+                .Where(it => it.GetParameters().All(param => param.IsOptional));
+            var nodeFactory = NodeFactory<S, T>.Single(
+                (sourceNF, _, thisFactory) =>
+                {
+                    if (target.IsSealed)
+                    {
+                        throw new InvalidOperationException($"Unable to instantiate sealed class {target}");
+                    }
+                    // We check `childrenSetAtConstruction` and not `emptyLikeConstructor` because, while we set this value
+                    // initially based on `emptyLikeConstructor` being equal to null, this can be later changed in `withChild`,
+                    // so we should really check the value that `childrenSetAtConstruction` time has when we actually invoke
+                    // the factory.
+                    if(thisFactory.ChildrenSetAtConstruction)
+                    {
+                        var constructor = target.PreferredConstructor();
+                        // the original Kolasu version is different because the equivalent of the
+                        // invoke method in Kotlin accepts parameters associated to the names
+                        // while in C# you have to supply the arguments in the correct order
+                        var constructorParamValues = constructor.GetParameters().Select(it => (it, cp: GetConstructorParameterValue<S, T>(thisFactory, target, sourceNF, it)))
+                                                        //.Where(it => it.cp is PresentParameterValue)                                                        
+                                                        .ToDictionary(key => key.it, val => val.cp);
+                        //var constructorParamValues = constructor.GetParameters().Select(it => GetConstructorParameterValue<S, T>(thisFactory, target, sourceNF, it)).ToArray();
+
+                        try
+                        {
+                            var instance = constructor.Invoke(constructorParamValues.Values.ToArray());
+                            (instance as Node).Children.ForEach(child => child.Parent = instance as Node);
+                            return (T) instance;
+                        }
+                        catch (Exception t)
+                        {
+                            throw new InvalidOperationException(
+                                $"Invocation of constructor {constructor} failed. " +
+                                $"We passed: {constructorParamValues.Select(it => $"{it.Key}={it.Value}").Aggregate("", (text, next) => text += next + ", ", it => it)} ",
+                                t);
+                        }
+                    }
+                    else
+                    {
+                        if (emptyLikeConstructor == null)
+                        {
+                            throw new InvalidOperationException(
+                                "childrenSetAtConstruction is set but there is no empty like " +
+                                $"constructor for {target}"
+                                );
+                        }
+                        return Activator.CreateInstance<T>();
+                    }
+                },
+                children: null,
+                finalizer: null,
+                // If I do not have an emptyLikeConstructor, then I am forced to invoke a constructor with parameters and
+                // therefore setting the children at construction time.
+                // Note that we are assuming that either we set no children at construction time or we set all of them
+                childrenSetAtConstruction: emptyLikeConstructor == null
+            );
+            Factories[source] = nodeFactory as NodeFactory<Object, Node>;
+            return nodeFactory;            
+        }
+
+        public NodeFactory<S, T> RegisterIdentityTransformation<S, T>(Type nodeClass)
+         where T : Node
+        {
+            return RegisterNodeFactory<S, T>(nodeClass, (node) => { return (T)(node as Node); });
+        }
+
+        public void RegisterKnownClass(Type target)
+        {
+            var qualifiedName = target.FullName;
+            var packageName = "";
+            if (qualifiedName != null)
+            {
+                var endIndex = qualifiedName.LastIndexOf('.');
+                if(endIndex >= 0)
+                {
+                    packageName = qualifiedName.Substring(0, endIndex);
+                }
+            }
+            if (!_knownClasses.ContainsKey(packageName))
+            {
+                _knownClasses.Add(packageName, new HashSet<Type>());
+            }
+            var set = _knownClasses[packageName];
+            set.Add(target);
+        }
+
+        public Issue AddIssue(string message, IssueSeverity severity = IssueSeverity.Error, Position position = null)
+        {
+            var issue = Issue.Semantic(message, position, severity);
+            Issues.Add(issue);
+            return issue;
+        }
     }
 }
