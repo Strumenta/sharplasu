@@ -1,6 +1,5 @@
-using ExtensionMethods;
-
 namespace Strumenta.SharpLasu.Tests.Models.SimpleLang;
+using Strumenta.Sharplasu.Model;
 
 public static class Models
 {

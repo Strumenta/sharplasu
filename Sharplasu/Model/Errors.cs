@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Strumenta.SharpLasu.Model
+namespace Strumenta.Sharplasu.Model
 {
     public interface ErrorNode
     {

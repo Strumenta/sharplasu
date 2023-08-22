@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Strumenta.SharpLasu.Transformation
+namespace Strumenta.Sharplasu.Transformation
 {
     public class GenericNode : Node
     {        

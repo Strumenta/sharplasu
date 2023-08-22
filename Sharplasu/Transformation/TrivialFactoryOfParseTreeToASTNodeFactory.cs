@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Strumenta.SharpLasu.Transformation
+namespace Strumenta.Sharplasu.Transformation
 {    
     public static class TrivialFactoryOfParseTreeToASTNodeFactory
     {

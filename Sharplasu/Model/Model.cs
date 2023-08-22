@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using static Antlr4.Runtime.Atn.SemanticContext;
 
-namespace Strumenta.SharpLasu.Model
+namespace Strumenta.Sharplasu.Model
 {
     /**
      * Use this to mark properties that are internal, i.e., they are used for bookkeeping and are not part of the model,

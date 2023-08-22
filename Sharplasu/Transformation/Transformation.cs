@@ -1,7 +1,5 @@
 ﻿using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Validation;
-using Strumenta.SharpLasu.Model;
-using Strumenta.SharpLasu.Transformation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +11,7 @@ using System.Text;
 using System.Xml.Linq;
 using Antlr4.Runtime.Tree;
 
-namespace Strumenta.SharpLasu.Transformation
+namespace Strumenta.Sharplasu.Transformation
 {
     public class PropertyAccessor
     {

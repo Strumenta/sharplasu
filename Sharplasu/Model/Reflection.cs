@@ -6,9 +6,8 @@ using System.Reflection;
 using System.Text;
 using Strumenta.Sharplasu.Model;
 
-namespace Strumenta.SharpLasu.Model
+namespace Strumenta.Sharplasu.Model
 {
-
     public class PropertyTypeDescription
     {
         public string Name { get; set; }
