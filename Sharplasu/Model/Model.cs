@@ -53,7 +53,7 @@ namespace Strumenta.Sharplasu.Model
     public interface Origin
     {
         Position Position { get; set; }
-        String SourceText { get; set; }
+        String SourceText { get; }
         Source Source { get; }           
     }
 
@@ -61,7 +61,7 @@ namespace Strumenta.Sharplasu.Model
     public class SimpleOrigin : Origin
     {
         public Position Position { get; set; }
-        public string SourceText { get; set; }
+        public string SourceText { get; }
 
         public Source Source => Position?.Source;
     }

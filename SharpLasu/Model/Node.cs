@@ -122,8 +122,7 @@ namespace Strumenta.Sharplasu.Model
             get
             {
                 return Origin?.SourceText;
-            }
-            set => throw new NotImplementedException(); 
+            }            
         }
 
         [Internal]
