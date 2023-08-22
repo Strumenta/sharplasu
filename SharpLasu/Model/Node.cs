@@ -108,7 +108,7 @@ namespace Strumenta.Sharplasu.Model
         {
             get
             {
-                return SpecifiedPosition ?? Origin.Position;
+                return SpecifiedPosition ?? Origin?.Position;
             }
             set 
             {
