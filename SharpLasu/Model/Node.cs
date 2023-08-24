@@ -16,24 +16,31 @@ namespace Strumenta.Sharplasu.Model
     public class Node : Origin
     {
         [field: NonSerialized][JsonIgnore][XmlIgnore]
+        [Internal]
         public ParserRuleContext ParseTreeNode { get; private set; } = null;
 
         [field: NonSerialized][JsonIgnore][XmlIgnore]
+        [Internal]
         public Node Parent { get; set; } = null;
-        [JsonIgnore][XmlIgnore]
+        [JsonIgnore]
+        [XmlIgnore]
+        [Internal]
         public Origin Origin { get; set; } = null;
 
         private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors",
             "DerivedProperties", "NotDerivedProperties" };
 
         [JsonIgnore][XmlIgnore]
+        [Internal]
         public IEnumerable<PropertyInfo> DerivedProperties => GetType().GetProperties().Where(p => ignore.Contains(p.Name));
 
         [JsonIgnore]
         [XmlIgnore]
+        [Internal]
         public IEnumerable<PropertyInfo> NotDerivedProperties =>
             GetType().GetProperties().Where(p => !ignore.Contains(p.Name));
 
+        [Internal]
         public List<Node> Children
         {
             get
@@ -48,6 +55,7 @@ namespace Strumenta.Sharplasu.Model
         }
 
         [JsonIgnore][XmlIgnore]
+        [Internal]
         public List<Node> Descendants
         {
             get
@@ -70,6 +78,7 @@ namespace Strumenta.Sharplasu.Model
         }
 
         [JsonIgnore][XmlIgnore]
+        [Internal]
         public List<Node> Ancestors
         {
             get
