@@ -69,8 +69,8 @@ namespace Strumenta.Sharplasu.Testing
                     $"{context}: expected node of type {expected.GetType().FullName}," +
                     $"but found {actual.GetType().FullName}");
 
-            if (considerPosition && !expected.SpecifiedPosition.Equals(actual.SpecifiedPosition))
-                throw new ASTDifferenceException(context, expected.SpecifiedPosition, actual.SpecifiedPosition,
+            if (considerPosition && (expected.Position != null && !expected.Position.Equals(actual.Position)))
+                throw new ASTDifferenceException(context, expected.Position, actual.Position,
                     $"{context}.position");
 
             foreach (var propertyInfo in expected.NotDerivedProperties)
