@@ -727,7 +727,7 @@ namespace Strumenta.Sharplasu.Transformation
             // We are looking for any constructor with does not take parameters or have default
             // values for all its parameters
             var emptyLikeConstructor = target.GetConstructors()
-                .Where(it => it.GetParameters().All(param => param.IsOptional));
+                .Where(it => it.GetParameters().All(param => param.IsOptional)).First();
             var nodeFactory = NodeFactory.Single(
                 (sourceNF, _, thisFactory) =>
                 {
@@ -773,7 +773,7 @@ namespace Strumenta.Sharplasu.Transformation
                                 $"constructor for {target}"
                                 );
                         }
-                        return Activator.CreateInstance<T>();
+                        return emptyLikeConstructor.Invoke(Enumerable.Repeat<object>(null, emptyLikeConstructor.GetParameters().Length).ToArray()) as T;
                     }
                 },
                 children: null,
