@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 using Antlr4.Runtime.Tree;
+using System.Xml.Xsl;
 
 namespace Strumenta.Sharplasu.Transformation
 {
@@ -62,40 +63,43 @@ namespace Strumenta.Sharplasu.Transformation
         /**
         * Sentinel value used to represent the information that a given property is not a child node.
         */
-        internal static ChildNodeFactory<Object, Object, Object> NO_CHILD_NODE = new ChildNodeFactory<Object, Object, Object>("", (x) => x, (y, z) => { });
+        internal static ChildNodeFactory NO_CHILD_NODE = new ChildNodeFactory("", (x) => x, (y, z) => { });
 
         internal static AbsentParameterValue AbsentParameterValue = new AbsentParameterValue();
 
-        internal static ChildNodeFactory<Source, Target, Child> GetChildNodeFactory<Source, Target, Child, A, B>(
-            this NodeFactory<A, B> nodeFactory,
+        internal static ChildNodeFactory GetChildNodeFactory(
+            this NodeFactory nodeFactory,
             Type nodeClass,
             string parameterName
-        ) where B: Node
+        )
         {
             var childKey = nodeClass.FullName + "#" + parameterName;
-            var childNodeFactory = nodeFactory.Children[childKey];
+            ChildNodeFactory childNodeFactory;
+            nodeFactory.Children.TryGetValue(childKey, out childNodeFactory);
             if ( childNodeFactory == null )
             {
                 childNodeFactory = nodeFactory.Children[parameterName];
             }
-            return childNodeFactory as ChildNodeFactory<Source, Target, Child>;
+            return childNodeFactory;
         }
-    }
+    }    
 
     /**
      * Factory that, given a tree node, will instantiate the corresponding transformed node.
      */
-    public class NodeFactory<Source, Output> where Output : Node
+    public class NodeFactory
     {
-        public Func<Source, ASTTransformer, NodeFactory<Source, Output>, List<Output>> Constructor { get; set; }
-        public Dictionary<string, ChildNodeFactory<Source, Object, Object>> Children { get; set; } = new Dictionary<string, ChildNodeFactory<Source, object, object>>();
-        public Action<Output> Finalizer { get; set; } = (x) => { };
+        public Func<object, ASTTransformer, NodeFactory, List<Node>> Constructor { get; set; }
+        public Dictionary<string, ChildNodeFactory> Children { get; set; } = new Dictionary<string, ChildNodeFactory>();
+        public Action<Node> Finalizer { get; set; } = (x) => { };
         public bool SkipChildren = false;
         public bool ChildrenSetAtConstruction = false;
+        public Type RealType { get; set; }
         public NodeFactory(
-            Func<Source, ASTTransformer, NodeFactory<Source, Output>, List<Output>> constructor,
-            Dictionary<string, ChildNodeFactory<Source, Object, Object>> children,
-            Action<Output> finalizer,
+            Func<object, ASTTransformer, NodeFactory, List<Node>> constructor,
+            Dictionary<string, ChildNodeFactory> children,
+            Action<Node> finalizer,
+            Type realType,
             bool skipChildren = false,
             bool childrenSetAtConstruction = false
         )
@@ -103,26 +107,28 @@ namespace Strumenta.Sharplasu.Transformation
             Constructor = constructor ?? Constructor;
             Children = children ?? Children;
             Finalizer = finalizer ?? Finalizer;
+            RealType = realType;
             SkipChildren = skipChildren;
             ChildrenSetAtConstruction = childrenSetAtConstruction;
         }
 
-        public static NodeFactory<Source, Output> 
+        public static NodeFactory
             Single(
-                Func<Source, ASTTransformer, NodeFactory<Source, Output>, Output> singleConstructor,
-                Dictionary<string, ChildNodeFactory<Source, Object, Object>> children,
-                Action<Output> finalizer,
+                Func<object, ASTTransformer, NodeFactory, Node> singleConstructor,
+                Dictionary<string, ChildNodeFactory> children,
+                Action<Node> finalizer,
+                Type realType,
                 bool skipChildren = false,
                 bool childrenSetAtConstruction = false
             )
         {
-            return new NodeFactory<Source, Output>( (source, at, nf) => { 
+            return new NodeFactory( (source, at, nf) => { 
                     var result = singleConstructor( source, at, nf );
                     if (result == null) 
-                        return new List<Output>();
+                        return new List<Node>();
                     else
-                        return new List<Output>() { result };
-            }, children, finalizer, skipChildren, childrenSetAtConstruction);
+                        return new List<Node>() { result };
+            }, children, finalizer, realType, skipChildren, childrenSetAtConstruction);
                 
         }
 
@@ -151,15 +157,15 @@ namespace Strumenta.Sharplasu.Transformation
          *  This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
          *  for mutable and immutable properties
          */
-        public NodeFactory<Source, Output> WithChild(            
+        public NodeFactory WithChild(            
             PropertyInfo targetProperty,
             PropertyAccessor sourceAccessor,
             TypeInfo scopedToType = null
         )
         {
-            return WithChild<Source, Output>(
+            return WithChild<object, Node>(
                      get: (source) => sourceAccessor.Accessor(source),
-                     set: (Source obj, Output value) => {
+                     set: (object obj, object value) => {
                          targetProperty.GetSetMethod().Invoke(obj, new object[] { value });
                      },
                      targetProperty.Name,
@@ -175,14 +181,14 @@ namespace Strumenta.Sharplasu.Transformation
         * This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
         * for mutable and immutable properties
         */
-        public NodeFactory<Source, Output> WithChild(
+        public NodeFactory WithChild(
             PropertyInfo targetProperty,
             PropertyAccessor sourceAccessor            
         )
         {
-            return WithChild(
+            return WithChild<object, Node>(
                 get: (source) => sourceAccessor.Accessor(source),
-                set: (Source obj, Output value) => {
+                set: (object obj, object value) => {
                         targetProperty.GetSetMethod().Invoke(obj, new object[] { value });
                      },
                 name: targetProperty.Name,
@@ -196,10 +202,10 @@ namespace Strumenta.Sharplasu.Transformation
         * as a constructor parameter when instantiating the parent, or be used to set the value after
         * the parent has been instantiated.
         */
-        public NodeFactory<Source, Output> WithChild<Target, Child>
+        public NodeFactory WithChild<Target, Child>
         (
-           Func<Source, object> get,
-           Action<Target, Child> set,
+           Func<object, object> get,
+           Action<object, object> set,
            string name,
            TypeInfo scopedToType = null
         )
@@ -219,11 +225,11 @@ namespace Strumenta.Sharplasu.Transformation
                 ChildrenSetAtConstruction = true;
             }
 
-            Children[prefix + name] = new ChildNodeFactory<Source, Target, Child>(prefix + name, get, set) as ChildNodeFactory<Source, object, object>;
+            Children[prefix + name] = new ChildNodeFactory(prefix + name, get, set) as ChildNodeFactory;
             return this;
         }
 
-        public NodeFactory<Source, Output> WithFinalizer(Action<Output> finalizer)
+        public NodeFactory WithFinalizer(Action<Node> finalizer)
         {
             this.Finalizer = finalizer;
             return this;
@@ -244,15 +250,15 @@ namespace Strumenta.Sharplasu.Transformation
         * according to the configuration determined by reflection. When it tries to do so, the "source" of the node will
         * be an instance of `XYZContext` that does not have a child named `someProperty`, and the transformation will fail.
         */
-        NodeFactory<Source, Output> WithSkipChildren(bool skip = true)
+        public NodeFactory WithSkipChildren(bool skip = true)
         {
             this.SkipChildren = skip;
             return this;
         }
 
-        public Func<Source, object> Getter(string path)
+        public Func<object, object> Getter(string path)
         {
-            return (Source src) =>
+            return (object src) =>
             {
                 object sub = src;
                 foreach (var elem in path.Split('.'))
@@ -291,6 +297,21 @@ namespace Strumenta.Sharplasu.Transformation
             }
         }
 
+        /*public static explicit operator NodeFactory<Output>(NodeFactory<Node> v)
+        {
+            return new NodeFactory<Output>();
+        }*/
+
+        /*public NodeFactory<Node> ConvertNodeFactory()
+        {
+            return new NodeFactory<Node>((obj, astt, nf) => { return Constructor(obj, astt, nf as NodeFactory<Output>).ToList<Node>(); },
+                Children,
+                (it) => { Finalizer(it as Output); },
+                SkipChildren,
+                ChildrenSetAtConstruction
+            );
+        }*/
+
         /*internal ChildNodeFactory<ChildSource, Target, Child> GetChildNodeFactory<ChildSource, Target, Child>(           
            TypeInfo nodeClass,
            string parameterName
@@ -309,20 +330,20 @@ namespace Strumenta.Sharplasu.Transformation
     /**
     * Information on how to retrieve a child node.
     */
-    public class ChildNodeFactory<Source, Target, Child>
+    public class ChildNodeFactory
     {
         public string Name { get; set; }
-        public Func<Source, Object> Get { get; set; }
-        public Action<Target, Child> Setter { get; set; }
+        public Func<object, object> Get { get; set; }
+        public Action<object, object> Setter { get; set; }
 
-        public ChildNodeFactory(string name, Func<Source, Object> get, Action<Target, Child> setter)
+        public ChildNodeFactory(string name, Func<object, object> get, Action<object, object> setter)
         {
             Name = name;
             Get = get;
             Setter = setter;
         }
 
-        public void Set(Target node, Child child)
+        public void Set(object node, object child)
         {
             if (Setter == null)
             {
@@ -359,7 +380,7 @@ namespace Strumenta.Sharplasu.Transformation
          * 
          * Factories that map from source tree node to target tree node.
          */
-        public Dictionary<Type, NodeFactory<Object, Node>> Factories { get; set; } = new Dictionary<Type, NodeFactory<Object, Node>>();
+        public Dictionary<Type, NodeFactory> Factories { get; set; } = new Dictionary<Type, NodeFactory>();
 
         private static Dictionary<string, ISet<Type>> _knownClasses = new Dictionary<string, ISet<Type>>();
         public Dictionary<string, ISet<Type>> KnownClasses { get; private set; } = _knownClasses;
@@ -391,7 +412,7 @@ namespace Strumenta.Sharplasu.Transformation
                 return new List<Node>();
             if (source.GetType().IsGenericType && (source.GetType().GetGenericTypeDefinition() == typeof(List<>)))
                 throw new Exception("Mapping error: received collection when value was expected");
-            var factory = GetNodeFactory<Object, Node>(source.GetType());
+            var factory = GetNodeFactory(source.GetType());
             var nodes = new List<Node>();
             if (factory != null)
             {
@@ -428,14 +449,14 @@ namespace Strumenta.Sharplasu.Transformation
             return nodes;
         }
 
-        private void SetChildren(NodeFactory<Object, Node> factory, Object source, Node node)
+        private void SetChildren(NodeFactory factory, Object source, Node node)
         {
             node.ProcessProperties(
                 new HashSet<string>(),
                 pd =>
                 {
                     var childKey = node.GetType().FullName + "#" + pd.Name;
-                    var childNodeFactory = factory.GetChildNodeFactory<Object, Object, Object, Object, Node>(node.GetType(), pd.Name);
+                    var childNodeFactory = factory.GetChildNodeFactory(node.GetType(), pd.Name);
                     if (childNodeFactory != null)
                     {
                         if (childNodeFactory != Transformation.NO_CHILD_NODE)
@@ -452,7 +473,7 @@ namespace Strumenta.Sharplasu.Transformation
                             string path = mapped.Path;
                             if(String.IsNullOrEmpty(path))
                                 path = targetProp.Name;
-                            childNodeFactory = new ChildNodeFactory<Object, Object, Object>(
+                            childNodeFactory = new ChildNodeFactory(
                                 childKey, factory.Getter(path), (Object obj, Object value) => {
                                     targetProp.GetSetMethod().Invoke(obj, new object[] { value });
                                 }
@@ -478,20 +499,20 @@ namespace Strumenta.Sharplasu.Transformation
         }
 
         protected void SetChild(
-            ChildNodeFactory<Object, Object, Object> childNodeFactory,
-            Object source,
+            ChildNodeFactory childNodeFactory,
+            object source,
             Node node,
             PropertyTypeDescription pd
         )
         {
-            var childFactory = childNodeFactory as ChildNodeFactory<Object, Object, Object>;
+            var childFactory = childNodeFactory;
             var childrenSource = childFactory.Get(GetSource(node, source));
-            Object child;
+            object child;
             if (pd.Multiple)
             {
-                child = (childrenSource as List<object>)
+                child = (childrenSource as IList).OfType<object>()
                     .Select(it => TransformIntoNodes(it, node)).ToList()
-                    .SelectMany(it => it);
+                    .SelectMany(it => it).ToList();
             }
             else
             {
@@ -512,18 +533,17 @@ namespace Strumenta.Sharplasu.Transformation
             return source;
         }
 
-        protected List<Node> MakeNodes<S, T>
+        protected List<Node> MakeNodes
             (
-                NodeFactory<S, T> factory,
-                S source,
+                NodeFactory factory,
+                object source,
                 bool allowGenericNode = true
-            )
-            where T : Node
+            )            
         {
             List<Node> nodes;
             try
             {
-                nodes = factory.Constructor(source, this, factory) as List<Node>;
+                nodes = factory.Constructor(source, this, factory);
             }
             catch (Exception ex)
             {
@@ -543,13 +563,12 @@ namespace Strumenta.Sharplasu.Transformation
             return nodes;
         }
 
-        protected NodeFactory<S, T> GetNodeFactory<S, T>(Type kClass)
-            where T : Node
+        protected NodeFactory GetNodeFactory(Type kClass)            
         {
             var factory = Factories[kClass];
             if (factory != null)
             {
-                return factory as NodeFactory<S, T>;
+                return factory;
             }
             else
             {
@@ -559,7 +578,7 @@ namespace Strumenta.Sharplasu.Transformation
                 }
                 foreach (var superclass in kClass.Superclasses())
                 {
-                    var nodeFactory = GetNodeFactory<S, T>(superclass);
+                    var nodeFactory = GetNodeFactory(superclass);
                     if (nodeFactory != null)
                         return nodeFactory;
                 }
@@ -567,35 +586,35 @@ namespace Strumenta.Sharplasu.Transformation
             return null;
         }
 
-        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+        public NodeFactory RegisterNodeFactory<T>(
             Type kClass, 
-            Func<S, ASTTransformer, NodeFactory<S, T>, T> factory
+            Func<object, ASTTransformer, NodeFactory, Node> factory
         )
          where T : Node
         {
-            var nodeFactory = NodeFactory<S, T>.Single(factory, null, null);
-            Factories[kClass] = nodeFactory as NodeFactory<Object, Node>;
+            var nodeFactory = NodeFactory.Single(factory, null, null, typeof(T));
+            Factories[kClass] = nodeFactory;
             return nodeFactory;
         }
 
-        public NodeFactory<S, T> RegisterMultipleNodeFactory<S, T>(
+        public NodeFactory RegisterMultipleNodeFactory<T>(
             Type kClass,
-            Func<S, ASTTransformer, NodeFactory<S, T>, List<T>> factory
+            Func<object, ASTTransformer, NodeFactory, List<Node>> factory
         )
          where T : Node
         {
-            var nodeFactory = new NodeFactory<S, T>(factory, null, null);
-            Factories[kClass] = nodeFactory as NodeFactory<Object, Node>;
+            var nodeFactory = new NodeFactory(factory, null, null, typeof(T));
+            Factories[kClass] = nodeFactory;
             return nodeFactory;
         }
 
-        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+        public NodeFactory RegisterNodeFactory<T>(
             Type kClass,
-            Func<S, ASTTransformer, T> factory
+            Func<object, ASTTransformer, T> factory
         )
          where T : Node
         {
-            return RegisterNodeFactory<S, T>(kClass, (source, transformer, _) => factory(source, transformer));            
+            return RegisterNodeFactory<T>(kClass, (source, transformer, _) => factory(source, transformer));            
         }
 
         //inline fun <reified S : Any, T : Node> registerNodeFactory(
@@ -609,44 +628,43 @@ namespace Strumenta.Sharplasu.Transformation
         //    return RegisterNodeFactory<S, T>(typeof(S), (source, transformer, _) => factory(source, transformer));
         //}
 
-        public NodeFactory<S, T> RegisterNodeFactory<S, T>(
+        public NodeFactory RegisterNodeFactory<T>(
             Type kClass,
-            Func<S, T> factory
+            Func<object, T> factory
         )
          where T : Node
         {
-            return RegisterNodeFactory<S, T>(kClass, (input, _, empty) => factory(input));
+            return RegisterNodeFactory<T>(kClass, (input, _, empty) => factory(input));
         }
 
-        public NodeFactory<S, T> RegisterMultipleNodeFactory<S, T>(
+        public NodeFactory RegisterMultipleNodeFactory<T>(
             Type kClass,
-            Func<S, List<T>> factory
+            Func<object, List<Node>> factory
         )
          where T : Node
         {
-            return RegisterMultipleNodeFactory<S, T>(kClass, (input, _, empty) => factory(input));
+            return RegisterMultipleNodeFactory<T>(kClass, (input, _, empty) => factory(input));
         }
 
-        public NodeFactory<S, T> RegisterNodeFactory<S, T>()
+        public NodeFactory RegisterNodeFactory<T>()
          where T : Node
         {
-            return RegisterNodeFactory<S, T>(typeof(S), typeof(T));
+            return RegisterNodeFactory<T>(typeof(object), typeof(T));
         }
 
-        public NodeFactory<S, Node> NotTranslatedDirectly<S, T>()
-            where T : Node
+        public NodeFactory NotTranslatedDirectly()            
         {
             throw new InvalidOperationException($"A Node of this type (${this.GetType().FullName}) should never be translated directly. " +
                 "It is expected that the container will not delegate the translation of this node but it will " +
                 "handle it directly");
         }
 
-        internal ParameterValue GetConstructorParameterValue<S, T>(NodeFactory<S, T> thisFactory, Type target, S source, ParameterInfo kParameter)
+        internal ParameterValue GetConstructorParameterValue<T>(NodeFactory thisFactory, Type target, object source, ParameterInfo kParameter)
             where T : Node
         {
             try
             {
-                var childNodeFactory = thisFactory.GetChildNodeFactory<object, T, object, S, T>(target, kParameter.Name);
+                var childNodeFactory = thisFactory.GetChildNodeFactory(target, kParameter.Name);
                 if (childNodeFactory == null)
                 {
                     if (kParameter.IsOptional)
@@ -696,7 +714,7 @@ namespace Strumenta.Sharplasu.Transformation
             }
         }
 
-        public NodeFactory<S, T> RegisterNodeFactory<S, T>(Type source, Type target)
+        public NodeFactory RegisterNodeFactory<T>(Type source, Type target)
          where T : Node
         {
             RegisterKnownClass(target);
@@ -704,7 +722,7 @@ namespace Strumenta.Sharplasu.Transformation
             // values for all its parameters
             var emptyLikeConstructor = target.GetConstructors()
                 .Where(it => it.GetParameters().All(param => param.IsOptional));
-            var nodeFactory = NodeFactory<S, T>.Single(
+            var nodeFactory = NodeFactory.Single(
                 (sourceNF, _, thisFactory) =>
                 {
                     if (target.IsSealed)
@@ -721,7 +739,7 @@ namespace Strumenta.Sharplasu.Transformation
                         // the original Kolasu version is different because the equivalent of the
                         // invoke method in Kotlin accepts parameters associated to the names
                         // while in C# you have to supply the arguments in the correct order
-                        var constructorParamValues = constructor.GetParameters().Select(it => (it, cp: GetConstructorParameterValue<S, T>(thisFactory, target, sourceNF, it)))
+                        var constructorParamValues = constructor.GetParameters().Select(it => (it, cp: GetConstructorParameterValue<T>(thisFactory, target, sourceNF, it)))
                                                         //.Where(it => it.cp is PresentParameterValue)                                                        
                                                         .ToDictionary(key => key.it, val => val.cp);
                         //var constructorParamValues = constructor.GetParameters().Select(it => GetConstructorParameterValue<S, T>(thisFactory, target, sourceNF, it)).ToArray();
@@ -754,19 +772,23 @@ namespace Strumenta.Sharplasu.Transformation
                 },
                 children: null,
                 finalizer: null,
+                realType: typeof(T),
                 // If I do not have an emptyLikeConstructor, then I am forced to invoke a constructor with parameters and
                 // therefore setting the children at construction time.
                 // Note that we are assuming that either we set no children at construction time or we set all of them
                 childrenSetAtConstruction: emptyLikeConstructor == null
             );
-            Factories[source] = nodeFactory as NodeFactory<Object, Node>;
+            Factories[source] = nodeFactory;
+            //Factories[source] = nodeFactory.ConvertNodeFactory();
             return nodeFactory;            
         }
 
-        public NodeFactory<S, T> RegisterIdentityTransformation<S, T>(Type nodeClass)
+        public NodeFactory RegisterIdentityTransformation<T>(Type nodeClass)
          where T : Node
         {
-            return RegisterNodeFactory<S, T>(nodeClass, (node) => { return (T)(node as Node); });
+            return RegisterNodeFactory<T>(nodeClass, (node) => { 
+                return (T) node; 
+            }).WithSkipChildren();
         }
 
         public void RegisterKnownClass(Type target)

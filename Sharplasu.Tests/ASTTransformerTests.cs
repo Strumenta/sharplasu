@@ -20,7 +20,12 @@ namespace Strumenta.Sharplasu.Tests
 
             public CU(List<Node> statements)
             {
-                this.Statements = statements;
+                this.Statements = statements ?? new List<Node>(); 
+            }
+
+            public CU()
+            { 
+                Statements = new List<Node>();
             }
         }
 
