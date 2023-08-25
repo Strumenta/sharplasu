@@ -78,7 +78,7 @@ namespace Strumenta.Sharplasu.Transformation
             nodeFactory.Children.TryGetValue(childKey, out childNodeFactory);
             if ( childNodeFactory == null )
             {
-                childNodeFactory = nodeFactory.Children[parameterName];
+                nodeFactory.Children.TryGetValue(parameterName, out childNodeFactory);
             }
             return childNodeFactory;
         }
@@ -376,6 +376,12 @@ namespace Strumenta.Sharplasu.Transformation
         public List<Issue> Issues { get; set; } = new List<Issue>();
         public bool AllowGenericNode { get; set; } = true;
 
+        public ASTTransformer(List<Issue> issues = null, bool allowGenericNode = true)
+        {
+            Issues = issues ?? new List<Issue>();
+            AllowGenericNode = allowGenericNode;
+        }
+
         /**
          * 
          * Factories that map from source tree node to target tree node.
@@ -634,7 +640,7 @@ namespace Strumenta.Sharplasu.Transformation
         )
          where T : Node
         {
-            return RegisterNodeFactory<T>(kClass, (input, _, empty) => factory(input));
+            return RegisterNodeFactory<T>(kClass, (source, _, empty) => factory(source));
         }
 
         public NodeFactory RegisterMultipleNodeFactory<T>(
