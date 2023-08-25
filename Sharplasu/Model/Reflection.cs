@@ -28,9 +28,7 @@ namespace Strumenta.Sharplasu.Model
             var propertyType = property.PropertyType;
             var classifier = property.PropertyType;
             var multiple = false;
-            if (classifier.GetInterfaces().Any(
-                i => i.IsGenericType &&
-                i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            if (property.PropertyType.IsACollection())
                 multiple = true;
             Type valueType;
             bool provideNodes;
@@ -86,26 +84,29 @@ namespace Strumenta.Sharplasu.Model
         {
             return type.CustomAttributes.Any(it => it.AttributeType.Name == "NodeTypeAttribute");
         }
-
+        
         public static bool IsAList(this Object obj)
         {
             return obj.GetType().GetInterfaces().Any(
                         i => i.IsGenericType &&
-                        i.GetGenericTypeDefinition() == typeof(IList<>));
+                        i.GetGenericTypeDefinition() == typeof(IList<>)) &&
+                        obj.GetType().IsGenericType;
         }
 
         public static bool IsACollection(this Object obj)
         {
             return obj.GetType().GetInterfaces().Any(
                         i => i.IsGenericType &&
-                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) &&
+                        obj.GetType().IsGenericType;
         }
 
         public static bool IsACollection(this Type type)
         {
             return type.GetInterfaces().Any(
                         i => i.IsGenericType &&
-                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                        i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) &&
+                        type.IsGenericType;
         }
     }
 }
