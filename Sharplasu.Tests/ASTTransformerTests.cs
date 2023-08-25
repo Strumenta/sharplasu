@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Strumenta.Sharplasu.Testing;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Strumenta.Sharplasu.Tests
 {   
@@ -105,6 +106,72 @@ namespace Strumenta.Sharplasu.Tests
             }
         }
 
+        private abstract class ALangExpression : Node { }
+        private class ALangIntLiteral : ALangExpression
+        {
+            public int Value { get; set; } = 0;
+
+            public ALangIntLiteral(int value)
+            {
+                Value = value;
+            }
+        }
+        private class ALangSum : ALangExpression
+        {
+            public ALangExpression Left { get; set; }
+            public ALangExpression Right { get; set; }
+
+            public ALangSum(ALangExpression left, ALangExpression right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+        private class ALangMult : ALangExpression
+        {
+            public ALangExpression Left { get; set; }
+            public ALangExpression Right { get; set; }
+
+            public ALangMult(ALangExpression left, ALangExpression right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
+        private abstract class BLangExpression : Node { }
+        private class BLangIntLiteral : BLangExpression
+        {
+            public int Value { get; set; } = 0;
+
+            public BLangIntLiteral(int value)
+            {
+                Value = value;
+            }
+        }
+        private class BLangSum : BLangExpression
+        {
+            public BLangExpression Left { get; set; }
+            public BLangExpression Right { get; set; }
+
+            public BLangSum(BLangExpression left, BLangExpression right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+        private class BLangMult : BLangExpression
+        {
+            public BLangExpression Left { get; set; }
+            public BLangExpression Right { get; set; }
+
+            public BLangMult(BLangExpression left, BLangExpression right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
         [TestMethod]
         public void TestIdentitiyTransformer()
         {
@@ -128,6 +195,9 @@ namespace Strumenta.Sharplasu.Tests
             Assert.AreEqual(transformedCU.Origin, cu);
         }
 
+        /**
+         * Example of transformation to perform a refactoring within the same language.
+         */
         [TestMethod]
         public void TranslateBinaryExpression()
         {
@@ -153,7 +223,6 @@ namespace Strumenta.Sharplasu.Tests
                 }
             });
             transformer.RegisterIdentityTransformation<IntLiteral>(typeof(IntLiteral));
-            var m = transformer.Transform(new GenericBinaryExpression(Operator.MULT, new IntLiteral(7), new IntLiteral(8)));
             Asserts.AssertASTsAreEqual(
                 new Mult(new IntLiteral(7), new IntLiteral(8)),
                 transformer.Transform(new GenericBinaryExpression(Operator.MULT, new IntLiteral(7), new IntLiteral(8)))
@@ -162,6 +231,50 @@ namespace Strumenta.Sharplasu.Tests
                 new Sum(new IntLiteral(7), new IntLiteral(8)),
                 transformer.Transform(new GenericBinaryExpression(Operator.PLUS, new IntLiteral(7), new IntLiteral(8)))
             );
+        }
+
+        /**
+         * Example of transformation to perform a translation to another language.
+         */
+        [TestMethod]
+        public void TranslateAcrossLanguages()
+        {
+            var transformer = new ASTTransformer(allowGenericNode: false);
+            transformer.RegisterNodeFactory(typeof(ALangIntLiteral), (source, ast) =>
+            {
+                var al = source as ALangIntLiteral;
+                return new BLangIntLiteral(al.Value);
+            });
+            transformer.RegisterNodeFactory(typeof(ALangSum), (source, ast) =>
+            {
+                var al = source as ALangSum;
+                return new BLangSum(
+                    ast.Transform(al.Left) as BLangExpression,
+                    ast.Transform(al.Right) as BLangExpression
+                );
+            });
+            transformer.RegisterNodeFactory(typeof(ALangMult), (source, ast) =>
+            {
+                var al = source as ALangMult;
+                return new BLangMult(
+                    ast.Transform(al.Left) as BLangExpression,
+                    ast.Transform(al.Right) as BLangExpression
+                );
+            });            
+            Asserts.AssertASTsAreEqual(
+                new BLangMult(
+                    new BLangSum(
+                        new BLangIntLiteral(1),
+                        new BLangMult(new BLangIntLiteral(2), new BLangIntLiteral(3))
+                    ), new BLangIntLiteral(4)),
+                transformer.Transform(
+                    new ALangMult(
+                    new ALangSum(
+                        new ALangIntLiteral(1),
+                        new ALangMult(new ALangIntLiteral(2), new ALangIntLiteral(3))
+                    ), new ALangIntLiteral(4))
+                )
+            );            
         }
     }
 }
