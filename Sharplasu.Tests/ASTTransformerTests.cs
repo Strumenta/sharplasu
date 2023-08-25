@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Strumenta.Sharplasu.Testing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Strumenta.Sharplasu.Tests
 {   
@@ -275,6 +274,33 @@ namespace Strumenta.Sharplasu.Tests
                     ), new ALangIntLiteral(4))
                 )
             );            
+        }
+
+        [TestMethod]
+        public void TestDroppingNodes()
+        {
+            var transformer = new ASTTransformer();
+            transformer.RegisterNodeFactory<CU>(typeof(CU), typeof(CU))
+                .WithChild(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
+            transformer.RegisterNodeFactory<DisplayIntStatement>(typeof(DisplayIntStatement), (source, ast) =>
+            {
+                return null;
+            });
+            transformer.RegisterIdentityTransformation<SetStatement>(typeof(SetStatement));
+
+            var cu = new CU(
+                new List<Node>()
+                {
+                    new DisplayIntStatement(value: 456),
+                    new SetStatement(variable: "foo", value: 123)
+                }
+
+            );
+            CU transformedCU = transformer.Transform(cu) as CU;
+            Assert.IsTrue(transformedCU.HasValidParents());
+            Assert.AreEqual(transformedCU.Origin, cu);
+            Assert.AreEqual(1, transformedCU.Statements.Count);
+            Asserts.AssertASTsAreEqual(cu.Statements[1], transformedCU.Statements[0]);
         }
     }
 }
