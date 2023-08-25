@@ -430,7 +430,7 @@ namespace Strumenta.Sharplasu.Transformation
 
         private void SetChildren(NodeFactory<Object, Node> factory, Object source, Node node)
         {
-            node.GetType().ProcessProperties(
+            node.ProcessProperties(
                 new HashSet<string>(),
                 pd =>
                 {
