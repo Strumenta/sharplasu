@@ -171,12 +171,55 @@ namespace Strumenta.Sharplasu.Tests
             }
         }
 
+        private class BazRoot : Node
+        {
+            public List<BazStmt> Stmts { get; set; } = new List<BazStmt>();
+
+            public BazRoot(List<BazStmt> stmts = null)
+            { 
+                Stmts = stmts ?? new List<BazStmt>();
+            }
+        }
+
+        
+        private class BazStmt : Node
+        {
+            public string Desc { get; set; }
+            
+            public BazStmt(string desc)
+            { 
+                this.Desc = desc; 
+            }
+        }
+
+
+        private class BarRoot : Node
+        {
+            public List<BarStmt> Stmts { get; set; } = new List<BarStmt>();
+
+            public BarRoot(List<BarStmt> stmts = null)
+            {
+                Stmts = stmts;
+            }
+        }
+
+
+        private class BarStmt : Node
+        {
+            public string Desc { get; set; }
+
+            public BarStmt(string desc)
+            {
+                this.Desc = desc;
+            }
+        }
+
         [TestMethod]
         public void TestIdentitiyTransformer()
         {
             var transformer = new ASTTransformer();
             transformer.RegisterNodeFactory<CU>(typeof(CU), typeof(CU))
-                .WithChild(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
+                .WithChild<Node>(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
             transformer.RegisterIdentityTransformation<DisplayIntStatement>(typeof(DisplayIntStatement));
             transformer.RegisterIdentityTransformation<SetStatement>(typeof(SetStatement));
 
@@ -281,7 +324,7 @@ namespace Strumenta.Sharplasu.Tests
         {
             var transformer = new ASTTransformer();
             transformer.RegisterNodeFactory<CU>(typeof(CU), typeof(CU))
-                .WithChild(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
+                .WithChild<Node>(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
             transformer.RegisterNodeFactory<DisplayIntStatement>(typeof(DisplayIntStatement), (source, ast) =>
             {
                 return null;
@@ -301,6 +344,67 @@ namespace Strumenta.Sharplasu.Tests
             Assert.AreEqual(transformedCU.Origin, cu);
             Assert.AreEqual(1, transformedCU.Statements.Count);
             Asserts.AssertASTsAreEqual(cu.Statements[1], transformedCU.Statements[0]);
+        }
+
+        [TestMethod]
+        public void TestNestedOrigin()
+        {
+            var transformer = new ASTTransformer();
+            transformer.RegisterNodeFactory<CU>(typeof(CU), typeof(CU))
+                .WithChild<Node>(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(CU), "Statements"));
+            transformer.RegisterNodeFactory<DisplayIntStatement>(typeof(DisplayIntStatement), (source) =>
+            {
+                return (source as DisplayIntStatement).WithOrigin(new GenericNode());
+            });
+            transformer.RegisterIdentityTransformation<SetStatement>(typeof(SetStatement));
+
+            var cu = new CU(
+                new List<Node>()
+                {
+                    new DisplayIntStatement(value: 456)                    
+                }
+
+            );
+            CU transformedCU = transformer.Transform(cu) as CU;
+            Assert.IsTrue(transformedCU.HasValidParents());
+            Assert.AreEqual(transformedCU.Origin, cu);
+            Assert.IsTrue(transformedCU.Statements[0].Origin is GenericNode);            
+        }
+
+        [TestMethod]
+        public void TestTransformingOneNodeToMany()
+        {
+            var transformer = new ASTTransformer();
+            transformer.RegisterNodeFactory<BazRoot>(typeof(BarRoot), typeof(BazRoot))
+                .WithChild<BazStmt>(typeof(BazRoot).GetProperty("Stmts"), new PropertyAccessor(typeof(BarRoot), "Stmts"));
+            transformer.RegisterMultipleNodeFactory<BarStmt>(typeof(BarStmt), (source) =>
+            {
+                return new List<BazStmt>() { new BazStmt($"{(source as BarStmt).Desc}-1"), new BazStmt($"{(source as BarStmt).Desc}-2") }.ToList<Node>();
+            });            
+
+            var original = new BarRoot(
+                new List<BarStmt>()
+                {
+                    new BarStmt("a"),
+                    new BarStmt("b"),
+                }
+
+            );
+            var transformed = transformer.Transform(original);
+            Assert.IsTrue(transformed.HasValidParents());
+            Assert.AreEqual(transformed.Origin, original);            
+            Asserts.AssertASTsAreEqual(
+                new BazRoot(
+                    new List<BazStmt>() 
+                    { 
+                        new BazStmt("a-1"),
+                        new BazStmt("a-2"),
+                        new BazStmt("b-1"),
+                        new BazStmt("b-2"),
+                    }
+                ),
+                transformed
+            );
         }
     }
 }
