@@ -157,16 +157,28 @@ namespace Strumenta.Sharplasu.Transformation
          *  This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
          *  for mutable and immutable properties
          */
-        public NodeFactory WithChild(            
+        public NodeFactory WithChild<T>(            
             PropertyInfo targetProperty,
             PropertyAccessor sourceAccessor,
             TypeInfo scopedToType = null
         )
+            where T : Node
         {
-            return WithChild<object, Node>(
+            return WithChild<object, T>(
                      get: (source) => sourceAccessor.Accessor(source),
                      set: (object obj, object value) => {
-                         targetProperty.GetSetMethod().Invoke(obj, new object[] { value });
+                         if (value is IList)
+                         {
+                             targetProperty.GetSetMethod().Invoke(obj,
+                                 new object[] { (value as IList).OfType<T>().ToList() }
+                             );
+                         }
+                         else
+                         {
+                             targetProperty.GetSetMethod().Invoke(obj,
+                                 new object[] { (value as T) }
+                             );
+                         }
                      },
                      targetProperty.Name,
                      scopedToType
@@ -180,22 +192,35 @@ namespace Strumenta.Sharplasu.Transformation
         * 
         * This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
         * for mutable and immutable properties
-        */
-        public NodeFactory WithChild(
-            PropertyInfo targetProperty,
-            PropertyAccessor sourceAccessor            
-        )
+        */        
+        public NodeFactory WithChild<T>(
+           PropertyInfo targetProperty,
+           PropertyAccessor sourceAccessor
+       )
+            where T : Node
         {
-            return WithChild<object, Node>(
+            return WithChild<object, T>(
                 get: (source) => sourceAccessor.Accessor(source),
                 set: (object obj, object value) => {
-                        targetProperty.GetSetMethod().Invoke(obj, new object[] { value });
-                     },
+                    if (value is IList)
+                    {
+                        targetProperty.GetSetMethod().Invoke(obj,
+                            new object[] { (value as IList).OfType<T>().ToList() }
+                        );
+                    }
+                    else
+                    {
+                        targetProperty.GetSetMethod().Invoke(obj,
+                            new object[] { (value as T) }
+                        );
+                    }
+                },
                 name: targetProperty.Name,
                 scopedToType: null
             );
         }
-        
+
+
 
         /**
         * Specify how to convert a child. The value obtained from the conversion could either be used
