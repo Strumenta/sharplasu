@@ -51,7 +51,7 @@ namespace Strumenta.Sharplasu.Tests
   BadStuff 2
   SmallNode
     Description I stand here
-", one.MultiLineString());
+".ReplaceLineEndings(), one.MultiLineString());
         }
     }
 }
