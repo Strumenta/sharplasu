@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strumenta.SharpLasu", "SharpLasu\Strumenta.SharpLasu.csproj", "{9A145143-209C-4160-BDD2-A352709A5C1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strumenta.Sharplasu", "Sharplasu\Strumenta.Sharplasu.csproj", "{9A145143-209C-4160-BDD2-A352709A5C1A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strumenta.SharpLasu.Tests", "SharpLasu.Tests\Strumenta.SharpLasu.Tests.csproj", "{AEF30874-01E7-4D9F-8561-EB3E19A0A3B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strumenta.Sharplasu.Tests", "Sharplasu.Tests\Strumenta.Sharplasu.Tests.csproj", "{AEF30874-01E7-4D9F-8561-EB3E19A0A3B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

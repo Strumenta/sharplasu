@@ -1,6 +1,6 @@
 ﻿using ExtensionMethods;
 using Strumenta.Sharplasu.Model;
-using Strumenta.SharpLasu.Tests.Models.SimpleLang;
+using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Type = System.Type;
 
 namespace Strumenta.Sharplasu.Tests
@@ -11,7 +11,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalk()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.Walk()),
                 new List<Type>
@@ -28,7 +28,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkLeavesFirst()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.WalkLeavesFirst()),
                     new List<System.Type>
@@ -63,7 +63,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkAncestors()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             var identifier = cu.Descendants.First(n => n.GetType() == typeof(Identifier));
             TestSequences(
                 MapNodesToTypes(identifier.WalkAncestors()),
@@ -77,7 +77,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkChildren()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.WalkChildren()),
                 new List<Type>
@@ -95,7 +95,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkDescendants()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.WalkDescendants()),
                 new List<System.Type>
@@ -147,7 +147,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestFindAncestorOfType()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             var identifier = cu.Descendants.First(n => n.GetType() == typeof(Identifier));
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<CompilationUnit>(), typeof(CompilationUnit));
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<SetStatement>(), typeof(SetStatement));
@@ -162,7 +162,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestSearchByType()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.SearchByType<Expression>()),
                 new List<Type>
@@ -186,7 +186,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestCollectByType()
         {
-            var cu = Strumenta.SharpLasu.Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             TestSequences(
                 MapNodesToTypes(cu.CollectByType<Expression>()),
                 new List<Type>

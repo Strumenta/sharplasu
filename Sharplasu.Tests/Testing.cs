@@ -1,6 +1,6 @@
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Testing;
-using Strumenta.SharpLasu.Tests.Models.SimpleLang;
+using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Validation;
 using static Strumenta.Sharplasu.Testing.Asserts;
 

@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharpLasu\Strumenta.SharpLasu.csproj" />
+    <ProjectReference Include="..\Sharplasu\Strumenta.Sharplasu.csproj" />
   </ItemGroup>
 
 </Project>

@@ -768,8 +768,7 @@ namespace Strumenta.Sharplasu.Transformation
                 // Note that we are assuming that either we set no children at construction time or we set all of them
                 childrenSetAtConstruction: emptyLikeConstructor == null
             );
-            Factories[source] = nodeFactory;
-            //Factories[source] = nodeFactory.ConvertNodeFactory();
+            Factories[source] = nodeFactory;            
             return nodeFactory;            
         }
 

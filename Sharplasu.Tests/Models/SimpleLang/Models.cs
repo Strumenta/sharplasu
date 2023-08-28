@@ -1,4 +1,4 @@
-namespace Strumenta.SharpLasu.Tests.Models.SimpleLang;
+namespace Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Model;
 
 public static class Models

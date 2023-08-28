@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
 using Strumenta.Sharplasu.Model;
 
-namespace Strumenta.SharpLasu.Tests.Models.SimpleLang;
+namespace Strumenta.Sharplasu.Tests.Models.SimpleLang;
 
 public class CompilationUnit : Node
 {
