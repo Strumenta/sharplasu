@@ -254,9 +254,13 @@ namespace Strumenta.Sharplasu.Transformation
             return this;
         }
 
-        public NodeFactory WithFinalizer(Action<Node> finalizer)
+        public NodeFactory WithFinalizer<T>(Action<T> finalizer)
+            where T : Node
         {
-            this.Finalizer = finalizer;
+            this.Finalizer = (it) =>
+            {
+                finalizer((T) it);
+            };
             return this;
         }
 

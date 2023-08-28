@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Strumenta.Sharplasu.Testing;
+using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Tests
 {   
@@ -214,6 +215,58 @@ namespace Strumenta.Sharplasu.Tests
             }
         }
 
+        private enum Type
+        {
+            INT, STR
+        }
+
+        private abstract class TypedExpression : Node
+        {
+            public Type? Type { get; set; }
+            
+            public TypedExpression(Type? type = null) : base()
+            {
+                this.Type = type;
+            }
+        }
+
+        private class TypedLiteral : TypedExpression
+        {
+            public string Value { get; set; }
+
+            public TypedLiteral(string value, Type type) : base(type)
+            {
+                Value = value;
+                Type = type;
+            }
+        }
+
+        private class TypedSum : TypedExpression
+        {
+            public TypedExpression Left { get; set; }
+            public TypedExpression Right { get; set; }
+
+            public TypedSum(TypedExpression left, TypedExpression right, Type? type = null) : base(type)
+            {
+                Left = left;
+                Right = right;
+                Type = type;
+            }
+        }
+
+        private class TypedConcat : TypedExpression
+        {
+            public TypedExpression Left { get; set; }
+            public TypedExpression Right { get; set; }
+
+            public TypedConcat(TypedExpression left, TypedExpression right, Type? type = null) : base(type)
+            {
+                Left = left;
+                Right = right;
+                Type = type;
+            }
+        }
+
         [TestMethod]
         public void TestIdentitiyTransformer()
         {
@@ -404,6 +457,117 @@ namespace Strumenta.Sharplasu.Tests
                     }
                 ),
                 transformed
+            );
+        }
+
+        /**
+         * Example of transformation to perform a simple type calculation.
+         */
+        [TestMethod]
+        public void TestFinalizerComputingTypes()
+        {
+            var transformer = new ASTTransformer(allowGenericNode: false);
+            transformer.RegisterIdentityTransformation<TypedSum>(typeof(TypedSum)).WithFinalizer<TypedSum>((it) =>
+            {
+                if (it.Left.Type == Type.INT && it.Right.Type == Type.INT)
+                    it.Type = Type.INT;
+                else
+                {
+                    transformer.AddIssue("Illegal types for sum operation. Only integer values are allowed. " +
+                            $"Found: ({it.Left.Type ?? null}, {it.Right.Type?? null})",
+                            IssueSeverity.Error, it.Position
+                    );
+                }
+
+            });
+            transformer.RegisterIdentityTransformation<TypedConcat>(typeof(TypedConcat)).WithFinalizer<TypedConcat>((it) =>
+            {
+                if (it.Left.Type == Type.STR && it.Right.Type == Type.STR)
+                    it.Type = Type.STR;
+                else
+                {
+                    transformer.AddIssue("Illegal types for concat operation. Only string values are allowed. " +
+                            $"Found: ({it.Left.Type ?? null}, {it.Right.Type ?? null})",
+                            IssueSeverity.Error, it.Position
+                    );
+                }
+            });
+            transformer.RegisterIdentityTransformation<TypedLiteral>(typeof(TypedLiteral));
+            // sum - legal
+            Asserts.AssertASTsAreEqual(
+                new TypedSum(
+                    new TypedLiteral("1", Type.INT),
+                    new TypedLiteral("1", Type.INT),
+                    Type.INT
+                ),
+                transformer.Transform(
+                    new TypedSum(
+                        new TypedLiteral("1", Type.INT),
+                        new TypedLiteral("1", Type.INT)                 
+                    )
+                )
+            );
+            // concat - legal
+            Assert.AreEqual(0, transformer.Issues.Count);
+            Asserts.AssertASTsAreEqual(
+                new TypedConcat(
+                    new TypedLiteral("test", Type.STR),
+                    new TypedLiteral("test", Type.STR),
+                    Type.STR
+                ),
+                transformer.Transform(
+                    new TypedConcat(
+                        new TypedLiteral("test", Type.STR),
+                        new TypedLiteral("test", Type.STR)                      
+                    )
+                )
+            );
+            Assert.AreEqual(0, transformer.Issues.Count);
+            // sum - error
+            Asserts.AssertASTsAreEqual(
+                new TypedSum(
+                    new TypedLiteral("1", Type.INT),
+                    new TypedLiteral("test", Type.STR),
+                    null
+                ),
+                transformer.Transform(
+                    new TypedSum(
+                        new TypedLiteral("1", Type.INT),
+                        new TypedLiteral("test", Type.STR)                        
+                    )
+                )
+            );
+            Assert.AreEqual(1, transformer.Issues.Count);
+            Assert.AreEqual(
+                Issue.Semantic(
+                    "Illegal types for sum operation. Only integer values are allowed. Found: (INT, STR)",
+                    null,
+                    IssueSeverity.Error
+                ),
+                transformer.Issues[0]
+            );
+            // concat - error
+            Asserts.AssertASTsAreEqual(
+                new TypedConcat(
+                    new TypedLiteral("1", Type.INT),
+                    new TypedLiteral("test", Type.STR),
+                    null
+                ),
+                transformer.Transform(
+                    new TypedConcat(
+                        new TypedLiteral("1", Type.INT),
+                        new TypedLiteral("test", Type.STR)
+                    )
+                )
+            );
+            Assert.AreEqual(2, transformer.Issues.Count);
+            Assert.AreEqual(
+                Issue.Semantic(
+                    "Illegal types for concat operation. Only string values are allowed. Found: (INT, STR)",
+                    null,
+                    IssueSeverity.Error
+                ),
+                transformer.Issues[1]
             );
         }
     }
