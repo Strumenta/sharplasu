@@ -297,7 +297,7 @@ namespace Strumenta.Sharplasu.Tests
         public void TranslateBinaryExpression()
         {
             var transformer = new ASTTransformer(allowGenericNode: false);
-            transformer.RegisterNodeFactory<Node>(typeof(GenericBinaryExpression), (source, ast) =>
+            transformer.RegisterNodeFactory<Node>(typeof(GenericBinaryExpression), (source) =>
             {
                 var sb = source as GenericBinaryExpression;         
 
@@ -305,13 +305,13 @@ namespace Strumenta.Sharplasu.Tests
                 {
                     case Operator.MULT:
                         return new Mult(
-                            ast.Transform(sb.Left) as Expression,
-                            ast.Transform(sb.Right) as Expression
+                            transformer.Transform(sb.Left) as Expression,
+                            transformer.Transform(sb.Right) as Expression
                         );
                     case Operator.PLUS:
                         return new Sum(
-                            ast.Transform(sb.Left) as Expression,
-                            ast.Transform(sb.Right) as Expression
+                            transformer.Transform(sb.Left) as Expression,
+                            transformer.Transform(sb.Right) as Expression
                          );
                     default:
                         return null;

@@ -186,17 +186,17 @@ namespace Strumenta.Sharplasu.Transformation
         }
 
         /**
-        * Specify how to convert a child. The value obtained from the conversion could either be used
-        * as a constructor parameter when instantiating the parent, or be used to set the value after
-        * the parent has been instantiated.
-        * 
-        * This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
-        * for mutable and immutable properties
-        */        
+         * Specify how to convert a child. The value obtained from the conversion could either be used
+         * as a constructor parameter when instantiating the parent, or be used to set the value after
+         * the parent has been instantiated.
+         * 
+         * This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
+         * for mutable and immutable properties
+         */        
         public NodeFactory WithChild<T>(
            PropertyInfo targetProperty,
            PropertyAccessor sourceAccessor
-       )
+        )
             where T : Node
         {
             return WithChild<object, T>(
@@ -220,8 +220,6 @@ namespace Strumenta.Sharplasu.Transformation
             );
         }
 
-
-
         /**
         * Specify how to convert a child. The value obtained from the conversion could either be used
         * as a constructor parameter when instantiating the parent, or be used to set the value after
@@ -233,10 +231,7 @@ namespace Strumenta.Sharplasu.Transformation
            Action<object, object> set,
            string name,
            TypeInfo scopedToType = null
-        )
-        //  in C# you cannot use Object, the equivalent of Any in Kotlin, as a type constraint
-        //where Target : Object
-        //where Child : Object
+        )        
         {
             string prefix = "";
             if (scopedToType != null)
@@ -324,36 +319,7 @@ namespace Strumenta.Sharplasu.Transformation
                     return (sourceProp as PropertyInfo).GetValue(src);
                 }
             }
-        }
-
-        /*public static explicit operator NodeFactory<Output>(NodeFactory<Node> v)
-        {
-            return new NodeFactory<Output>();
-        }*/
-
-        /*public NodeFactory<Node> ConvertNodeFactory()
-        {
-            return new NodeFactory<Node>((obj, astt, nf) => { return Constructor(obj, astt, nf as NodeFactory<Output>).ToList<Node>(); },
-                Children,
-                (it) => { Finalizer(it as Output); },
-                SkipChildren,
-                ChildrenSetAtConstruction
-            );
-        }*/
-
-        /*internal ChildNodeFactory<ChildSource, Target, Child> GetChildNodeFactory<ChildSource, Target, Child>(           
-           TypeInfo nodeClass,
-           string parameterName
-        )
-        {
-            var childKey = nodeClass.FullName + "#" + parameterName;
-            var childNodeFactory = this.Children[childKey];
-            if (childNodeFactory == null)
-            {
-                childNodeFactory = this.Children[parameterName];
-            }
-            return childNodeFactory as ChildNodeFactory<ChildSource, Target, Child>;
-        }*/
+        }        
     }
 
     /**
@@ -651,17 +617,6 @@ namespace Strumenta.Sharplasu.Transformation
         {
             return RegisterNodeFactory<T>(kClass, (source, transformer, _) => factory(source, transformer));            
         }
-
-        //inline fun <reified S : Any, T : Node> registerNodeFactory(
-        //crossinline factory: S.(ASTTransformer) -> T?
-        //): NodeFactory<S, T> = registerNodeFactory(S::class) { source, transformer, _ -> source.factory(transformer)}
-        //public NodeFactory<S, T> RegisterNodeFactory<S, T>(            
-        //    Func<S, ASTTransformer, T> factory
-        //)
-        // where T : Node
-        //{
-        //    return RegisterNodeFactory<S, T>(typeof(S), (source, transformer, _) => factory(source, transformer));
-        //}
 
         public NodeFactory RegisterNodeFactory<T>(
             Type kClass,
