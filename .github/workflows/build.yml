@@ -24,12 +24,13 @@ jobs:
       #- name: Navigate to Workspace
       #  run: cd $GITHUB_WORKSPACE                
       - name: Install ANTLR
-        run: |
-          chmod +x Sharplasu.Tests/generate_test_parsers.sh
-          curl -O https://www.antlr.org/download/antlr-4.13.0-complete.jar
+        run: curl -O https://www.antlr.org/download/antlr-4.13.0-complete.jar
       - name: Generate test parsers
-        run: ./generate_test_parsers.sh            
-        working-directory: "Sharplasu.Tests"
+        run: |
+            cd $GITHUB_WORKSPACE/Sharplasu.Tests
+            chmod +x generate_test_parsers.sh
+            sh ./generate_test_parsers.sh            
+            cd ..        
       #- name: Install dependencies
       #  run: dotnet restore
       #- name: Build
