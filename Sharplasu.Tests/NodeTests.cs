@@ -53,5 +53,26 @@ namespace Strumenta.Sharplasu.Tests
     Description I stand here
 ".ReplaceLineEndings(), one.MultiLineString());
         }
+
+        [TestMethod]
+        public void CheckingParseTreeNodeAndPositionAreAdded()
+        {
+            var one = new TopNode
+            {
+                GoodStuff = 1,
+                BadStuff = 2,                
+            };
+            List<Issue> issues = new List<Issue>();
+
+            Assert.IsNull(one.SpecifiedPosition);
+            Assert.IsNull(one.ParseTreeNode);
+
+            one.WithParseTreeNode(new Antlr4.Runtime.ParserRuleContext());
+            one.WithPosition(new Position(new Point(1,1), new Point(1,2)));
+            
+            Assert.IsNotNull(one.SpecifiedPosition);
+            Assert.IsNotNull(one.ParseTreeNode);
+
+        }
     }
 }

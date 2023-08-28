@@ -1,4 +1,4 @@
-﻿using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace Strumenta.Sharplasu.Tests
         }
 
         [TestMethod]
-        public void referenceByNameSolvedToString()
+        public void ReferenceByNameSolvedToString()
         {
             var refSolved = new ReferenceByName<MyNode>("foo", new MyNode("foo"));
             Assert.AreEqual("Ref(foo)[Solved]", refSolved.ToString());

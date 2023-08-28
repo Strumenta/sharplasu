@@ -179,6 +179,20 @@ namespace Strumenta.Sharplasu.Model
 
             return sb.ToString();
         }
+
+        public Node WithParseTreeNode(ParserRuleContext ruleContext)
+        {
+            ParseTreeNode = ruleContext;
+
+            return this;
+        }
+
+        public Node WithPosition(Position position)
+        {
+            specifiedPosition = position;
+
+            return this;
+        }
     }
 
     public class EmptyNode : Node { }  
