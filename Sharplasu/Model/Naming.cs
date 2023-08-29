@@ -28,7 +28,7 @@ namespace Strumenta.Sharplasu.Model
     * However, this is enforced dynamically.
     */
     [Serializable]
-    public class ReferenceByName<N> where N : Named
+    public class ReferenceByName<N> where N : class, Named
     {
         public string Name { get; private set; }
         private N referred;
@@ -51,7 +51,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
-        public ReferenceByName(string name, N initialReferred)
+        public ReferenceByName(string name, N initialReferred = null)
         {
             Name = name;
             Referred = initialReferred;
@@ -100,7 +100,7 @@ namespace Strumenta.Sharplasu.Model
         * The name match is performed in a case sensitive or insensitive way depending on the value of @param[caseInsensitive].
         */
         public static bool TryToResolve<N>(this ReferenceByName<N> reference, IEnumerable<N> candidates, bool caseInsensitive = false)
-            where N : Named
+            where N : class, Named
         {
             N res = candidates.FirstOrDefault(it => it.Name == null ? false : String.Equals(it.Name, reference.Name, caseInsensitive ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture));
             reference.Referred = res;
