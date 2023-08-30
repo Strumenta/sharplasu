@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Strumenta.Sharplasu.Testing;
 using Strumenta.Sharplasu.Validation;
 
-namespace Strumenta.Sharplasu.Tests
-{   
+namespace Strumenta.Sharplasu.Tests.Transformation
+{
     [TestClass]
     public class ASTTransformerTests
     {
@@ -20,11 +20,11 @@ namespace Strumenta.Sharplasu.Tests
 
             public CU(List<Node> statements)
             {
-                this.Statements = statements ?? new List<Node>(); 
+                Statements = statements ?? new List<Node>();
             }
 
             public CU()
-            { 
+            {
                 Statements = new List<Node>();
             }
         }
@@ -36,7 +36,7 @@ namespace Strumenta.Sharplasu.Tests
 
             public DisplayIntStatement(int value)
             {
-                this.Value = value;
+                Value = value;
             }
         }
 
@@ -47,15 +47,15 @@ namespace Strumenta.Sharplasu.Tests
 
             public SetStatement(string variable, int value)
             {
-                this.Variable = variable;
-                this.Value = value;
+                Variable = variable;
+                Value = value;
             }
         }
 
         private abstract class Expression : Node { }
         private class IntLiteral : Expression
         {
-            public int Value { get; set;} = 0;
+            public int Value { get; set; } = 0;
 
             public IntLiteral(int value)
             {
@@ -88,7 +88,7 @@ namespace Strumenta.Sharplasu.Tests
             public Expression Right { get; set; }
 
             public Mult(Expression left, Expression right)
-            {                
+            {
                 Left = left;
                 Right = right;
             }
@@ -177,19 +177,19 @@ namespace Strumenta.Sharplasu.Tests
             public List<BazStmt> Stmts { get; set; } = new List<BazStmt>();
 
             public BazRoot(List<BazStmt> stmts = null)
-            { 
+            {
                 Stmts = stmts ?? new List<BazStmt>();
             }
         }
 
-        
+
         private class BazStmt : Node
         {
             public string Desc { get; set; }
-            
+
             public BazStmt(string desc)
-            { 
-                this.Desc = desc; 
+            {
+                Desc = desc;
             }
         }
 
@@ -211,7 +211,7 @@ namespace Strumenta.Sharplasu.Tests
 
             public BarStmt(string desc)
             {
-                this.Desc = desc;
+                Desc = desc;
             }
         }
 
@@ -223,10 +223,10 @@ namespace Strumenta.Sharplasu.Tests
         private abstract class TypedExpression : Node
         {
             public Type? Type { get; set; }
-            
+
             public TypedExpression(Type? type = null) : base()
             {
-                this.Type = type;
+                Type = type;
             }
         }
 
@@ -299,7 +299,7 @@ namespace Strumenta.Sharplasu.Tests
             var transformer = new ASTTransformer(allowGenericNode: false);
             transformer.RegisterNodeFactory<Node>(typeof(GenericBinaryExpression), (source) =>
             {
-                var sb = source as GenericBinaryExpression;         
+                var sb = source as GenericBinaryExpression;
 
                 switch (sb.Operator)
                 {
@@ -355,7 +355,7 @@ namespace Strumenta.Sharplasu.Tests
                     ast.Transform(al.Left) as BLangExpression,
                     ast.Transform(al.Right) as BLangExpression
                 );
-            });            
+            });
             Asserts.AssertASTsAreEqual(
                 new BLangMult(
                     new BLangSum(
@@ -369,7 +369,7 @@ namespace Strumenta.Sharplasu.Tests
                         new ALangMult(new ALangIntLiteral(2), new ALangIntLiteral(3))
                     ), new ALangIntLiteral(4))
                 )
-            );            
+            );
         }
 
         [TestMethod]
@@ -414,14 +414,14 @@ namespace Strumenta.Sharplasu.Tests
             var cu = new CU(
                 new List<Node>()
                 {
-                    new DisplayIntStatement(value: 456)                    
+                    new DisplayIntStatement(value: 456)
                 }
 
             );
             CU transformedCU = transformer.Transform(cu) as CU;
             Assert.IsTrue(transformedCU.HasValidParents());
             Assert.AreEqual(transformedCU.Origin, cu);
-            Assert.IsTrue(transformedCU.Statements[0].Origin is GenericNode);            
+            Assert.IsTrue(transformedCU.Statements[0].Origin is GenericNode);
         }
 
         [TestMethod]
@@ -433,7 +433,7 @@ namespace Strumenta.Sharplasu.Tests
             transformer.RegisterMultipleNodeFactory<BarStmt>(typeof(BarStmt), (source) =>
             {
                 return new List<BazStmt>() { new BazStmt($"{(source as BarStmt).Desc}-1"), new BazStmt($"{(source as BarStmt).Desc}-2") }.ToList<Node>();
-            });            
+            });
 
             var original = new BarRoot(
                 new List<BarStmt>()
@@ -445,11 +445,11 @@ namespace Strumenta.Sharplasu.Tests
             );
             var transformed = transformer.Transform(original);
             Assert.IsTrue(transformed.HasValidParents());
-            Assert.AreEqual(transformed.Origin, original);            
+            Assert.AreEqual(transformed.Origin, original);
             Asserts.AssertASTsAreEqual(
                 new BazRoot(
-                    new List<BazStmt>() 
-                    { 
+                    new List<BazStmt>()
+                    {
                         new BazStmt("a-1"),
                         new BazStmt("a-2"),
                         new BazStmt("b-1"),
@@ -474,7 +474,7 @@ namespace Strumenta.Sharplasu.Tests
                 else
                 {
                     transformer.AddIssue("Illegal types for sum operation. Only integer values are allowed. " +
-                            $"Found: ({it.Left.Type ?? null}, {it.Right.Type?? null})",
+                            $"Found: ({it.Left.Type ?? null}, {it.Right.Type ?? null})",
                             IssueSeverity.Error, it.Position
                     );
                 }
@@ -503,7 +503,7 @@ namespace Strumenta.Sharplasu.Tests
                 transformer.Transform(
                     new TypedSum(
                         new TypedLiteral("1", Type.INT),
-                        new TypedLiteral("1", Type.INT)                 
+                        new TypedLiteral("1", Type.INT)
                     )
                 )
             );
@@ -518,7 +518,7 @@ namespace Strumenta.Sharplasu.Tests
                 transformer.Transform(
                     new TypedConcat(
                         new TypedLiteral("test", Type.STR),
-                        new TypedLiteral("test", Type.STR)                      
+                        new TypedLiteral("test", Type.STR)
                     )
                 )
             );
@@ -533,7 +533,7 @@ namespace Strumenta.Sharplasu.Tests
                 transformer.Transform(
                     new TypedSum(
                         new TypedLiteral("1", Type.INT),
-                        new TypedLiteral("test", Type.STR)                        
+                        new TypedLiteral("test", Type.STR)
                     )
                 )
             );
