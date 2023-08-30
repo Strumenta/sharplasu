@@ -17,10 +17,6 @@ namespace Strumenta.Sharplasu.Model
     {
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         [Internal]
-        public ParserRuleContext ParseTreeNode { get; private set; } = null;
-
-        [field: NonSerialized][JsonIgnore][XmlIgnore]
-        [Internal]
         public Node Parent { get; set; } = null;
         [JsonIgnore]
         [XmlIgnore]
@@ -102,27 +98,18 @@ namespace Strumenta.Sharplasu.Model
             return Ancestors.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T).ToList();
         }
 
-        protected Position specifiedPosition = null;
-
-        [Internal]
-        public Position SpecifiedPosition
-        {
-            get
-            {
-                return specifiedPosition ?? ParseTreeNode?.Position();
-            }
-        }
+        protected Position PositionOverride = null;
 
         [Internal]
         public Position Position
         {
             get
             {
-                return SpecifiedPosition ?? Origin?.Position;
+                return PositionOverride ?? Origin?.Position;
             }
             set 
             {
-                specifiedPosition = value;
+                PositionOverride = value;
             }
         }
 
@@ -138,9 +125,9 @@ namespace Strumenta.Sharplasu.Model
         [Internal]
         public Source Source => Origin?.Source;
 
-        public Node() : this(null, null, null) {}
+        public Node() {}
 
-        public Node(Origin origin) : this()
+        public Node(Origin origin)
         {
             if (origin != null)
             {
@@ -148,11 +135,9 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
-        public Node(Position specifiedPosition = null, Node parent = null, ParserRuleContext ruleContext = null)
+        public Node(Position position)
         {
-            ParseTreeNode = ruleContext;
-            Parent = parent;
-            this.specifiedPosition = specifiedPosition;
+            Position = position;
         }
 
         public string MultiLineString(string indentation = "")
@@ -180,16 +165,9 @@ namespace Strumenta.Sharplasu.Model
             return sb.ToString();
         }
 
-        public Node WithParseTreeNode(ParserRuleContext ruleContext)
-        {
-            ParseTreeNode = ruleContext;
-
-            return this;
-        }
-
         public Node WithPosition(Position position)
         {
-            specifiedPosition = position;
+            Position = position;
 
             return this;
         }

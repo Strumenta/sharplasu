@@ -108,7 +108,7 @@ namespace Strumenta.Sharplasu.Parsing
 
             root?.ProcessDescendants((Node node) => {
                 if (node?.Parent == null)
-                    issues.Add(new Issue(IssueType.SEMANTIC, "Node has no parent", node?.SpecifiedPosition));
+                    issues.Add(new Issue(IssueType.SEMANTIC, "Node has no parent", node?.Position));
             }, false);
         }
 
