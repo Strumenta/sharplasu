@@ -114,5 +114,22 @@ namespace Strumenta.Sharplasu.Testing
                         $"{context}, comparing property {propertyInfo.Name}, expected {expectedPropertyValue}, actual {actualPropertyValue}");
             }
         }
+
+        public static void Require(bool value, Func<object> lazyMessage)
+        {
+            if(!value)
+            { 
+                var message = lazyMessage();
+                throw new InvalidOperationException(message.ToString());
+            }
+        }
+
+        public static void Require(bool value)
+        {
+            if (!value)
+            {
+                throw new InvalidOperationException("Failed requirement.");
+            }
+        }
     }
 }

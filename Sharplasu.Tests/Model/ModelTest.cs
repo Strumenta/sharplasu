@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace Strumenta.Sharplasu.Tests
+namespace Strumenta.Sharplasu.Tests.Model
 {
     [TestClass]
     public class ModelTest
@@ -16,9 +16,9 @@ namespace Strumenta.Sharplasu.Tests
             public string Name { get; set; }
 
             public MyNode(string name)
-            { 
+            {
                 Name = name;
-            }            
+            }
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace Strumenta.Sharplasu.Tests
             Assert.AreEqual("Ref(foo)[Solved]", refSolved.ToString());
         }
 
-        
+
         [TestMethod]
         public void TryToResolvePositiveCaseSameCase()
         {
@@ -43,7 +43,7 @@ namespace Strumenta.Sharplasu.Tests
             Assert.AreEqual(true, reference.TryToResolve(new List<MyNode>() { new MyNode("foo") }));
             Assert.AreEqual(true, reference.Resolved);
         }
-        
+
         [TestMethod]
         public void TryToResolveNegativeCaseSameCase()
         {

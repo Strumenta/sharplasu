@@ -291,4 +291,11 @@ public class Testing
                 }
             });
     }
+
+    [TestMethod]
+    public void CheckRequire()
+    {
+        Assert.ThrowsException<InvalidOperationException>(() => Require(false));
+        Assert.ThrowsException<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
+    }
 }
