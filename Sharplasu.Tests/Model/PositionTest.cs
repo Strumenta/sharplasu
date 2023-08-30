@@ -111,15 +111,15 @@ third line";
         {
             var code = @"this is some code
 second line
-third line";
+third line".ReplaceLineEndings("\n");
             
             Assert.AreEqual("", new Position(Point.START_POINT, Point.START_POINT).Text(code));
             Assert.AreEqual("t", new Position(Point.START_POINT, new Point(1, 1)).Text(code));
             Assert.AreEqual("this is some cod", new Position(Point.START_POINT, new Point(1, 16)).Text(code));
             Assert.AreEqual("this is some code", new Position(Point.START_POINT, new Point(1, 17)).Text(code));
             var e = new Position(Point.START_POINT, new Point(2, 0)).Text(code);
-            Assert.AreEqual("this is some code\r", new Position(Point.START_POINT, new Point(2, 0)).Text(code));
-            Assert.AreEqual("this is some code\r\n", new Position(Point.START_POINT, new Point(2, 1)).Text(code));
+            Assert.AreEqual($"this is some code\n", new Position(Point.START_POINT, new Point(2, 0)).Text(code));
+            Assert.AreEqual($"this is some code\ns", new Position(Point.START_POINT, new Point(2, 1)).Text(code));
         }
 
         [TestMethod]
