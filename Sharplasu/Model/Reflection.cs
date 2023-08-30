@@ -51,7 +51,6 @@ namespace Strumenta.Sharplasu.Model
         }
     }
 
-
     public static class Reflection
     {
         public static void ProcessProperties(
@@ -91,6 +90,12 @@ namespace Strumenta.Sharplasu.Model
                         i => i.IsGenericType &&
                         i.GetGenericTypeDefinition() == typeof(IList<>)) &&
                         obj.GetType().IsGenericType;
+        }
+
+        public static bool IsReferenceByName(this Type type)
+        {
+            return type.IsGenericType &&
+                   type.GetGenericTypeDefinition() == typeof(ReferenceByName<>);
         }
 
         public static bool IsACollection(this Object obj)
