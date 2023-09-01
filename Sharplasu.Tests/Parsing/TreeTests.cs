@@ -14,7 +14,7 @@ namespace Strumenta.Sharplasu.Tests
         public void CheckingCompleteASTTreeIsValid()
         {
             var example = new ExampleSharpLasuParser();
-            var tree = example.GetTreeForText("set foo = 123 set bar = 1.23");
+            var tree = example.Parse("set foo = 123 set bar = 1.23");
             List<Issue> issues = new List<Issue>();
             ExampleSharpLasuParser.VerifyASTTree(tree.Root, issues);
 
@@ -25,7 +25,7 @@ namespace Strumenta.Sharplasu.Tests
         public void CheckingASTIssuesAreRaised()
         {
             var example = new ExampleSharpLasuParser();
-            var tree = example.GetTreeForText("display 12.3");      
+            var tree = example.Parse("display 12.3");      
 
             Assert.AreEqual(1, tree.Issues.Count);
         }
@@ -34,9 +34,9 @@ namespace Strumenta.Sharplasu.Tests
         public void CheckingParsingIssuesAreRaised()
         {
             var example = new ExampleSharpLasuParser();
-            var tree = example.GetTreeForText("displat 12.3");
+            var tree = example.Parse("displat 12.3");
 
-            Assert.AreEqual(2, tree.Issues.Count);
+            Assert.AreEqual(3, tree.Issues.Count);
         }
     }
 }

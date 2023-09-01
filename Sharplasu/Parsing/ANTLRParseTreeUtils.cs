@@ -19,7 +19,7 @@ namespace Strumenta.Sharplasu.Parsing
         public static void ProcessDescendantsAndErrors(
             this ParserRuleContext parserRule,
             Action<ParserRuleContext> operationOnParserRuleContext,
-            Action<ErrorNode> operationOnError,
+            Action<IErrorNode> operationOnError,
             bool includingMe = false
         )
         {
@@ -33,7 +33,7 @@ namespace Strumenta.Sharplasu.Parsing
                 {
                     it.ProcessDescendantsAndErrors(operationOnParserRuleContext, operationOnError, includingMe = true);
                 });
-                parserRule.children.OfType<ErrorNode>().ToList().ForEach(it =>
+                parserRule.children.OfType<IErrorNode>().ToList().ForEach(it =>
                 {
                     operationOnError(it);
                 });

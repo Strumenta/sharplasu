@@ -204,9 +204,9 @@ namespace Strumenta.Sharplasu.Model
 
     public class FileSource : Source
     {
-        public FileStream File { get; private set; }
+        public FileInfo File { get; private set; }
         
-        public FileSource(FileStream file)
+        public FileSource(FileInfo file)
         {
             File = file;
         }

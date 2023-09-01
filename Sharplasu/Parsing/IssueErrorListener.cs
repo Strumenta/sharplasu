@@ -25,7 +25,7 @@ namespace Strumenta.Sharplasu.Parsing
 
             issues.Add(
                 new Issue(
-                    IssueType.LEXICAL,
+                    IssueType.Lexical,
                     $"[mode {mode}] {msg}" ?? "Unspecified",
                     new Point(line, charPositionInLine).AsPosition
                 )
@@ -38,7 +38,7 @@ namespace Strumenta.Sharplasu.Parsing
         {
             issues.Add(
                 new Issue(
-                    IssueType.SYNTACTIC,
+                    IssueType.Syntatic,
                     msg ?? "Unspecified",
                     new Point(line, charPositionInLine).AsPosition
                 )

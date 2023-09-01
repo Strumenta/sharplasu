@@ -23,8 +23,12 @@ namespace Strumenta.Sharplasu.Model
         [Internal]
         public Origin Origin { get; set; } = null;
 
-        private IEnumerable<string> ignore = new string[] { "Parent", "ParseTreeNode", "Children", "Descendants", "Ancestors",
-            "DerivedProperties", "NotDerivedProperties" };
+        private IEnumerable<string> ignore = typeof(Node).GetProperties()
+                .Where(it => it.GetCustomAttribute(typeof(InternalAttribute)) != null
+                          || it.GetCustomAttribute(typeof(DerivedAttribute)) != null
+                          || it.GetCustomAttribute(typeof(LinkAttribute)) != null)
+                .Select(x => x.Name)
+                .ToList();
 
         [JsonIgnore][XmlIgnore]
         [Internal]
@@ -41,7 +45,6 @@ namespace Strumenta.Sharplasu.Model
         {
             get
             {
-
                 List<Node> properties = GetType().GetProperties().Where(x => typeof(Node).IsAssignableFrom(x.PropertyType) && !ignore.Contains(x.Name) && x.GetValue(this) != null).Select(x => x.GetValue(this) as Node).ToList();
 
                 GetType().GetProperties().Where(x => typeof(IEnumerable<Node>).IsAssignableFrom(x.PropertyType) && !ignore.Contains(x.Name) && x.GetValue(this) != null).Select(x => x.GetValue(this) as IEnumerable<Node>).ToList().ForEach(p => properties.AddRange(p));
@@ -138,6 +141,36 @@ namespace Strumenta.Sharplasu.Model
         public Node(Position position)
         {
             Position = position;
+        }
+
+        [Internal]
+        public string NodeType
+        {
+            get => this.GetType().FullName;            
+        }
+
+        [Internal]
+        public string SimpleNodeType
+        {
+            get => NodeType.Split('.').Last();
+        }
+
+        [Internal]
+        [JsonIgnore]
+        [XmlIgnore]
+        public List<PropertyDescription> Properties
+        {
+            get
+            {
+                try
+                { 
+                    return this.NodeProperties().Select(it => PropertyDescription.BuildFor(it, this)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Issue while getting properties of node {this.GetType().FullName}", ex);
+                }
+            }
         }
 
         public string MultiLineString(string indentation = "")
