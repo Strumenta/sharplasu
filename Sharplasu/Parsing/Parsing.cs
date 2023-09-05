@@ -356,5 +356,15 @@ namespace Strumenta.Sharplasu.Parsing
 
         public static Stream ToStream(this string text, Encoding encoding)
             => new MemoryStream(encoding.GetBytes(text));
+
+        public static string ArrayToString(object[] array)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach(object obj in array)
+            {
+                sb.Append(obj.ToString() + ", ");
+            }
+            return sb.Remove(sb.Length - 2, 2).ToString();
+        }
     }
 }

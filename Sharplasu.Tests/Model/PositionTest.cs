@@ -216,5 +216,23 @@ third line".ReplaceLineEndings("\n");
             var pos = cu.ToPosition();
             Assert.AreEqual(new Position(new Point(1, 0), new Point(1, 13)), pos);
         }
+
+        [TestMethod]
+        public void ContainsPositionStart()
+        {
+            var inside = new Position(new Point(2, 0), new Point(2, 8));
+            var position = new Position(new Point(2, 0), new Point(3, 3));
+
+            Assert.IsTrue(position.Contains(inside), "contains should return true with position inside");            
+        }
+
+        [TestMethod]
+        public void ContainsPointStart()
+        {
+            var inside = new Point(2, 0);
+            var position = new Position(new Point(2, 0), new Point(3, 3));
+
+            Assert.IsTrue(position.Contains(inside), "contains should return true with position at the start");
+        }
     }
 }

@@ -7,6 +7,10 @@ using System.Text;
 
 namespace Strumenta.Sharplasu.Model
 {
+    /**
+     * An AST node that marks the presence of an error, for example a syntactic 
+     * or semantic error in the original tree.
+     */
     public interface ErrorNode
     {
         string Message { get; }
@@ -36,11 +40,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
-        public string Message
-        {
-            get { return Message; }
-            private set { Message = value; }
-        }
+        public string Message { get; private set; }
     }
 
     public static class ErrorsClass

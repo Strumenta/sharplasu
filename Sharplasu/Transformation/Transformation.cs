@@ -13,19 +13,22 @@ using Antlr4.Runtime.Tree;
 using System.Xml.Xsl;
 
 namespace Strumenta.Sharplasu.Transformation
-{
+{    
     public class PropertyAccessor
     {
         private PropertyInfo PropertyInfo { get; set; }
+        private MethodInfo MethodInfo { get; set; }
 
         public PropertyAccessor(Type typeInfo, string property)
         {
             PropertyInfo = typeInfo.GetProperty(property);
+            if(PropertyInfo == null)
+                MethodInfo = typeInfo.GetMethod(property, new Type[] { });
         }
 
         public Object Accessor(Object obj)
         {
-            return PropertyInfo.GetGetMethod().Invoke(obj, null);
+            return PropertyInfo?.GetGetMethod().Invoke(obj, null) ?? MethodInfo.Invoke(obj, null);
         }
     }
 
@@ -407,7 +410,7 @@ namespace Strumenta.Sharplasu.Transformation
         /**
          * Performs the transformation of a node and, recursively, its descendants.
          */
-        public List<Node> TransformIntoNodes(object source, Node parent = null)
+        public virtual List<Node> TransformIntoNodes(object source, Node parent = null)
         {
             if (source == null)
                 return new List<Node>();
@@ -491,7 +494,7 @@ namespace Strumenta.Sharplasu.Transformation
             );
         }
 
-        protected Origin AsOrigin(Object source)
+        protected virtual Origin AsOrigin(Object source)
         {
             if (source is Origin)
                 return source as Origin;
@@ -529,7 +532,7 @@ namespace Strumenta.Sharplasu.Transformation
             }
         }
 
-        protected Object GetSource(Node node, Object source)
+        protected virtual object GetSource(Node node, Object source)
         {
             return source;
         }
@@ -566,19 +569,22 @@ namespace Strumenta.Sharplasu.Transformation
 
         protected NodeFactory GetNodeFactory(Type kClass)            
         {
-            var factory = Factories[kClass];
+            NodeFactory factory = null;
+            if (kClass == null)
+                return null;
+            Factories.TryGetValue(kClass, out factory);
             if (factory != null)
             {
                 return factory;
             }
             else
             {
-                if (kClass == typeof(Object))
+                if (kClass == typeof(object))
                 {
                     return null;
                 }
                 foreach (var superclass in kClass.Superclasses())
-                {
+                {                    
                     var nodeFactory = GetNodeFactory(superclass);
                     if (nodeFactory != null)
                         return nodeFactory;

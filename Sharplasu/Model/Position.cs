@@ -28,7 +28,7 @@ namespace Strumenta.Sharplasu.Model
     }
 
     [Serializable]
-    public class Point : IComparable<Point>
+    public class Point : IComparable<Point>, IEquatable<Point>
     {
         public static int START_LINE = 1;
         public static int START_COLUMN = 0;
@@ -166,12 +166,33 @@ namespace Strumenta.Sharplasu.Model
             return new Position(this, this + length);
         }
 
+        public bool Equals(Point other)
+        {
+            return this == other;
+        }
+
         public Position AsPosition
         {
             get
             {
                 return new Position(this, this);
             }
+        }
+
+        public static bool operator ==(Point one, Point other)
+        {
+            if (ReferenceEquals(one, other))
+                return true;
+            if (ReferenceEquals(one, null))
+                return false;
+            if (ReferenceEquals(other, null))
+                return false;
+            return one.Line == other.Line && one.Column == other.Column;           
+        }
+
+        public static bool operator !=(Point one, Point other)
+        {
+            return !(one == other);
         }
     }    
 
