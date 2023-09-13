@@ -44,7 +44,7 @@ namespace Strumenta.Sharplasu.Model
     /**
      * Use this to mark something that does not inherit from Node as a node, so it will be included in the AST.
      */
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class NodeTypeAttribute : System.Attribute
     {
         public NodeTypeAttribute() { }

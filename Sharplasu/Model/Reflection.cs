@@ -280,6 +280,6 @@ namespace Strumenta.Sharplasu.Model
         {
             // Check that this works
             return propertyInfo.PropertyType.Name.Equals("ReferenceByName`1");
-        }
+        }        
     }
 }

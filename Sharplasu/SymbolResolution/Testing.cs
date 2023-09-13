@@ -12,11 +12,6 @@ namespace Strumenta.Sharplasu.SymbolResolution
 {
     public static class Testing
     {
-        /*private static Type ReferenceByName<T>(Type targetClass)
-        {
-            return typeof(ReferenceByName<>);
-        }*/
-
         public static void AssertAllReferencesResolved(this Node node, Type withReturnType = null)
         {           
             Assert.IsTrue(node.GetReferenceResolvedValues(withReturnType).All(it => it));
@@ -30,6 +25,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
         public static void AssertNotAllReferencesResolved(this Node node, Type withReturnType = null)
         {
             IEnumerable<bool> references = new List<bool>() { false };
+            var s = node.GetReferenceResolvedValues(withReturnType);
             if (node.GetReferenceResolvedValues(withReturnType).Count() > 0)
             {
                 references = node.GetReferenceResolvedValues(withReturnType);
@@ -55,7 +51,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, Type withReturnType = null)            
         {
             return node.Walk().SelectMany(it => 
-                    it.NodeProperties().Where(property => property.PropertyType == ReferenceByName())
+                    it.NodeProperties().Where(property => property.PropertyType.GetGenericTypeDefinition() == ReferenceByName())
                     .Select(property => property.GetValue(node)).ToList()
                     .Select(value => (bool) (value as dynamic).Resolved)
                 );

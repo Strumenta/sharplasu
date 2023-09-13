@@ -5,6 +5,7 @@ using Strumenta.Sharplasu.Testing;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Validation;
 using static Strumenta.Sharplasu.Testing.Asserts;
+using Statement = Strumenta.Sharplasu.Tests.Models.SimpleLang.Statement;
 
 namespace Strumenta.Sharplasu.Tests;
 

@@ -26,7 +26,8 @@ namespace Strumenta.Sharplasu.SymbolResolution
 
         public void Define(Named symbol)
         {
-            if(!SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) || SymbolTable[ToSymbolTableKey(symbol.Name)] == null)
+            if(!SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) || 
+                (SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) && SymbolTable[ToSymbolTableKey(symbol.Name)] == null))
             {
                 SymbolTable.Add(ToSymbolTableKey(symbol.Name), new List<Named>() { symbol });
             }

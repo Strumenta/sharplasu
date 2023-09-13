@@ -2,6 +2,7 @@
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Type = System.Type;
+using Expression = Strumenta.Sharplasu.Tests.Models.SimpleLang.Expression;
 
 namespace Strumenta.Sharplasu.Tests
 {
