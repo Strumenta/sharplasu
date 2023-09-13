@@ -1,4 +1,6 @@
+using Antlr4.Runtime;
 using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Parsing;
 using Strumenta.Sharplasu.Testing;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Validation;
@@ -12,12 +14,12 @@ public class Testing
     [TestMethod]
     public void TestParsingResultsIdentity()
     {
-        var result1 = new ParsingResult<CompilationUnit>
+        var result1 = new ParsingResult<CompilationUnit, ParserRuleContext>
         {
             Issues = new List<Issue>()
             {
-                new (IssueType.SEMANTIC, "foo issue", new Position(new Point(1, 2), new Point(1, 4))),
-                new (IssueType.SYNTACTIC, "bar issue", new Position(new Point(2, 3), new Point(3, 5)))
+                new (IssueType.Semantic, "foo issue", new Position(new Point(1, 2), new Point(1, 4))),
+                new (IssueType.Syntatic, "bar issue", new Position(new Point(2, 3), new Point(3, 5)))
             },
             Root = new CompilationUnit
             {
@@ -40,12 +42,12 @@ public class Testing
     [TestMethod]
     public void TestDifferentParsingResults()
     {
-        var result1 = new ParsingResult<CompilationUnit>
+        var result1 = new ParsingResult<CompilationUnit, ParserRuleContext>
         {
             Issues = new List<Issue>()
             {
-                new (IssueType.SEMANTIC, "foo issue", new Position(new Point(1, 2), new Point(1, 4))),
-                new (IssueType.SYNTACTIC, "bar issue", new Position(new Point(2, 3), new Point(3, 5)))
+                new (IssueType.Semantic, "foo issue", new Position(new Point(1, 2), new Point(1, 4))),
+                new (IssueType.Syntatic, "bar issue", new Position(new Point(2, 3), new Point(3, 5)))
             },
             Root = new CompilationUnit
             {
@@ -61,12 +63,12 @@ public class Testing
                 }
             }
         };
-        var result2 = new ParsingResult<CompilationUnit>
+        var result2 = new ParsingResult<CompilationUnit, ParserRuleContext>
         {
             Issues = new List<Issue>()
             {
-                new (IssueType.SEMANTIC, "another issue", new Position(new Point(1, 2), new Point(1, 4))),
-                new (IssueType.SYNTACTIC, "different issue", new Position(new Point(2, 3), new Point(3, 5)))
+                new (IssueType.Semantic, "another issue", new Position(new Point(1, 2), new Point(1, 4))),
+                new (IssueType.Syntatic, "different issue", new Position(new Point(2, 3), new Point(3, 5)))
             },
             Root = new CompilationUnit
             {
@@ -290,5 +292,12 @@ public class Testing
                     }
                 }
             });
+    }
+
+    [TestMethod]
+    public void CheckRequire()
+    {
+        Assert.ThrowsException<InvalidOperationException>(() => Require(false));
+        Assert.ThrowsException<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
     }
 }

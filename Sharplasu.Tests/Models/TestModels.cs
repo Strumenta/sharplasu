@@ -49,25 +49,29 @@ namespace Strumenta.Sharplasu.Tests.Models
         }
     }
 
-    public class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext>
+    public class ExampleSharpLasuParser : SharpLasuParser<CompilationUnit, SimpleLangParser, SimpleLangParser.CompilationUnitContext, SharplasuANTLRToken>
     {
-        public override Lexer InstantiateLexer(ICharStream charStream)
+        public ExampleSharpLasuParser(TokenFactory<SharplasuANTLRToken> tokenFactory) : base(tokenFactory) { }
+
+        public ExampleSharpLasuParser() : base(new ANTLRTokenFactory()) { }
+
+        protected override Lexer CreateANTLRLexer(ICharStream charStream)
         {
             return new SimpleLangLexer(charStream);
         }
 
-        public override SimpleLangParser InstantiateParser(ITokenStream tokenStream)
+        protected override SimpleLangParser CreateANTLRParser(ITokenStream tokenStream)
         {
             return new SimpleLangParser(tokenStream);
         }
 
-        protected override CompilationUnit ParseTreeToAst(SimpleLangParser.CompilationUnitContext parseTreeRoot, bool considerPosition = true, List<Issue> issues = null)
+        protected override CompilationUnit ParseTreeToAst(SimpleLangParser.CompilationUnitContext parseTreeRoot, bool considerPosition = true, List<Issue> issues = null, Source source = null)
         {
             CompilationUnit cu = new CompilationUnit();            
             foreach(var s in parseTreeRoot.statement())
             {
                 if (s.GetText().ToLower().Contains("display"))
-                    issues.Add(new Issue(IssueType.SEMANTIC, "Display statement not supported", s.ToPosition()));
+                    issues.Add(new Issue(IssueType.Semantic, "Display statement not supported", s.ToPosition()));
                 else
                     cu.Statements.Add(s.GetText());
             }

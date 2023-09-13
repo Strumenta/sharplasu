@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Strumenta.Sharplasu.Parsing;
 using Strumenta.Sharplasu.Serialization.Json;
 using Strumenta.Sharplasu.Serialization.Xml;
 using Strumenta.Sharplasu.Tests.Models;
@@ -13,10 +14,11 @@ namespace Strumenta.Sharplasu.Tests {
         [TestMethod]
         public void TestSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
-            var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
+            var tree = parser.Parse("set foo = 123 set bar = 1.23");
             var serializedResult = new XmlGenerator().generateString(tree);
             var deserializedResult = new XmlDeserializer().deserializeResult<CompilationUnit>(serializedResult);
-            Assert.AreEqual(tree, deserializedResult);
+            CollectionAssert.AreEqual(tree.Issues, deserializedResult.Issues);
+            Assert.AreEqual(tree.Root, deserializedResult.Root);
         }
     }
 
@@ -26,16 +28,17 @@ namespace Strumenta.Sharplasu.Tests {
         [TestMethod]
         public void TestSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
-            var tree = parser.GetTreeForText("set foo = 123 set bar = 1.23");
+            var tree = parser.Parse("set foo = 123 set bar = 1.23");
             var serializedResult = new JsonGenerator().generateString(tree);
-            var deserializedResult = new JsonDeserializer().deserializeResult<CompilationUnit>(serializedResult);
-            Assert.AreEqual(tree, deserializedResult);
+            var deserializedResult = new JsonDeserializer().deserializeParsingResult<CompilationUnit, SimpleLangParser.CompilationUnitContext>(serializedResult);
+            CollectionAssert.AreEqual(tree.Issues, deserializedResult.Issues);
+            Assert.AreEqual(tree.Root, deserializedResult.Root);
         }
 
         [TestMethod]
         public void TestCompilationUnitSerializationAndBack() {
             var parser = new ExampleSharpLasuParser();
-            var parseResult = parser.GetTreeForText("set foo = 123 set bar = 1.23");
+            var parseResult = parser.Parse("set foo = 123 set bar = 1.23");
             var options = new JsonSerializerOptions {
                 ReferenceHandler = ReferenceHandler.Preserve,
                 WriteIndented = true
@@ -70,13 +73,13 @@ namespace Strumenta.Sharplasu.Tests {
 }";
 
             var deserializedResult = new JsonDeserializer().deserializeResult<CompilationUnit>(json);
-            Assert.IsInstanceOfType(deserializedResult, typeof(ParsingResult<CompilationUnit>));
+            Assert.IsInstanceOfType(deserializedResult, typeof(Result<CompilationUnit>));
             Assert.AreEqual(2, deserializedResult.Issues.Count);
             Assert.AreEqual(
-                new Issue(IssueType.LEXICAL, "This is an example of a lexical error", null),
+                new Issue(IssueType.Lexical, "This is an example of a lexical error", null),
                 deserializedResult.Issues[0]);
             Assert.AreEqual(
-                new Issue(IssueType.SYNTACTIC, "This is an example of a syntactic error", null, IssueSeverity.Info),
+                new Issue(IssueType.Syntatic, "This is an example of a syntactic error", null, IssueSeverity.Info),
                 deserializedResult.Issues[1]);
         }
     }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Strumenta.Sharplasu.Parsing;
 
 namespace Strumenta.Sharplasu.Tests
 {
@@ -64,14 +65,14 @@ namespace Strumenta.Sharplasu.Tests
             };
             List<Issue> issues = new List<Issue>();
 
-            Assert.IsNull(one.SpecifiedPosition);
-            Assert.IsNull(one.ParseTreeNode);
+            Assert.IsNull(one.Position);
+            Assert.IsNull(one.Origin);
 
             one.WithParseTreeNode(new Antlr4.Runtime.ParserRuleContext());
             one.WithPosition(new Position(new Point(1,1), new Point(1,2)));
             
-            Assert.IsNotNull(one.SpecifiedPosition);
-            Assert.IsNotNull(one.ParseTreeNode);
+            Assert.IsNotNull(one.Position);
+            Assert.IsNotNull(one.Origin);
 
         }
     }

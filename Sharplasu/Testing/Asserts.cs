@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Antlr4.Runtime;
 using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Parsing;
 using Strumenta.Sharplasu.Validation;
 
 namespace Strumenta.Sharplasu.Testing
@@ -29,10 +31,11 @@ namespace Strumenta.Sharplasu.Testing
 
     public static class Asserts
     {
-        public static void AssertParsingResultsAreEqual<T>(
-            ParsingResult<T> expected, ParsingResult<T> actual,
-            string context = "<root>", bool considerPosition = false)
+        public static void AssertParsingResultsAreEqual<T, C>(
+            ParsingResult<T, C> expected, ParsingResult<T, C> actual,
+            string context = "<root>", bool considerPosition = false)            
             where T : Node
+            where C : ParserRuleContext
         {
             if (!expected.Issues.SequenceEqual(actual.Issues))
                 throw new ASTDifferenceException(context, expected.Issues, actual.Issues);
@@ -46,11 +49,13 @@ namespace Strumenta.Sharplasu.Testing
             AssertASTsAreEqual(expected.Root, actual.Root, context, considerPosition);
         }
 
-        public static void AssertASTsAreEqual<TNode>(
+        public static void AssertASTsAreEqual<TNode, C>(
             Node expected,
-            ParsingResult<TNode> actual,
+            ParsingResult<TNode, C> actual,
             string context = "<root>",
-            bool considerPosition = false) where TNode : Node
+            bool considerPosition = false)
+            where TNode : Node            
+            where C : ParserRuleContext
         {
             if (actual.Issues.Count > 0)
                 throw new ASTDifferenceException(context, expected, actual, actual.Issues.ToString());
@@ -112,6 +117,23 @@ namespace Strumenta.Sharplasu.Testing
                 else if (!expectedPropertyValue.Equals(actualPropertyValue))
                     throw new ASTDifferenceException(context, expectedPropertyValue, actualPropertyValue,
                         $"{context}, comparing property {propertyInfo.Name}, expected {expectedPropertyValue}, actual {actualPropertyValue}");
+            }
+        }
+
+        public static void Require(bool value, Func<object> lazyMessage)
+        {
+            if(!value)
+            { 
+                var message = lazyMessage();
+                throw new InvalidOperationException(message.ToString());
+            }
+        }
+
+        public static void Require(bool value)
+        {
+            if (!value)
+            {
+                throw new InvalidOperationException("Failed requirement.");
             }
         }
     }

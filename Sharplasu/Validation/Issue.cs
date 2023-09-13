@@ -5,9 +5,10 @@ namespace Strumenta.Sharplasu.Validation
 {
     public enum IssueType
     {
-        LEXICAL,
-        SYNTACTIC,
-        SEMANTIC
+        Lexical,
+        Syntatic,
+        Semantic,
+        Translation
     }
 
     public enum IssueSeverity
@@ -37,17 +38,17 @@ namespace Strumenta.Sharplasu.Validation
 
         public static Issue Lexical(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
-            return new Issue(IssueType.LEXICAL, message, position);
+            return new Issue(IssueType.Lexical, message, position);
         }
 
         public static Issue Syntactic(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
-            return new Issue(IssueType.SYNTACTIC, message, position);
+            return new Issue(IssueType.Syntatic, message, position);
         }
 
         public static Issue Semantic(string message, Position position = null, IssueSeverity severity = IssueSeverity.Error)
         {
-            return new Issue(IssueType.SEMANTIC, message, position);
+            return new Issue(IssueType.Semantic, message, position);
         }
 
         public override string ToString()

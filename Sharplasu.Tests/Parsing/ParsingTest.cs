@@ -25,10 +25,10 @@ namespace Strumenta.Sharplasu.Tests {
             var parsingResult = parser.ParseFirstStage("ste foo = 123");
             Assert.IsNotNull(parsingResult);
             Assert.IsFalse(parsingResult.Correct);
-            Assert.AreEqual(2, parsingResult.Issues.Count);
-            Assert.AreEqual(IssueType.SYNTACTIC, parsingResult.Issues[0].IssueType);
+            Assert.AreEqual(5, parsingResult.Issues.Count);
+            Assert.AreEqual(IssueType.Syntatic, parsingResult.Issues[0].IssueType);
             Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[0].IssueSeverity);
-            Assert.AreEqual(IssueType.SYNTACTIC, parsingResult.Issues[1].IssueType);
+            Assert.AreEqual(IssueType.Syntatic, parsingResult.Issues[1].IssueType);
             Assert.AreEqual(IssueSeverity.Error, parsingResult.Issues[1].IssueSeverity);
         }
     }
