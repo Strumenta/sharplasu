@@ -1,5 +1,4 @@
-﻿using ExtensionMethods;
-using Strumenta.Sharplasu.Model;
+﻿using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.SymbolResolution;
 using Strumenta.Sharplasu.Testing;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
@@ -9,15 +8,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.Tests.SymbolResolution
 {
     [TestClass]
     public class DeclarativeLocalSymbolResolverTest
     {
-        private class CompilationUnit : Node
+        public class CompilationUnit : Node
         {
-            public List<TypeDecl> Content = new List<TypeDecl>();            
+            public List<TypeDecl> Content { get; set; } = new List<TypeDecl>();            
 
             public CompilationUnit(List<TypeDecl> content = null)
             {
@@ -152,7 +152,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         }
         private CompilationUnit GetCompilationUnit()
         {
-            return new CompilationUnit(
+            var cu = new CompilationUnit(
                 new List<TypeDecl>()
                 {
                     new ClassDecl(
@@ -189,6 +189,8 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
                     new ClassDecl("class_1")
                 }
             );
+            cu.AssignParents();
+            return cu;
         }
         
         private DeclarativeLocalSymbolResolver GetFullSymbolResolver()

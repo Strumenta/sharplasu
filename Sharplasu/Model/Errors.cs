@@ -1,5 +1,5 @@
-﻿using ExtensionMethods;
-using Strumenta.Sharplasu.Model;
+﻿using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Traversing;
 using System;
 using System.Collections.Generic;
 using System.Linq;

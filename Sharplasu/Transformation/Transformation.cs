@@ -11,6 +11,7 @@ using System.Text;
 using System.Xml.Linq;
 using Antlr4.Runtime.Tree;
 using System.Xml.Xsl;
+using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.Transformation
 {    
@@ -743,7 +744,7 @@ namespace Strumenta.Sharplasu.Transformation
                         try
                         {
                             var instance = constructor.Invoke(constructorParamValues.Values.ToArray());
-                            (instance as Node).Children.ForEach(child => child.Parent = instance as Node);
+                            (instance as Node).Children().ForEach(child => child.Parent = instance as Node);
                             return (T) instance;
                         }
                         catch (Exception t)

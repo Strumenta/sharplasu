@@ -8,7 +8,7 @@ using SymbolTable = System.Collections.Generic.Dictionary<string, System.Collect
 using ClassScopeDefinitions = System.Collections.Generic.Dictionary<System.Type, System.Collections.Generic.List<Strumenta.Sharplasu.SymbolResolution.ScopeDefinition>>;
 using ReferenceByNameProperty = System.Reflection.PropertyInfo;
 using PropertyScopeDefinitions = System.Collections.Generic.Dictionary<System.Reflection.PropertyInfo, System.Collections.Generic.List<Strumenta.Sharplasu.SymbolResolution.ScopeDefinition>>;
-using ExtensionMethods;
+using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.SymbolResolution
 {

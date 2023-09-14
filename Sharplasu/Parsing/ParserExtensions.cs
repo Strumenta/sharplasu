@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Traversing;
 using Strumenta.Sharplasu.Validation;
 using System;
 using System.Collections;
@@ -37,7 +38,7 @@ namespace Strumenta.Sharplasu.Parsing
                 operation(node);
             }
 
-            foreach (var c in node.Children)
+            foreach (var c in node.Children())
                 c.ProcessDescendants(operation);
         }
 

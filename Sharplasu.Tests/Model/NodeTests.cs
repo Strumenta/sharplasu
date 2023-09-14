@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Strumenta.Sharplasu.Parsing;
+using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.Tests
 {
@@ -29,7 +30,7 @@ namespace Strumenta.Sharplasu.Tests
             };
             List<Issue> issues = new List<Issue>();
 
-            Assert.AreEqual(1, one.Children.Count);
+            Assert.AreEqual(1, one.Children().Count);
         }
 
         [TestMethod]

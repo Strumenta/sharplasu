@@ -1,4 +1,5 @@
 ﻿using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Traversing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -83,7 +84,7 @@ namespace Strumenta.Sharplasu.Model
 
         public static List<PropertyInfo> NodeProperties(this Object obj)
         {
-            // GetProperties just returns the public properties
+            // GetProperties just returns the public properties           
             return obj.GetType().GetProperties()
                 .Where(it => it.GetCustomAttribute(typeof(DerivedAttribute)) == null)
                 .Where(it => it.GetCustomAttribute(typeof(InternalAttribute)) == null)
@@ -100,6 +101,37 @@ namespace Strumenta.Sharplasu.Model
             var superclasses = new List<Type>() { type.BaseType };
             superclasses.AddRange(type.GetInterfaces());
             return superclasses;
+        }
+
+        public static string MultiLineString(this Node node, string indentation = "")
+        {
+            IEnumerable<string> ignore = typeof(Node).GetProperties()
+                .Where(it => it.GetCustomAttribute(typeof(InternalAttribute)) != null
+                          || it.GetCustomAttribute(typeof(DerivedAttribute)) != null
+                          || it.GetCustomAttribute(typeof(LinkAttribute)) != null)
+                .Select(x => x.Name)
+                .ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine($"{indentation}{node.GetType().Name}");
+
+            var properties = node.GetType().GetProperties()
+                .Where(x => !ignore.Contains(x.Name)
+                            && x.GetValue(node) != null
+                            && !typeof(Node).IsAssignableFrom(x.PropertyType)
+                            && !typeof(IEnumerable<Node>).IsAssignableFrom(x.PropertyType));
+            foreach (PropertyInfo prp in properties)
+            {
+                object value = prp.GetValue(node);
+
+                sb.AppendLine($"{indentation + "  "}{prp.Name} {prp.GetValue(node)}");
+            }
+
+            if (node.Children().Count > 0)
+            {
+                node.Children().ForEach(c => sb.Append(c.MultiLineString(indentation + "  ")));
+            }
+
+            return sb.ToString();
         }
     }
 }

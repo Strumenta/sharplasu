@@ -4,6 +4,7 @@ using Antlr4.Runtime.Tree;
 using Strumenta.Sharplasu.Mapping;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Parsing;
+using Strumenta.Sharplasu.Traversing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -96,7 +97,7 @@ namespace Strumenta.Sharplasu.Transformation
                 try
                 {
                     T instance = (T) constructor.Invoke(args);
-                    instance.Children.ForEach(it => { it.Parent = instance; });
+                    instance.Children().ForEach(it => { it.Parent = instance; });
                     return instance;
                 }
                 catch (ArgumentException e)

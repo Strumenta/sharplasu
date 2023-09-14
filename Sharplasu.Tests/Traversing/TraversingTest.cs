@@ -1,6 +1,6 @@
-﻿using ExtensionMethods;
-using Strumenta.Sharplasu.Model;
+﻿using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
+using Strumenta.Sharplasu.Traversing;
 using Type = System.Type;
 using Expression = Strumenta.Sharplasu.Tests.Models.SimpleLang.Expression;
 
@@ -65,7 +65,7 @@ namespace Strumenta.Sharplasu.Tests
         public void TestWalkAncestors()
         {
             var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
-            var identifier = cu.Descendants.First(n => n.GetType() == typeof(Identifier));
+            var identifier = cu.WalkDescendants().First(n => n.GetType() == typeof(Identifier));
             TestSequences(
                 MapNodesToTypes(identifier.WalkAncestors()),
                 new List<System.Type>
@@ -149,7 +149,7 @@ namespace Strumenta.Sharplasu.Tests
         public void TestFindAncestorOfType()
         {
             var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
-            var identifier = cu.Descendants.First(n => n.GetType() == typeof(Identifier));
+            var identifier = cu.WalkDescendants().First(n => n.GetType() == typeof(Identifier));
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<CompilationUnit>(), typeof(CompilationUnit));
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<SetStatement>(), typeof(SetStatement));
             Assert.IsNull(identifier.FindAncestorOfType<DisplayStatement>());

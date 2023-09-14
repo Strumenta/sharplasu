@@ -1,4 +1,5 @@
 ﻿using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Traversing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace Strumenta.Sharplasu.Transformation
             if (node is GenericNode)
                 return node as GenericNode;
             else
-                return node.Children.Find(x => x.FindGenericNode() != null)?.FindGenericNode();
+                return node.Children().Find(x => x.FindGenericNode() != null)?.FindGenericNode();
         }
     }
 }

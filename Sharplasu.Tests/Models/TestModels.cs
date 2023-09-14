@@ -11,7 +11,6 @@ namespace Strumenta.Sharplasu.Tests.Models
         public int BadStuff { get; init; }
 
         public SmallNode? Smaller { get; init; }
-
     }
 
     public class SmallNode : Node

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExtensionMethods;
 using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Traversing;
 using static Antlr4.Runtime.Atn.SemanticContext;
 
 namespace Strumenta.Sharplasu.Model
@@ -26,7 +26,7 @@ namespace Strumenta.Sharplasu.Model
             if (realParent == null)
                 realParent = node.Parent;
 
-            return node.Parent == realParent && node.Children.All(it => it.HasValidParents(node));
+            return node.Parent == realParent && node.Children().All(it => it.HasValidParents(node));
         }
 
         public static IEnumerable<Node> InvalidPositions(this Node node)

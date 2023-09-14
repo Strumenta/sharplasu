@@ -40,7 +40,7 @@ namespace Strumenta.Sharplasu.Model
         public IEnumerable<PropertyInfo> NotDerivedProperties =>
             GetType().GetProperties().Where(p => !ignore.Contains(p.Name));
 
-        [Internal]
+        /*[Internal]
         public List<Node> Children
         {
             get
@@ -51,55 +51,7 @@ namespace Strumenta.Sharplasu.Model
 
                 return properties ?? new List<Node>();
             }
-        }
-
-        [JsonIgnore][XmlIgnore]
-        [Internal]
-        public List<Node> Descendants
-        {
-            get
-            {
-                List<Node> descendants = new List<Node>();
-
-                Children.ForEach(x =>
-                {
-                    descendants.Add(x);
-                    descendants.AddRange(x.Descendants);
-                });
-
-                return descendants;
-            }
-        }
-
-        public List<T> DescendantsByType<T>() where T : Node
-        {
-            return Descendants.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T).ToList();
-        }
-
-        [JsonIgnore][XmlIgnore]
-        [Internal]
-        public List<Node> Ancestors
-        {
-            get
-            {
-                List<Node> ancestors = new List<Node>();
-
-                var p = Parent;
-
-                while (p != null)
-                {
-                    ancestors.Add(p);
-                    p = p.Parent;
-                }
-
-                return ancestors;
-            }
-        }
-
-        public List<T> AncestorsByType<T>() where T : Node
-        {
-            return Ancestors.Where(x => typeof(T).IsAssignableFrom(x.GetType())).Select(x => x as T).ToList();
-        }
+        }*/        
 
         protected Position PositionOverride = null;
 
@@ -171,32 +123,7 @@ namespace Strumenta.Sharplasu.Model
                     throw new Exception($"Issue while getting properties of node {this.GetType().FullName}", ex);
                 }
             }
-        }
-
-        public string MultiLineString(string indentation = "")
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine($"{indentation}{GetType().Name}");
-
-            var properties = this.GetType().GetProperties()
-                .Where(x => !ignore.Contains(x.Name)
-                            && x.GetValue(this) != null
-                            && !typeof(Node).IsAssignableFrom(x.PropertyType)
-                            && !typeof(IEnumerable<Node>).IsAssignableFrom(x.PropertyType));
-            foreach (PropertyInfo prp in properties)
-            {
-                object value = prp.GetValue(this);
-
-                sb.AppendLine($"{indentation + "  "}{prp.Name} {prp.GetValue(this)}");
-            }
-
-            if (Children.Count > 0)
-            {
-                Children.ForEach(c => sb.Append(c.MultiLineString(indentation + "  ")));
-            }
-
-            return sb.ToString();
-        }
+        }        
 
         public Node WithPosition(Position position)
         {

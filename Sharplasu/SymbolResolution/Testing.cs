@@ -1,5 +1,4 @@
-﻿using ExtensionMethods;
-using Strumenta.Sharplasu.Model;
+﻿using Strumenta.Sharplasu.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Reflection;
 using ReferenceByNameProperty = System.Reflection.PropertyInfo;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.SymbolResolution
 {

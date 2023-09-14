@@ -1,6 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using ExtensionMethods;
+using Strumenta.Sharplasu.Traversing;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Parsing;
 using Strumenta.Sharplasu.Validation;
