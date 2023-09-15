@@ -16,9 +16,9 @@ namespace Strumenta.Sharplasu.Tests.Model
     {
         private class MySetStatement : Node
         {
-            public new Position SpecifiedPosition { get; set; }
+            public Position? SpecifiedPosition { get; set; }
 
-            public MySetStatement(Position specifiedPosition = null) : base(specifiedPosition)
+            public MySetStatement(Position? specifiedPosition = null) : base(specifiedPosition)
             {
                 SpecifiedPosition = specifiedPosition;
             }

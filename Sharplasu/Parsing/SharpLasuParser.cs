@@ -101,6 +101,29 @@ namespace Strumenta.Sharplasu.Parsing
 
             var lexer = CreateANTLRLexer(inputStream, encoding);
             AttachListeners(lexer, issues);
+            IToken t = null;
+            do
+            {
+                t = lexer.NextToken();
+                if (t == null)
+                {
+                    break;
+                }
+                else
+                {
+                    if (!onlyFromDefaultChannel || t.Channel == TokenConstants.DefaultChannel)
+                    {
+                        tokens.Add(TokenFactory.ConvertToken(t));
+                        last = t;
+                    }
+                }
+            } while (t.Type != TokenConstants.EOF);
+
+            if(last != null && last.Type != TokenConstants.EOF)
+            {
+                var message = "The parser did not consume the entire input";
+                issues.Add(new Issue(IssueType.Syntatic, message, position: last.EndPoint().AsPosition));
+            }
             
             stopwatch.Stop();
             time = stopwatch.ElapsedMilliseconds;
