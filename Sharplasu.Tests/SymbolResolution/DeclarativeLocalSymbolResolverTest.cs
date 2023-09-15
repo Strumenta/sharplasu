@@ -318,7 +318,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         {
             var cu = GetCompilationUnit();            
             cu.AssertNotAllReferencesResolved();
-            GetFullSymbolResolver().ResolveSimbols(cu);
+            GetFullSymbolResolver().ResolveSymbols(cu);
             cu.AssertAllReferencesResolved();
         }
 
@@ -326,9 +326,31 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         public void TestIncrementalSymbolResolutionDevelopment()
         {
             var cu = GetCompilationUnit();
-            cu.AssertAllReferencesResolved();
-            GetFullSymbolResolver().ResolveSimbols(cu);
-            cu.AssertAllReferencesResolved();
+            // pre-condition - v1
+            cu.AssertNotAllReferencesResolved(typeof(ClassDecl).GetProperty("Superclass"));
+            cu.AssertNotAllReferencesResolved(typeof(FeatureDecl).GetProperty("Type"));
+            cu.AssertNotAllReferencesResolved(typeof(RefExpr).GetProperty("Symbol"));
+            cu.AssertNotAllReferencesResolved(typeof(CallExpr).GetProperty("Operation"));
+            cu.AssertNotAllReferencesResolved(typeof(OperationDecl).GetProperty("Returns"));
+            cu.AssertNotAllReferencesResolved();
+            // resolution - v1
+            GetPartialSymbolResolver().ResolveSymbols(cu);
+            // post-condition - v1 (pre-condition - v2)
+            cu.AssertAllReferencesResolved(typeof(ClassDecl).GetProperty("Superclass"));
+            cu.AssertNotAllReferencesResolved(typeof(FeatureDecl).GetProperty("Type"));
+            cu.AssertNotAllReferencesResolved(typeof(RefExpr).GetProperty("Symbol"));
+            cu.AssertNotAllReferencesResolved(typeof(CallExpr).GetProperty("Operation"));
+            cu.AssertNotAllReferencesResolved(typeof(OperationDecl).GetProperty("Returns"));
+            cu.AssertNotAllReferencesResolved();
+            // resolution - v2;
+            GetFullSymbolResolver().ResolveSymbols(cu);
+            // post-condition - v2;
+            cu.AssertAllReferencesResolved(typeof(ClassDecl).GetProperty("Superclass"));
+            cu.AssertAllReferencesResolved(typeof(FeatureDecl).GetProperty("Type"));
+            cu.AssertAllReferencesResolved(typeof(RefExpr).GetProperty("Symbol"));
+            cu.AssertAllReferencesResolved(typeof(CallExpr).GetProperty("Operation"));
+            cu.AssertAllReferencesResolved(typeof(OperationDecl).GetProperty("Returns"));
+            cu.AssertAllReferencesResolved();            
         }
     }
 }

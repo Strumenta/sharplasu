@@ -51,15 +51,17 @@ namespace Strumenta.Sharplasu.SymbolResolution
                     it.NodeProperties().Where(property => property.IsReference(withReturnType))
                     .Select(property => property.GetValue(it))
                     .Where(property => property != null)
-                    .Select(property => (bool)property.GetType().GetProperty("Resolved").GetValue(property)));
+                    .Select(value => (bool)value.GetType().GetProperty("Resolved").GetValue(value))
+                    );
         }
 
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, ReferenceByNameProperty forProperty)            
         {
             return node.Walk().SelectMany(it =>
                     it.NodeProperties().Where(property => property == forProperty)
-                    .Select(property => property.GetValue(node)).ToList()
-                    .Select(value => (bool)(value as dynamic).Resolved)
+                    .Select(property => property.GetValue(it)).ToList()
+                    .Where(property => property != null)
+                    .Select(value => (bool)value.GetType().GetProperty("Resolved").GetValue(value))
                 );
         }
     }

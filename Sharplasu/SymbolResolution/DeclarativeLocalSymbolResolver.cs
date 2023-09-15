@@ -25,7 +25,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
         }
 
 
-        public override List<Issue> ResolveSimbols(Node root)
+        public override List<Issue> ResolveSymbols(Node root)
         {
             ResolveNode(root, true);
             return Issues;
@@ -44,7 +44,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
         {
             var p = context.Properties.FirstOrDefault(it => it.Name == property.Name).Value;            
             if (p != null)
-            {                
+            {
                 p.GetType().GetProperty("Referred").SetMethod.Invoke(p, new object[] { GetScope(property, context)?.Resolve(p.GetType().GetProperty("Name").GetValue(p) as string, property.GetReferredType()) });                
             }
         }

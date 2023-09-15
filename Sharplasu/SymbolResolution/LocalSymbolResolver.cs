@@ -9,6 +9,6 @@ namespace Strumenta.Sharplasu.SymbolResolution
     [Serializable]
     public abstract class LocalSymbolResolver
     {
-        public abstract List<Issue> ResolveSimbols(Node root);
+        public abstract List<Issue> ResolveSymbols(Node root);
     }
 }
