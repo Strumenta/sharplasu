@@ -9,6 +9,7 @@ using ClassScopeDefinitions = System.Collections.Generic.Dictionary<System.Type,
 using ReferenceByNameProperty = System.Reflection.PropertyInfo;
 using PropertyScopeDefinitions = System.Collections.Generic.Dictionary<System.Reflection.PropertyInfo, System.Collections.Generic.List<Strumenta.Sharplasu.SymbolResolution.ScopeDefinition>>;
 using Strumenta.Sharplasu.Traversing;
+using System.Runtime.InteropServices;
 
 namespace Strumenta.Sharplasu.SymbolResolution
 {
@@ -34,29 +35,31 @@ namespace Strumenta.Sharplasu.SymbolResolution
         {
             node.ReferenceByNameProperties().ToList().ForEach(it => ResolveProperty(it, node));
             if (children)
-            {
-                node.WalkChildren().ToList().ForEach(it => ResolveNode(node, true));
+            {                
+                node.WalkChildren().ToList().ForEach(it => ResolveNode(it, true));
             }
         }
 
         public void ResolveProperty(ReferenceByNameProperty property, Node context)
         {
-            var p = context.Properties.FirstOrDefault(it => it.Name == property.Name).Value as ReferenceByName<Named>;
+            var p = context.Properties.FirstOrDefault(it => it.Name == property.Name).Value;            
             if (p != null)
-            {
-                p.Referred = GetScope(property, context)?.Resolve(p.Name, property.GetReferredType());
+            {                
+                p.GetType().GetProperty("Referred").SetMethod.Invoke(p, new object[] { GetScope(property, context)?.Resolve(p.GetType().GetProperty("Name").GetValue(p) as string, property.GetReferredType()) });                
             }
         }
 
         public Scope GetScope(ReferenceByNameProperty property, Node context)
-        {
+        {        
             return TryGetScopeForProperty(property, context) ?? TryGetScopeForPropertyType(property, context);
         }
 
         private Scope TryGetScopeForProperty(ReferenceByNameProperty reference, Node context)
         {
-            var scope = TryGetScope(PropertyScopeDefinitions[reference], context);
-            if (scope != null)
+            Scope scope = null;
+            if (PropertyScopeDefinitions.ContainsKey(reference))
+                scope = TryGetScope(PropertyScopeDefinitions[reference], context);            
+            if (scope == null)
             {
                 if (context.Parent == null)
                     return null;
@@ -64,14 +67,16 @@ namespace Strumenta.Sharplasu.SymbolResolution
                     return TryGetScopeForProperty(reference, context.Parent);
             }
 
-            return null;
+            return scope;
         }
 
         private Scope TryGetScopeForPropertyType(ReferenceByNameProperty reference, Node context)
         {
             var referenceType = reference.PropertyType.GetGenericArguments()[0];
-            var scope = TryGetScope(ClassScopeDefinitions[referenceType], context);
-            if (scope != null)
+            Scope scope = null;
+            if(ClassScopeDefinitions.ContainsKey(referenceType))
+                scope = TryGetScope(ClassScopeDefinitions[referenceType], context);
+            if (scope == null)
             {
                 if (context.Parent == null)
                     return null;
@@ -79,16 +84,16 @@ namespace Strumenta.Sharplasu.SymbolResolution
                     return TryGetScopeForPropertyType(reference, context.Parent);
             }
 
-            return null;
+            return scope;
         }
 
         private class ScopeComparer : IComparer<ScopeDefinition>
         {
             public int Compare(ScopeDefinition left, ScopeDefinition right)
             {
-                if (left.ContextType.IsAssignableFrom(right.ContextType))
+                if (left.ContextType.IsSuperclassOf(right.ContextType))
                     return 1;
-                else if (right.ContextType.IsAssignableFrom(left.ContextType))
+                else if (right.ContextType.IsSuperclassOf(left.ContextType))
                     return -1;
                 else
                     return 0;
@@ -97,18 +102,29 @@ namespace Strumenta.Sharplasu.SymbolResolution
 
         private Scope TryGetScope(List<ScopeDefinition> scopeDefinitions, Node context)
         {
-            return scopeDefinitions?.Where(scopeDefinition => scopeDefinition.ContextType.IsAssignableFrom(context.GetType()))
+            return scopeDefinitions?.Where(scopeDefinition => scopeDefinition.ContextType.IsSuperclassOf(context.GetType()))
                                    ?.OrderBy(score => score, new ScopeComparer())?.FirstOrDefault()?.ScopeFunction?.Invoke(context);
         }
 
         public void ScopeFor<ContextType>(Type nodeType, Func<ContextType, Scope> scopeFunction)
             where ContextType : Node
         {
-            if (!ClassScopeDefinitions.ContainsKey(nodeType) || 
+            List<ScopeDefinition> scopeDefinitions = null;
+            if (!ClassScopeDefinitions.ContainsKey(nodeType) ||
                 (ClassScopeDefinitions.ContainsKey(nodeType) && ClassScopeDefinitions[nodeType] == null))
             {
-                ClassScopeDefinitions.Add(nodeType, new List<ScopeDefinition>()
-                {
+                scopeDefinitions = new List<ScopeDefinition>();
+            }
+            if (!ClassScopeDefinitions.ContainsKey(nodeType))
+            {
+                ClassScopeDefinitions.Add(nodeType, scopeDefinitions);
+            }
+            else if (!(ClassScopeDefinitions.ContainsKey(nodeType) && ClassScopeDefinitions[nodeType] == null))
+            {
+                scopeDefinitions = ClassScopeDefinitions[nodeType];
+            }
+
+            scopeDefinitions.Add(
                     new ScopeDefinition(
                             typeof(ContextType),
                             (Node context) =>
@@ -118,19 +134,31 @@ namespace Strumenta.Sharplasu.SymbolResolution
                                 else
                                     return null;
                             }
-                        )                    
-                });
-            }                
+                        )
+                );
+
+            ClassScopeDefinitions[nodeType] = scopeDefinitions;                   
         }
 
         public void ScopeFor<ContextType>(ReferenceByNameProperty reference, Func<ContextType, Scope> scopeDefinition)
             where ContextType : Node
         {
+            List<ScopeDefinition> scopeDefinitions = null;            
             if (!PropertyScopeDefinitions.ContainsKey(reference) || 
                 (PropertyScopeDefinitions.ContainsKey(reference) && PropertyScopeDefinitions[reference] == null))
             {
-                PropertyScopeDefinitions.Add(reference, new List<ScopeDefinition>()
-                {
+                scopeDefinitions = new List<ScopeDefinition>();                
+            }
+            if (!PropertyScopeDefinitions.ContainsKey(reference))
+            {
+                PropertyScopeDefinitions.Add(reference, scopeDefinitions);
+            }
+            else if (!(PropertyScopeDefinitions.ContainsKey(reference) && PropertyScopeDefinitions[reference] == null))
+            {
+                scopeDefinitions = PropertyScopeDefinitions[reference];
+            }
+
+            scopeDefinitions.Add(                
                     new ScopeDefinition(
                             typeof(ContextType),
                             (Node context) =>
@@ -141,8 +169,9 @@ namespace Strumenta.Sharplasu.SymbolResolution
                                     return null;
                             }
                         )
-                });
-            }
+                );
+
+            PropertyScopeDefinitions[reference] = scopeDefinitions;
         }
 
         public static DeclarativeLocalSymbolResolver SymbolResolver(Action<DeclarativeLocalSymbolResolver> init, List<Issue> issues = null)

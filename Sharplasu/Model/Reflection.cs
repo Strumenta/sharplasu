@@ -276,10 +276,19 @@ namespace Strumenta.Sharplasu.Model
                         type.IsGenericType;
         }
 
-        public static bool IsReference(this PropertyInfo propertyInfo)
+        public static bool IsReference(this PropertyInfo propertyInfo, Type type = null)
         {
-            // Check that this works
-            return propertyInfo.PropertyType.Name.Equals("ReferenceByName`1");
-        }        
+            bool isReference = propertyInfo.PropertyType.IsReferenceByName();
+
+            if (type != null)
+                isReference = isReference && type.IsAssignableFrom(propertyInfo.PropertyType.GenericTypeArguments[0]);
+
+            return isReference;
+        }
+
+        public static bool IsSuperclassOf(this Type type, Type derived)
+        {
+            return derived.IsSubclassOf(type) || derived == type;
+        }
     }
 }

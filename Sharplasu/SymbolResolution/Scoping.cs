@@ -26,11 +26,25 @@ namespace Strumenta.Sharplasu.SymbolResolution
 
         public void Define(Named symbol)
         {
-            if(!SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) || 
+            List<Named> symbols = null;
+            if (!SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) || 
                 (SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) && SymbolTable[ToSymbolTableKey(symbol.Name)] == null))
             {
-                SymbolTable.Add(ToSymbolTableKey(symbol.Name), new List<Named>() { symbol });
+                symbols = new List<Named>();
             }
+
+            if (!SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)))
+            {
+                SymbolTable.Add(ToSymbolTableKey(symbol.Name), symbols);
+            }
+            else if(!(SymbolTable.ContainsKey(ToSymbolTableKey(symbol.Name)) && SymbolTable[ToSymbolTableKey(symbol.Name)] == null))
+            {
+                symbols = SymbolTable[ToSymbolTableKey(symbol.Name)];
+            }
+
+            symbols.Add(symbol);
+
+            SymbolTable[ToSymbolTableKey(symbol.Name)] = symbols;
         }
 
         public Named Resolve(string name, Type type = null)

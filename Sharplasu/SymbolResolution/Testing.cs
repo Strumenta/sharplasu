@@ -13,19 +13,21 @@ namespace Strumenta.Sharplasu.SymbolResolution
     public static class Testing
     {
         public static void AssertAllReferencesResolved(this Node node, Type withReturnType = null)
-        {           
+        {
+            var refs = node.GetReferenceResolvedValues(withReturnType);
             Assert.IsTrue(node.GetReferenceResolvedValues(withReturnType).All(it => it));
         }
 
         public static void AssertAllReferencesResolved(this Node node, ReferenceByNameProperty forProperty)
-        {            
+        {
             Assert.IsTrue(node.GetReferenceResolvedValues(forProperty).All(it => it));
         }
 
         public static void AssertNotAllReferencesResolved(this Node node, Type withReturnType = null)
         {
             IEnumerable<bool> references = new List<bool>() { false };
-            var s = node.GetReferenceResolvedValues(withReturnType);
+            if (withReturnType == null)
+                withReturnType = typeof(Named);
             if (node.GetReferenceResolvedValues(withReturnType).Count() > 0)
             {
                 references = node.GetReferenceResolvedValues(withReturnType);
@@ -43,18 +45,13 @@ namespace Strumenta.Sharplasu.SymbolResolution
             Assert.IsTrue(references.Any(it => !it));
         }
 
-        private static Type ReferenceByName()
-        {
-            return typeof(ReferenceByName<>);
-        }
-
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, Type withReturnType = null)            
-        {
-            return node.Walk().SelectMany(it => 
-                    it.NodeProperties().Where(property => property.PropertyType.GetGenericTypeDefinition() == ReferenceByName())
-                    .Select(property => property.GetValue(node)).ToList()
-                    .Select(value => (bool) (value as dynamic).Resolved)
-                );
+        {                      
+            return node.Walk().SelectMany(it =>
+                    it.NodeProperties().Where(property => property.IsReference(withReturnType))
+                    .Select(property => property.GetValue(it))
+                    .Where(property => property != null)
+                    .Select(property => (bool)property.GetType().GetProperty("Resolved").GetValue(property)));
         }
 
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, ReferenceByNameProperty forProperty)            

@@ -171,6 +171,19 @@ namespace Strumenta.Sharplasu.Model
             return this == other;
         }
 
+        public override int GetHashCode()
+        {
+            int hashCode = -1456208474;
+            hashCode = hashCode * -1521134295 + Line.GetHashCode();
+            hashCode = hashCode * -1521134295 + Column.GetHashCode();
+            return hashCode;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
         public Position AsPosition
         {
             get

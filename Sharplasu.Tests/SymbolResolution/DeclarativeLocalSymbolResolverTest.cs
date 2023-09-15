@@ -19,7 +19,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         {
             public List<TypeDecl> Content { get; set; } = new List<TypeDecl>();            
 
-            public CompilationUnit(List<TypeDecl> content = null)
+            public CompilationUnit(List<TypeDecl>? content = null)
             {
                 Content = content ?? new List<TypeDecl>();
             }
@@ -37,12 +37,11 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
         private class ClassDecl : TypeDecl
         {
-            public string Name { get; set; }
-            public ReferenceByName<ClassDecl> Superclass { get; set; }
+            public ReferenceByName<ClassDecl>? Superclass { get; set; }
             public List<FeatureDecl> Features { get; set; }
             public List<OperationDecl> Operations { get; set; }
 
-            public ClassDecl(string name, ReferenceByName<ClassDecl> superclass = null, List<FeatureDecl> features = null, List<OperationDecl> operations = null)
+            public ClassDecl(string name, ReferenceByName<ClassDecl>? superclass = null, List<FeatureDecl>? features = null, List<OperationDecl>? operations = null)
                 : base(name)
             {
                 Name = name;
@@ -81,9 +80,9 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
             public string Name { get; set; }
             public List<ParameterDecl> Parameters { get; set; }
             public List<StmtNode> Statements { get; set; }
-            public ReferenceByName<TypeDecl> Returns { get; set; }
+            public ReferenceByName<TypeDecl>? Returns { get; set; }
 
-            public OperationDecl(string name, List<ParameterDecl> parameters = null, List<StmtNode> statements = null, ReferenceByName<TypeDecl> returns = null) : base()
+            public OperationDecl(string name, List<ParameterDecl>? parameters = null, List<StmtNode>? statements = null, ReferenceByName<TypeDecl>? returns = null) : base()
             {
                 Name = name;
                 Parameters = parameters ?? new List<ParameterDecl>();
@@ -96,8 +95,8 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
         private class DeclarationStmt : StmtNode, Named
         {
-            public string Name { get; set;}
-            public ExprNode Value { get; set; } = null;
+            public string Name { get; set; }
+            public ExprNode Value { get; set; }
 
             public DeclarationStmt(string name, ExprNode value)
             {
@@ -108,8 +107,8 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
         private class AssignmentStmt : StmtNode
         {
-            public ExprNode Lhs { get; set; } = null;
-            public ExprNode Rhs { get; set; } = null;
+            public ExprNode Lhs { get; set; }
+            public ExprNode Rhs { get; set; }
 
             public AssignmentStmt(ExprNode lhs, ExprNode rhs) : base()
             {
@@ -135,7 +134,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         {            
             public ReferenceByName<OperationDecl> Operation { get; set; }
             public List<ExprNode> Arguments { get; set; }
-            public CallExpr(ReferenceByName<OperationDecl> operation, List<ExprNode> arguments = null) : base()
+            public CallExpr(ReferenceByName<OperationDecl> operation, List<ExprNode>? arguments = null) : base()
             {
                 Operation = operation;
                 Arguments = arguments ?? new List<ExprNode>();
@@ -214,7 +213,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
                         decl.ScopeFor(typeof(RefExpr).GetProperty("Symbol"), (RefExpr refExpr) =>
                         {
-                            Scope scope = null;
+                            Scope? scope = null;
                             if (refExpr.Context != null)
                             {
                                 scope = decl.GetScope(typeof(RefExpr).GetProperty("Symbol"), refExpr.Context);
@@ -229,11 +228,11 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
                             {
                                 decl.ResolveProperty(typeof(CallExpr).GetProperty("Operation"), callExpr);
                             }
-                            if (callExpr.Operation.Referred != null && !callExpr.Operation.Referred.Returns.Resolved)
+                            if (callExpr.Operation.Referred != null && !callExpr.Operation.Referred!.Returns!.Resolved)
                             {
                                 decl.ResolveProperty(typeof(OperationDecl).GetProperty("Returns"), callExpr.Operation.Referred);
                             }
-                            if (callExpr.Operation.Referred?.Returns.Referred != null)
+                            if (callExpr.Operation.Referred != null && callExpr.Operation.Referred!.Returns!.Referred != null)
                             {
                                 var returnType = callExpr.Operation.Referred.Returns.Referred;
                                 if (returnType is ClassDecl)
@@ -266,7 +265,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
                         decl.ScopeFor(typeof(CallExpr).GetProperty("Operation"), (CallExpr callExpr) =>
                         {
-                            Scope scope = new Scope();
+                            Scope scope = null;
                             var it = callExpr.FindAncestorOfType<ClassDecl>();
                             if (it != null)
                                 decl.GetScope(typeof(CallExpr).GetProperty("Operation"), it);
@@ -282,7 +281,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
 
                         decl.ScopeFor(typeof(OperationDecl).GetProperty("Returns"), (OperationDecl operationDecl) =>
                         {
-                            Scope scope = new Scope();
+                            Scope scope = null;
                             var it = operationDecl.FindAncestorOfType<CompilationUnit>();
                             if (it != null)
                                 decl.GetScope(typeof(OperationDecl).GetProperty("Returns"), it);
@@ -317,7 +316,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         [TestMethod]
         public void TestSymbolResolution()
         {
-            var cu = GetCompilationUnit();
+            var cu = GetCompilationUnit();            
             cu.AssertNotAllReferencesResolved();
             GetFullSymbolResolver().ResolveSimbols(cu);
             cu.AssertAllReferencesResolved();
