@@ -6,7 +6,7 @@ Sharplasu is part of the [StarLasu](https://starlasu.strumenta.com/) family of l
 
 As of version 0.9, we have ported a basic implementation of the most used features from Kolasu, including support for transformers and symbol resolution. These features have been ported with the objective of supporting building parsers up to our standard. Code generation support is still missing, therefore we do not have good support yet for building transpilers using Sharplasu. 
 
-The original Kolasu API for transformers is well suited for Kotlin, but it is not a perfect fit for C#. The two languages have strong similarities, but C# is more stringent when handling the inheritance of classes using Generics and it is less flexible in general when working with generics. For example, you can use wildcard generics in Kotlin, but not in C#. So, it should be considered in beta status and subject to improvements. You can participate to the discussion in the [issues]().
+The original Kolasu API for transformers is well suited for Kotlin, but it is not a perfect fit for C#. The two languages have strong similarities, but C# is more stringent when handling the inheritance of classes using Generics and it is less flexible in general when working with generics. For example, you can use wildcard generics in Kotlin, but not in C#. So, it should be considered in beta status and subject to improvements. You can participate to the discussion in the [issues](https://github.com/Strumenta/sharplasu/issues/12).
 
 Sharplasu is integrated with ANTLR.
 
