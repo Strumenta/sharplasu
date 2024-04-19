@@ -168,7 +168,7 @@ namespace Strumenta.Sharplasu.Transformation
         )
             where T : Node
         {
-            return WithChild<object, T>(
+            return WithChild<T>(
                      get: (source) => sourceAccessor.Accessor(source),
                      set: (object obj, object value) => {
                          if (value is IList)
@@ -203,7 +203,7 @@ namespace Strumenta.Sharplasu.Transformation
         )
             where T : Node
         {
-            return WithChild<object, T>(
+            return WithChild<T>(
                 get: (source) => sourceAccessor.Accessor(source),
                 set: (object obj, object value) => {
                     if (value is IList)
@@ -229,7 +229,7 @@ namespace Strumenta.Sharplasu.Transformation
         * as a constructor parameter when instantiating the parent, or be used to set the value after
         * the parent has been instantiated.
         */
-        public NodeFactory WithChild<Target, Child>
+        public NodeFactory WithChild<Child>
         (
            Func<object, object> get,
            Action<object, object> set,

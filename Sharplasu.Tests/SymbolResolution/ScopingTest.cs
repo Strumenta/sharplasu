@@ -21,11 +21,6 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
             }
         }
 
-        /*private static bool GetReferenceType<T>(Type type)
-            where T : class, Named            
-        {
-            return type.IsSubclassOf(typeof(ReferenceByName<Named>));
-        }*/
         private static bool GetReferenceType(Type type)
         {
             return type.IsGenericType &&

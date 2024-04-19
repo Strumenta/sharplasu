@@ -60,7 +60,7 @@ namespace Strumenta.Sharplasu.Tests.Mapping
         private void Configure (ASTTransformer transformer)
         {
             transformer.RegisterNodeFactory<CU>(typeof(SimpleLangParser.CompilationUnitContext), typeof(CU))
-                .WithChild<Node>(typeof(CU).GetProperty("Statements"), new PropertyAccessor(typeof(SimpleLangParser.CompilationUnitContext), "statement"));
+                .WithChild<Node>(typeof(CU).GetProperty(nameof(CU.Statements)), new PropertyAccessor(typeof(SimpleLangParser.CompilationUnitContext), nameof(SimpleLangParser.CompilationUnitContext.statement)));
             transformer.RegisterNodeFactory<DisplayIntStatement>(typeof(SimpleLangParser.DisplayStmtContext), (it) =>
             {
                 var ctx = it as SimpleLangParser.DisplayStmtContext;

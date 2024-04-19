@@ -5,22 +5,35 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using ReferenceByNameProperty = System.Reflection.PropertyInfo;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Strumenta.Sharplasu.Traversing;
 
 namespace Strumenta.Sharplasu.SymbolResolution
 {
+    public class SymbolResolutionException : Exception
+    {
+        public Type WithType { get; }
+        
+        public SymbolResolutionException(string message, Type withType = null)
+            : base(message)            
+        {
+            WithType = withType;
+        }
+    }
+
     public static class Testing
     {
         public static void AssertAllReferencesResolved(this Node node, Type withReturnType = null)
         {
             var refs = node.GetReferenceResolvedValues(withReturnType);
-            Assert.IsTrue(node.GetReferenceResolvedValues(withReturnType).All(it => it));
+
+            if (!node.GetReferenceResolvedValues(withReturnType).All(it => it))
+                throw new SymbolResolutionException($"Not all references in ${node} ${(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
         }
 
         public static void AssertAllReferencesResolved(this Node node, ReferenceByNameProperty forProperty)
         {
-            Assert.IsTrue(node.GetReferenceResolvedValues(forProperty).All(it => it));
+            if (!node.GetReferenceResolvedValues(forProperty).All(it => it))
+                throw new SymbolResolutionException($"Not all references in ${node} are solved");
         }
 
         public static void AssertNotAllReferencesResolved(this Node node, Type withReturnType = null)
@@ -32,7 +45,8 @@ namespace Strumenta.Sharplasu.SymbolResolution
             {
                 references = node.GetReferenceResolvedValues(withReturnType);
             }
-            Assert.IsTrue(references.Any(it => !it));
+            if (!references.Any(it => !it))
+                throw new SymbolResolutionException($"All references in ${node} ${(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
         }
 
         public static void AssertNotAllReferencesResolved(this Node node, ReferenceByNameProperty forProperty)
@@ -41,8 +55,9 @@ namespace Strumenta.Sharplasu.SymbolResolution
             if (node.GetReferenceResolvedValues(forProperty).Count() > 0)
             {
                 references = node.GetReferenceResolvedValues(forProperty);
-            }            
-            Assert.IsTrue(references.Any(it => !it));
+            }
+            if (!references.Any(it => !it))
+                throw new SymbolResolutionException($"All references in ${node} are solved");
         }
 
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, Type withReturnType = null)            
