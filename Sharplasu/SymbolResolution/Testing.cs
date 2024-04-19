@@ -27,13 +27,13 @@ namespace Strumenta.Sharplasu.SymbolResolution
             var refs = node.GetReferenceResolvedValues(withReturnType);
 
             if (!node.GetReferenceResolvedValues(withReturnType).All(it => it))
-                throw new SymbolResolutionException($"Not all references in ${node} ${(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
+                throw new SymbolResolutionException($"Not all references in {node} {(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
         }
 
         public static void AssertAllReferencesResolved(this Node node, ReferenceByNameProperty forProperty)
         {
             if (!node.GetReferenceResolvedValues(forProperty).All(it => it))
-                throw new SymbolResolutionException($"Not all references in ${node} are solved");
+                throw new SymbolResolutionException($"Not all references in {node} are solved");
         }
 
         public static void AssertNotAllReferencesResolved(this Node node, Type withReturnType = null)
@@ -46,7 +46,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
                 references = node.GetReferenceResolvedValues(withReturnType);
             }
             if (!references.Any(it => !it))
-                throw new SymbolResolutionException($"All references in ${node} ${(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
+                throw new SymbolResolutionException($"All references in {node} {(withReturnType != null ? "with type:" + withReturnType.ToString() : "")} are solved");
         }
 
         public static void AssertNotAllReferencesResolved(this Node node, ReferenceByNameProperty forProperty)
@@ -57,7 +57,7 @@ namespace Strumenta.Sharplasu.SymbolResolution
                 references = node.GetReferenceResolvedValues(forProperty);
             }
             if (!references.Any(it => !it))
-                throw new SymbolResolutionException($"All references in ${node} are solved");
+                throw new SymbolResolutionException($"All references in {node} are solved");
         }
 
         private static IEnumerable<bool> GetReferenceResolvedValues(this Node node, Type withReturnType = null)            

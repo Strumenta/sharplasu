@@ -149,7 +149,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
                 Clazz = clazz;
             }
         }
-        private CompilationUnit GetCompilationUnit()
+        static internal CompilationUnit GetCompilationUnit()
         {
             var cu = new CompilationUnit(
                 new List<TypeDecl>()
@@ -192,7 +192,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
             return cu;
         }
         
-        private DeclarativeLocalSymbolResolver GetFullSymbolResolver()
+        internal static DeclarativeLocalSymbolResolver GetFullSymbolResolver()
         {
             return DeclarativeLocalSymbolResolver.SymbolResolver(
                     (decl) =>
