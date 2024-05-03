@@ -273,7 +273,7 @@ public class Testing
 
     [TestMethod]
     public void TestTwoDifferentNodesWithIgnoreChildren()
-    {
+    {        
         AssertASTsAreEqual(
             new CompilationUnit
             {
@@ -293,6 +293,49 @@ public class Testing
                     }
                 }
             });
+    }
+
+    [TestMethod]
+    public void TestTwoDifferentNodesWithOneNullProperty()
+    {
+        var ast1 = new CompilationUnit
+        {
+            Statements = new List<Statement>
+                {
+                    new SetStatement
+                    {
+                        Expression = new AdditionExpression()
+                        {
+                            Left = new IntLiteral()
+                            {
+                                Value = "4"
+                            },
+                            Right = new IntLiteral()
+                            {
+                                Value = "5"
+                            }
+                        }
+                    }
+                }
+        };
+        var ast2 = new CompilationUnit
+        {
+            Statements = new List<Statement>
+                {
+                    new SetStatement
+                    {
+                        Expression = new AdditionExpression()
+                        {
+                            Left = new IntLiteral()
+                            {
+                                Value = "4"
+                            },
+                            Right = null
+                        }
+                    }
+                }
+        };
+        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]

@@ -83,7 +83,14 @@ namespace Strumenta.Sharplasu.Testing
                 var actualPropertyValue = propertyInfo.GetValue(actual);
                 var expectedPropertyValue = propertyInfo.GetValue(expected);
 
-                if (expectedPropertyValue == null || actualPropertyValue == null) continue;
+                if (expectedPropertyValue == null && actualPropertyValue == null) continue;
+
+                if ((expectedPropertyValue == null && actualPropertyValue != null) 
+                    || (expectedPropertyValue != null && actualPropertyValue == null))
+                {
+                    throw new ASTDifferenceException(context, expectedPropertyValue, actualPropertyValue,
+                        $"{context}, comparing property {propertyInfo.Name}, expected {expectedPropertyValue}, actual {actualPropertyValue}");
+                }                
 
                 if (expectedPropertyValue.GetType().IsGenericType &&
                      expectedPropertyValue.GetType().GetGenericTypeDefinition() == typeof(IgnoreChildren<>))

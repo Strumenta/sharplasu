@@ -234,5 +234,22 @@ third line".ReplaceLineEndings("\n");
 
             Assert.IsTrue(position.Contains(inside), "contains should return true with position at the start");
         }
+
+        [TestMethod]
+        public void OrderPositions()
+        {
+            var after = new Position(new Point(3, 0), new Point(3, 10));
+            var before = new Position(new Point(1, 0), new Point(1, 10));
+            var inside = new Position(new Point(2, 3), new Point(2, 8));            
+            var position = new Position(new Point(2, 0), new Point(2, 10));
+
+            var positions = new List<Position>() { after, before, inside, position };
+            positions.Sort();
+
+            Assert.IsTrue(positions[0] == before);
+            Assert.IsTrue(positions[1] == position);
+            Assert.IsTrue(positions[2] == inside);
+            Assert.IsTrue(positions[3] == after);
+        }
     }
 }
