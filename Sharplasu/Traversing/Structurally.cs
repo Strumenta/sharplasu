@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using static Antlr4.Runtime.Atn.SemanticContext;
 
 namespace Strumenta.Sharplasu.Traversing
 {
     public static class StructurallyExtensions
     {
-        /**
-         * Traverse the entire tree, deep first, starting from this Node
-         */
+        /// <summary>
+        /// Traverse the entire tree, deep first, starting from this Node
+        /// </summary>
         public static IEnumerable<Node> Walk(this Node node)
         {
             var stack = new Stack<Node>();
@@ -24,21 +25,15 @@ namespace Strumenta.Sharplasu.Traversing
                 stack.PushAll(next.Children());
                 yield return next;
             }
-            //yield return null;
         }
-
-        /**
-         * @return all direct children of this node.
-         */
+        
+        /// <returns>all direct children of this node.</returns>
         public static List<Node> Children(this Node node)
         {
             return node.WalkChildren().ToList();
         }
 
-
-        /**
-         * @return all direct children of this node.
-         */
+        /// <returns>all direct children of this node.</returns>
         public static IEnumerable<Node> WalkChildren(this Node node)
         {
             List<Node> children = new List<Node>();
@@ -60,9 +55,9 @@ namespace Strumenta.Sharplasu.Traversing
             return children.AsEnumerable<Node>();
         }
 
-        /**
-         * Performs a post-order (or leaves-first) node traversal starting with a given node.
-         */
+        /// <summary>
+        /// Performs a post-order (or leaves-first) node traversal starting with a given node.
+        /// </summary>
         public static IEnumerable<Node> WalkLeavesFirst(this Node node)
         {
             var nodesStack = new Stack<List<Node>>();
@@ -122,10 +117,10 @@ namespace Strumenta.Sharplasu.Traversing
             }
         }
 
-        /**
-        * @return the sequence of nodes from this.parent all the way up to the root node.
-        * For this to work, assignParents() must have been called.
-        */
+        /// <returns>
+        /// the sequence of nodes from this.parent all the way up to the root node.
+        /// For this to work, <c>assignParents()</c> must have been called.
+        /// </returns>
         public static IEnumerable<Node> WalkAncestors(this Node node)
         {
             var currentNode = node;
@@ -136,11 +131,9 @@ namespace Strumenta.Sharplasu.Traversing
             }
         }
 
-        /**
-         * @param walker a function that generates a sequence of nodes. By default this is the depth-first "walk" method.
-         * For post-order traversal, take "walkLeavesFirst"
-         * @return walks the whole AST starting from the childnodes of this node.
-         */
+        /// <param name="walker">a function that generates a sequence of nodes. By default this is the depth-first <c>walk</c> method.
+        /// For post-order traversal, take <c>walkLeavesFirst</c></param>
+        /// <returns>walks the whole AST starting from the childnodes of this node.</returns>
         public static IEnumerable<Node> WalkDescendants(this Node node, Func<Node, IEnumerable<Node>> walker)
         {
             return walker.Invoke(node).Where(n => n != node);
@@ -161,13 +154,12 @@ namespace Strumenta.Sharplasu.Traversing
             return WalkDescendants<T>(node, Walk);
         }
 
-        /**
-         * Note that type T is not strictly forced to be a Node. This is intended to support
-         * interfaces like `Statement` or `Expression`. However, being an ancestor the returned
-         * value is guaranteed to be a Node, as only Node instances can be part of the hierarchy.
-         *
-         * @return the nearest ancestor of this node that is an instance of klass.
-         */
+        /// <summary>
+        /// <para>Note that type T is not strictly forced to be a Node. This is intended to support
+        /// interfaces like <c>Statement</c> or <c>Expression</c>. However, being an ancestor the returned
+        /// value is guaranteed to be a Node, as only Node instances can be part of the hierarchy.</para>        
+        /// </summary>
+        /// <returns>the nearest ancestor of this node that is an instance of klass.</returns>
         public static T FindAncestorOfType<T>(this Node node) where T : Node
         {
             return (T)node.WalkAncestors().FirstOrDefault(n => n is T);

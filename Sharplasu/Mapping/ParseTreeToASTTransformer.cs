@@ -12,10 +12,10 @@ using System.Text;
 
 namespace Strumenta.Sharplasu.Mapping
 {
-    /**
-     * Implements a transformation from an ANTLR parse tree (the output of the parser) 
-     * to an AST (a higher-level representation of the source code).
-     */
+    /// <summary>
+    /// Implements a transformation from an ANTLR parse tree (the output of the parser) 
+    /// to an AST (a higher-level representation of the source code).
+    /// </summary>
     public class ParseTreeToASTTransformer : ASTTransformer
     {
         public Source Source { get; private set; }
@@ -29,13 +29,13 @@ namespace Strumenta.Sharplasu.Mapping
         {
             Source = source;
         }
-
-        /**
-         * Performs the transformation of a node and, recursively, its descendants. 
-         * In addition to the overridden method, it also assigns the parseTreeNode 
-         * to the AST node so that it can keep track of its position. However, a node 
-         * factory can override the parseTreeNode of the nodes it creates (but not the parent).
-         */
+        
+        /// <summary>
+        /// Performs the transformation of a node and, recursively, its descendants. 
+        /// In addition to the overridden method, it also assigns the parseTreeNode 
+        /// to the AST node so that it can keep track of its position. However, a node 
+        /// factory can override the parseTreeNode of the nodes it creates (but not the parent).
+        /// </summary>
         public override List<Node> TransformIntoNodes(object source, Node parent = null)
         {
             var transformed = base.TransformIntoNodes(source, parent);
@@ -71,12 +71,12 @@ namespace Strumenta.Sharplasu.Mapping
             else
                 return null;
         }
-
-        /**
-         * Often in ANTLR grammar we have rules which wraps other rules and act as wrapper.
-         * When there is only a ParserRuleContext child we can transform that child 
-         * and return that result.
-         */
+        
+        /// <summary>
+        /// Often in ANTLR grammar we have rules which wraps other rules and act as wrapper.
+        /// When there is only a ParserRuleContext child we can transform that child 
+        /// and return that result.
+        /// </summary>
         public NodeFactory RegisterNodeFactoryUnwrappingChild<P>(Type kclass)
             where P : ParserRuleContext
         {
@@ -89,10 +89,10 @@ namespace Strumenta.Sharplasu.Mapping
                 return transformer.Transform(nodeChildren.ElementAt(0)) as Node;
             });            
         }
-
-        /**
-         * Alternative to registerNodeFactoryUnwrappingChild(KClass) which is slightly more concise.
-         */
+        
+        /// <summary>
+        /// Alternative to registerNodeFactoryUnwrappingChild(KClass) which is slightly more concise. 
+        /// </summary>
         public NodeFactory RegisterNodeFactoryUnwrappingChild<P>()
             where P : ParserRuleContext
         {

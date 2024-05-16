@@ -183,11 +183,11 @@ namespace Strumenta.Sharplasu.Model
 
     public static class Reflection
     {
-        /**
-         * Executes an operation on the properties definitions of a node class.
-         * <param name="propertiesToIgnore">which properties to ignore</param>
-         * <param name="propertyTypeOperation"> the operation to perform on each property.</param>
-         */
+        /// <summary>
+        /// Executes an operation on the properties definitions of a node class. 
+        /// </summary>
+        /// <param name="propertiesToIgnore">which properties to ignore</param>
+        /// <param name="propertyTypeOperation"> the operation to perform on each property.</param>
         public static void ProcessProperties(
             this object obj,
             ISet<string> propertiesToIgnore,
@@ -204,11 +204,11 @@ namespace Strumenta.Sharplasu.Model
             );
         }
 
-        /**
-         * Executes an operation on the properties of a node.
-         * <param name="propertiesToIgnore">which properties to ignore</param>
-         * <param name="propertyOperation"> the operation to perform on each property.</param>
-         */
+        /// <summary>
+        /// Executes an operation on the properties of a node.
+        /// </summary>
+        /// <param name="propertiesToIgnore">which properties to ignore</param>
+        /// <param name = "propertyOperation" > the operation to perform on each property.</param>
         public static void ProcessProperties(
             this Node node,
             ISet<string> propertiesToIgnore,

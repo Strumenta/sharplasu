@@ -11,40 +11,41 @@ using static Antlr4.Runtime.Atn.SemanticContext;
 
 namespace Strumenta.Sharplasu.Model
 {
-    /**
-     * Use this to mark properties that are internal, i.e., they are used for bookkeeping and are not part of the model,
-     * so that they will not be considered branches of the AST.
-     */
+    /// <summary>
+    /// Use this to mark properties that are internal, i.e., they are used for bookkeeping and are not part of the model,
+    /// so that they will not be considered branches of the AST.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class InternalAttribute : System.Attribute
     {
         public InternalAttribute() { }
     }
 
-    /**
-     * Use this to mark all relations which are secondary, i.e., they are calculated from other relations,
-     * so that they will not be considered branches of the AST.
-     */
+    /// <summary>
+    /// Use this to mark all relations which are secondary, i.e., they are calculated from other relations,
+    /// so that they will not be considered branches of the AST.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class DerivedAttribute : System.Attribute
     {
         public DerivedAttribute() { }
     }
 
-    /**
-     * Use this to mark all the properties that return a Node or a list of Nodes which are not
-     * contained by the Node having the properties. In other words: they are just references.
-     * This will prevent them from being considered branches of the AST.
-     */
+    /// <summary>
+    /// Use this to mark all the properties that return a Node or a list of Nodes which are not
+    /// contained by the Node having the properties.In other words: they are just references.
+    /// This will prevent them from being considered branches of the AST.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class LinkAttribute : System.Attribute
     {
         public LinkAttribute() { }
     }
-
-    /**
-     * Use this to mark something that does not inherit from Node as a node, so it will be included in the AST.
-     */
+    
+    /// <summary>
+    /// Use this to mark something that does not inherit from Node as a node, 
+    /// so it will be included in the AST.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class NodeTypeAttribute : System.Attribute
     {

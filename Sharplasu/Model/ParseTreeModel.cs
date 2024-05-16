@@ -11,9 +11,9 @@ namespace Strumenta.Sharplasu.Model
         public abstract string MultiLineString(string indentation = "");
     }
 
-    /**
-     * Representation of the information contained in a Parse Tree terminal or leaf.
-     */
+    /// <summary>
+    /// Representation of the information contained in a Parse Tree terminal or leaf.
+    /// </summary>
     public class ParseTreeLeaf : ParseTreeElement
     {
         public string Type { get; private set;}
@@ -34,9 +34,9 @@ namespace Strumenta.Sharplasu.Model
             => $"{indentation}T:{Type}[{Text}]\n";
     }
 
-    /**
-     * Representation of the information contained in a Parse Tree terminal or leaf.
-     */
+    /// <summary>
+    /// Representation of the information contained in a Parse Tree terminal or leaf.
+    /// </summary>
     public class ParseTreeNode : ParseTreeElement
     {
         public string Name { get; private set; }
@@ -76,9 +76,9 @@ namespace Strumenta.Sharplasu.Model
         }
     }
 
-    /**
-    * Given an actual parse-tree produced by ANTLR, it creates a Parse Tree model.
-    */
+    /// <summary>
+    /// Given an actual parse-tree produced by ANTLR, it creates a Parse Tree model.
+    /// </summary>
     public static class ParseTreeModelExtensions
     {
         internal static string RemoveSuffix(this string text, string suffix)

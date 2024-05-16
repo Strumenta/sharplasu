@@ -7,10 +7,10 @@ using System.Text;
 
 namespace Strumenta.Sharplasu.Model
 {
-    /**
-     * An AST node that marks the presence of an error, for example a syntactic 
-     * or semantic error in the original tree.
-     */
+    /// <summary>
+    /// An AST node that marks the presence of an error, for example a syntactic  
+    /// or semantic error in the original tree.
+    /// </summary>
     public interface ErrorNode
     {
         string Message { get; }

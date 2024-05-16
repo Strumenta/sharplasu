@@ -35,9 +35,9 @@ namespace Strumenta.Sharplasu.Transformation
 
     public delegate void Setter(Object obj, Object value);
 
-    /**
-     * A child of an AST node that is automatically populated from a source tree.
-     */
+    /// <summary>
+    /// A child of an AST node that is automatically populated from a source tree.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class MappedAttribute : System.Attribute
     {
@@ -63,10 +63,10 @@ namespace Strumenta.Sharplasu.Transformation
     internal class AbsentParameterValue : ParameterValue { }
 
     public static class Transformation
-    {
-        /**
-        * Sentinel value used to represent the information that a given property is not a child node.
-        */
+    {        
+        /// <summary>
+        /// Sentinel value used to represent the information that a given property is not a child node.
+        /// </summary>
         internal static ChildNodeFactory NO_CHILD_NODE = new ChildNodeFactory("", (x) => x, (y, z) => { });
 
         internal static AbsentParameterValue AbsentParameterValue = new AbsentParameterValue();
@@ -86,11 +86,11 @@ namespace Strumenta.Sharplasu.Transformation
             }
             return childNodeFactory;
         }
-    }    
-
-    /**
-     * Factory that, given a tree node, will instantiate the corresponding transformed node.
-     */
+    }
+    
+    /// <summary>
+    /// Sentinel value used to represent the information that a given property is not a child node.
+    /// </summary>
     public class NodeFactory
     {
         public Func<object, ASTTransformer, NodeFactory, List<Node>> Constructor { get; set; }
@@ -135,32 +135,33 @@ namespace Strumenta.Sharplasu.Transformation
             }, children, finalizer, realType, skipChildren, childrenSetAtConstruction);
                 
         }
-
-        /**
-         * Specify how to convert a child. The value obtained from the conversion could either be used
-         * as a constructor parameter when instantiating the parent, or be used to set the value after
-         * the parent has been instantiated.
-         *
-         * Example using the scopedToType parameter:
-         * ```
-         *     on.registerNodeFactory(SASParser.DatasetOptionContext::class) { ctx ->
-         *         when {
-         *             ...
-         *         }
-         *     }
-         *         .withChild(SASParser.DatasetOptionContext::macroStatementStrict, ComputedDatasetOption::computedWith, ComputedDatasetOption::class)
-         *         .withChild(SASParser.DatasetOptionContext::variableList, DropDatasetOption::variables, DropDatasetOption::class)
-         *         .withChild(SASParser.DatasetOptionContext::variableList, KeepDatasetOption::variables, KeepDatasetOption::class)
-         *         .withChild(SASParser.DatasetOptionContext::variableList, InDatasetOption::variables, InDatasetOption::class)
-         *         .withChild("indexDatasetOption.variables", IndexDatasetOption::variables, IndexDatasetOption::class)
-         *  ```
-         *
-         *  Please note that we cannot merge this method with the variant without the type (making the type optional),
-         *  as it would not permit to specify the lambda outside the list of method parameters.
-         *  
-         *  This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
-         *  for mutable and immutable properties
-         */
+      
+        /// <summary>
+        /// </para>
+        /// Specify how to convert a child. The value obtained from the conversion could either be used
+        /// as a constructor parameter when instantiating the parent, or be used to set the value after
+        /// the parent has been instantiated.
+        /// </para>
+        /// 
+        /// <para>Example using the scopedToType parameter:</para>
+        /// <code>        
+        ///     on.registerNodeFactory(SASParser.DatasetOptionContext::class) { ctx ->
+        ///         when {
+        ///             ...
+        ///         }
+        ///     }
+        ///         .withChild(SASParser.DatasetOptionContext::macroStatementStrict, ComputedDatasetOption::computedWith, ComputedDatasetOption::class)
+        ///         .withChild(SASParser.DatasetOptionContext::variableList, DropDatasetOption::variables, DropDatasetOption::class)
+        ///         .withChild(SASParser.DatasetOptionContext::variableList, KeepDatasetOption::variables, KeepDatasetOption::class)
+        ///         .withChild(SASParser.DatasetOptionContext::variableList, InDatasetOption::variables, InDatasetOption::class)
+        ///         .withChild("indexDatasetOption.variables", IndexDatasetOption::variables, IndexDatasetOption::class)
+        /// </code>
+        /// 
+        /// <para>Please note that we cannot merge this method with the variant without the type (making the type optional),
+        /// as it would not permit to specify the lambda outside the list of method parameters.</para>
+        ///  
+        /// <para>This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)</para>
+        /// </summary>
         public NodeFactory WithChild<T>(            
             PropertyInfo targetProperty,
             PropertyAccessor sourceAccessor,
@@ -189,14 +190,14 @@ namespace Strumenta.Sharplasu.Transformation
             );
         }
 
-        /**
-         * Specify how to convert a child. The value obtained from the conversion could either be used
-         * as a constructor parameter when instantiating the parent, or be used to set the value after
-         * the parent has been instantiated.
-         * 
-         * This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
-         * for mutable and immutable properties
-         */        
+        /// <summary>
+        /// <para>Specify how to convert a child. The value obtained from the conversion could either be used
+        /// as a constructor parameter when instantiating the parent, or be used to set the value after
+        /// the parent has been instantiated.</para>
+        /// 
+        /// <para>This corresponds to 2 methods in Kolasu, because C# does not have different PropertyInfo(s)
+        /// for mutable and immutable properties</para>
+        /// </summary>
         public NodeFactory WithChild<T>(
            PropertyInfo targetProperty,
            PropertyAccessor sourceAccessor
@@ -224,11 +225,11 @@ namespace Strumenta.Sharplasu.Transformation
             );
         }
 
-        /**
-        * Specify how to convert a child. The value obtained from the conversion could either be used
-        * as a constructor parameter when instantiating the parent, or be used to set the value after
-        * the parent has been instantiated.
-        */
+        /// <summary>
+        /// Specify how to convert a child. The value obtained from the conversion could either be used
+        /// as a constructor parameter when instantiating the parent, or be used to set the value after 
+        /// the parent has been instantiated.
+        /// </summary>
         public NodeFactory WithChild<Child>
         (
            Func<object, object> get,
@@ -262,22 +263,25 @@ namespace Strumenta.Sharplasu.Transformation
             };
             return this;
         }
-
-        /**
-        * Tells the transformer whether this factory already takes care of the node's children and no further computation
-        * is desired on that subtree. E.g., when we're mapping an ANTLR parse tree, and we have a context that is only a
-        * wrapper over several alternatives, and for some reason those are not labeled alternatives in ANTLR (subclasses),
-        * we may configure the transformer as follows:
-        *
-        * ```kotlin
-        * transformer.registerNodeFactory(XYZContext::class) { ctx -> transformer.transform(ctx.children[0]) }
-        * ```
-        *
-        * However, if the result of `transformer.transform(ctx.children[0])` is an instance of a Node with a child
-        * annotated with `@Mapped("someProperty")`, the transformer will think that it has to populate that child,
-        * according to the configuration determined by reflection. When it tries to do so, the "source" of the node will
-        * be an instance of `XYZContext` that does not have a child named `someProperty`, and the transformation will fail.
-        */
+       
+        /// <summary>
+        /// <para>
+        /// Tells the transformer whether this factory already takes care of the node's children and no further computation
+        /// is desired on that subtree. E.g., when we're mapping an ANTLR parse tree, and we have a context that is only a
+        /// wrapper over several alternatives, and for some reason those are not labeled alternatives in ANTLR (subclasses),
+        /// we may configure the transformer as follows:
+        /// </para>
+        /// 
+        /// <code>
+        /// transformer.registerNodeFactory(XYZContext::class) { ctx -> transformer.transform(ctx.children[0]) }
+        /// </code>
+        /// 
+        /// <para>However, if the result of `transformer.transform(ctx.children[0])` is an instance of a Node with a child
+        /// annotated with `@Mapped("someProperty")`, the transformer will think that it has to populate that child,
+        /// according to the configuration determined by reflection. When it tries to do so, the "source" of the node will
+        /// be an instance of `XYZContext` that does not have a child named `someProperty`, and the transformation will fail.
+        /// </para>
+        /// </summary>
         public NodeFactory WithSkipChildren(bool skip = true)
         {
             this.SkipChildren = skip;
@@ -325,10 +329,10 @@ namespace Strumenta.Sharplasu.Transformation
             }
         }        
     }
-
-    /**
-    * Information on how to retrieve a child node.
-    */
+    
+    /// <summary>
+    /// Information on how to retrieve a child node.
+    /// </summary>
     public class ChildNodeFactory
     {
         public string Name { get; set; }
@@ -360,18 +364,18 @@ namespace Strumenta.Sharplasu.Transformation
         }
     }
 
-    /**
-     * Implementation of a tree-to-tree transformation. 
-     * For each source node type, we can register a factory that knows how to create a transformed node. 
-     * Then, this transformer can read metadata in the transformed node to recursively transform 
-     * and assign children. If no factory is provided for a source node type, a GenericNode 
-     * is created, and the processing of the subtree stops there.
-    */
+    /// <summary>
+    /// Implementation of a tree-to-tree transformation. 
+    /// For each source node type, we can register a factory that knows how to create a transformed node
+    /// Then, this transformer can read metadata in the transformed node to recursively transform 
+    /// and assign children. If no factory is provided for a source node type, a GenericNode 
+    /// is created, and the processing of the subtree stops there.
+    /// </summary>
     public class ASTTransformer
-    {
-        /**
-        * Additional issues found during the transformation process.
-        */
+    {        
+        /// <summary>
+        /// Additional issues found during the transformation process. 
+        /// </summary>
         public List<Issue> Issues { get; set; } = new List<Issue>();
         public bool AllowGenericNode { get; set; } = true;
 
@@ -381,18 +385,17 @@ namespace Strumenta.Sharplasu.Transformation
             AllowGenericNode = allowGenericNode;
         }
 
-        /**
-         * 
-         * Factories that map from source tree node to target tree node.
-         */
+        /// <summary>
+        /// Factories that map from source tree node to target tree node.
+        /// </summary>
         public Dictionary<Type, NodeFactory> Factories { get; set; } = new Dictionary<Type, NodeFactory>();
 
         private static Dictionary<string, ISet<Type>> _knownClasses = new Dictionary<string, ISet<Type>>();
         public Dictionary<string, ISet<Type>> KnownClasses { get; private set; } = _knownClasses;
 
-        /**
-         * This ensures that the generated value is a single Node or null.
-         */
+        /// <summary>
+        /// This ensures that the generated value is a single Node or null.
+        /// </summary>
         public Node Transform(object source, Node parent = null)
         {
             var result = TransformIntoNodes(source, parent);
@@ -407,10 +410,10 @@ namespace Strumenta.Sharplasu.Transformation
                     throw new InvalidOperationException("Cannot transform into a single Node as multiple nodes where produced");
             }
         }
-
-        /**
-         * Performs the transformation of a node and, recursively, its descendants.
-         */
+        
+        /// <summary>
+        /// Performs the transformation of a node and, recursively, its descendants. 
+        /// </summary>
         public virtual List<Node> TransformIntoNodes(object source, Node parent = null)
         {
             if (source == null)

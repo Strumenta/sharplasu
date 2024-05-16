@@ -12,10 +12,10 @@ namespace Strumenta.Sharplasu.Parsing
 {
     public static class ANTLRParseTreeUtils
     {
-        /**
-         * Navigate the parse tree performing the specified operations on the nodes, either real nodes or nodes
-         * representing errors.
-         */
+        /// <summary>
+        /// Navigate the parse tree performing the specified operations on the nodes, either real nodes or nodes 
+        /// representing errors.
+        /// </summary>
         public static void ProcessDescendantsAndErrors(
             this ParserRuleContext parserRule,
             Action<ParserRuleContext> operationOnParserRuleContext,
@@ -39,10 +39,10 @@ namespace Strumenta.Sharplasu.Parsing
                 });
             }
         }
-
-        /**
-         * Get the original text associated to this non-terminal by querying the inputstream.
-         */
+        
+        /// <summary>
+        /// Get the original text associated to this non-terminal by querying the inputstream. 
+        /// </summary>
         public static string GetOriginalText(this ParserRuleContext parserRule)
         {
             var a = parserRule.Start.StartIndex;
@@ -55,18 +55,18 @@ namespace Strumenta.Sharplasu.Parsing
             var interval = new Interval(a, b);
             return parserRule.Start.InputStream.GetText(interval);
         }
-
-        /**
-         * Get the original text associated to this terminal by querying the inputstream.
-        */
+        
+        /// <summary>
+        /// Get the original text associated to this terminal by querying the inputstream. 
+        /// </summary>
         public static string GetOriginalText(this ITerminalNode terminalNode)
         {
             return terminalNode.Symbol.GetOriginalText();
         }
 
-        /**
-         * Get the original text associated to this token by querying the inputstream.
-         */
+        /// <summary>
+        /// Get the original text associated to this token by querying the inputstream. 
+        /// </summary>
         public static string GetOriginalText(this IToken token)
         {
             var a = token.StartIndex;
@@ -79,19 +79,21 @@ namespace Strumenta.Sharplasu.Parsing
             var interval = new Interval(a, b);
             return token.InputStream.GetText(interval);
         }
+        
+        /// <summary>
+        /// Given the entire code, this returns the slice covered by this Node. 
+        /// </summary>
 
-        /**
-         * Given the entire code, this returns the slice covered by this Node.
-         */
         public static string GetText(this Node node, string code)
         {           
             return node.Position?.Text(code);
         }
+        
+        /// <summary>
+        /// Set the origin of the AST node as a ParseTreeOrigin, providing the parseTree is not null. 
+        /// If the parseTree is null, no operation is performed.
+        /// </summary>
 
-        /**
-         * Set the origin of the AST node as a ParseTreeOrigin, providing the parseTree is not null.
-         * If the parseTree is null, no operation is performed.
-         */
         public static Node WithParseTreeNode(this Node node, ParserRuleContext parseTree, Source source = null)
         {
             if (parseTree != null)
@@ -143,19 +145,20 @@ namespace Strumenta.Sharplasu.Parsing
         {
             return new Position(token.StartPoint(), token.EndPoint());
         }
-
-        /**
-         * Returns the position of the receiver parser rule context.
-         */
+        
+        /// <summary>
+        /// Returns the position of the receiver parser rule context. 
+        /// </summary>
         public static Position Position(this ParserRuleContext rule)
         {
             return new Position(rule.Start.StartPoint(), rule.Stop.EndPoint());
         }
 
-        /**
-         * Returns the position of the receiver parser rule context.
-         * <param name="considerPosition">if it's false, this method returns null.</param>
-         */
+        /// <summary>
+        /// Returns the position of the receiver parser rule context. 
+        /// </summary>
+        /// <param name="considerPosition">if it's false, this method returns null.</param> 
+
         public static Position ToPosition(this ParserRuleContext rule, bool considerPosition = true, Source source = null)
         {
             if(considerPosition && rule.Start != null && rule.Stop != null)
@@ -191,19 +194,21 @@ namespace Strumenta.Sharplasu.Parsing
                     return null;
             }
         }
+        
+        /// <summary>
+        /// Find the ancestor of the given element with the given class. 
+        /// </summary>
 
-        /**
-         * Find the ancestor of the given element with the given class.
-         */
         public static T Ancestor<T>(this RuleContext rule)
             where T : RuleContext
         {
             return rule.Ancestor<T>(typeof(T));
         }
+        
+        /// <summary>
+        /// Find the ancestor of the given element with the given class. 
+        /// </summary>
 
-        /**
-         * Find the ancestor of the given element with the given class.
-         */
         public static T Ancestor<T>(this RuleContext rule, Type kclass)
             where T : RuleContext 
         {
@@ -215,13 +220,13 @@ namespace Strumenta.Sharplasu.Parsing
                 return rule.Parent.Ancestor<T>(kclass);
         }
     }
+    
+    /// <summary>
+    /// An Origin corresponding to a ParseTreeNode. This is used to indicate that an AST Node has been obtained
+    /// by mapping an original ParseTreeNode.
+    /// Note that this is NOT serializable as ParseTree elements are not Serializable.
+    /// </summary>
 
-    /**
-     * An Origin corresponding to a ParseTreeNode. This is used to indicate that an AST Node has been obtained
-     * by mapping an original ParseTreeNode.
-     *
-     * Note that this is NOT serializable as ParseTree elements are not Serializable.
-     */
     public class ParseTreeOrigin : Origin
     {
         public IParseTree ParseTree { get; private set; }

@@ -4,6 +4,7 @@ using Strumenta.Sharplasu.Validation;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace Strumenta.Sharplasu.Parsing
@@ -24,39 +25,29 @@ namespace Strumenta.Sharplasu.Parsing
         where R : Node
         where C : ParserRuleContext
     {
-        /**
-         * Parses source code, returning a result that includes an AST and a collection of parse issues (errors, warnings).
-         * The parsing is done in accordance to the StarLasu methodology i.e. a first-stage parser builds a parse tree which
-         * is then mapped onto a higher-level tree called the AST.
-         * @param inputStream the source code.
-         * @param charset the character set in which the input is encoded.
-         * @param considerPosition if true (the default), parsed AST nodes record their position in the input text.
-         * @param measureLexingTime if true, the result will include a measurement of the time spent in lexing i.e. breaking
-         * the input stream into tokens.
-         */
-
+        /// <summary>
+        /// Parses source code, returning a result that includes an AST and a collection of parse issues (errors, warnings).
+        /// The parsing is done in accordance to the StarLasu methodology i.e. a first-stage parser builds a parse tree which
+        /// is then mapped onto a higher-level tree called the AST.
+        /// </summary>
+        /// <param name="inputStream">the source code</param>
+        /// <param name="encoding">the encoding of the input</param>
+        /// <param name="considerPosition">if true (the default), parsed AST nodes record their position in the input text</param>
+        /// <param name="measureLexingTime">if true, the result will include a measurement of the time spent in lexing i.e. breaking
+        /// the input stream into tokens</param>
+        /// <param name="source">an object identifying the source of the code</param>
         ParsingResult<R, C> Parse(Stream inputStream,
                 Encoding encoding = null,
                 bool considerPosition = true,
                 bool measureLexingTime = false,
                 Source source = null
-            );
-        //{
-        //    encoding ??= Encoding.UTF8;
-        //    return Parse(ASTParserExtensions.InputStreamToString(inputStream, encoding), considerPosition, measureLexingTime, source);
-        //}
+            );        
 
         ParsingResult<R, C> Parse(string code,
                 bool considerPosition = true,
                 bool measureLexingTime = false,
                 Source source = null
             );
-
-        //ParsingResult<R, C> Parse(string code,
-        //        bool considerPosition = true,
-        //        bool measureLexingTime = false                
-        //    ) //=> Parse(code, considerPosition, measureLexingTime, new StringSource(code))
-        //    ;
 
         ParsingResult<R, C> Parse(FileInfo file,
                 Encoding encoding = null,

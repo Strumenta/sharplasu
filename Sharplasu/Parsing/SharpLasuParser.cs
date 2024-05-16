@@ -74,19 +74,19 @@ namespace Strumenta.Sharplasu.Parsing
         {
             this.TokenFactory = tokenFactory;
         }
-
-        /**
-         * Creates the Lexer
-         */
+        
+        /// <summary>
+        /// Creates the Lexer
+        /// </summary>
         protected Lexer CreateANTLRLexer(Stream inputStream, Encoding encoding = null)
         {
             encoding = encoding ?? Encoding.UTF8;
             return CreateANTLRLexer(CharStreams.fromStream(inputStream, encoding));
         }
 
-        /**
-         * Creates the Lexer
-         */
+        /// <summary>
+        ///  Creates the Lexer
+        /// </summary>
         protected abstract Lexer CreateANTLRLexer(ICharStream charStream);
 
         public override LexingResult<T> Lex(Stream inputStream, Encoding encoding, bool onlyFromDefaultChannel = true)
@@ -145,28 +145,28 @@ namespace Strumenta.Sharplasu.Parsing
     {
         public SharpLasuParser(TokenFactory<T> tokenFactory) : base(tokenFactory) { }
 
-
-        /**
-         * Creates the first-stage parser.
-         */
+        
+        /// <summary>
+        /// Creates the first-stage parser.
+        /// </summary>
         protected abstract P CreateANTLRParser(ITokenStream tokenStream);
 
-        /**
-         * Invokes the parser's root rule, i.e., the method which is responsible of parsing the entire input.
-         * Usually this is the topmost rule, the one with index 0 (as also assumed by other libraries such as antlr4-c3),
-         * so this method invokes that rule. If your grammar/parser is structured differently, or if you're using this to
-         * parse only a portion of the input or a subset of the language, you have to override this method to invoke the
-         * correct entry point.
-        */
+        /// <summary>
+        /// Invokes the parser's root rule, i.e., the method which is responsible of parsing the entire input.
+        /// Usually this is the topmost rule, the one with index 0 (as also assumed by other libraries such as antlr4-c3),
+        /// so this method invokes that rule. If your grammar/parser is structured differently, or if you're using this to
+        /// parse only a portion of the input or a subset of the language, you have to override this method to invoke the
+        /// correct entry point.
+        /// </summary>
         protected virtual C InvokeRootRule(P parser)
         {
             var entryPoint = parser.GetType().GetMethod(parser.RuleNames[0]);
             return entryPoint?.Invoke(parser, null) as C;
         }
-
-        /**
-        * Transforms a parse tree into an AST (second parsing stage).
-        */
+        
+        /// <summary>
+        /// Transforms a parse tree into an AST (second parsing stage). 
+        /// </summary>
         protected abstract R ParseTreeToAst(C parseTreeRoot, bool considerPosition = true, List<Issue> issues = null, Source source = null);
 
         protected virtual void AttachListeners(P parser, List<Issue> issues)
@@ -174,9 +174,9 @@ namespace Strumenta.Sharplasu.Parsing
             parser.InjectErrorCollectorInParser(issues);
         }
 
-        /**
-         * Creates the first-stage parser.
-         */
+        /// <summary>
+        /// Creates the first-stage parser.
+        /// </summary>
         private P CreateParser(ICharStream charStream, List<Issue> issues)
         {
             var lexer = CreateANTLRLexer(charStream);
@@ -188,11 +188,11 @@ namespace Strumenta.Sharplasu.Parsing
         }
 
         protected virtual CommonTokenStream CreateTokenStream(Lexer lexer) => new CommonTokenStream(lexer);
-
-        /**
-         * Checks the parse tree for correctness. If you're concerned about performance, you may want to 
-         * override this to do nothing.
-         */
+        
+        /// <summary>
+        /// Checks the parse tree for correctness. If you're concerned about performance, you may want to  
+        /// override this to do nothing.
+        /// </summary>
         private void VerifyParseTree(P parser, List<Issue> issues, ParserRuleContext root)
         {
             var commonTokenStream = parser.TokenStream as CommonTokenStream;
@@ -226,12 +226,12 @@ namespace Strumenta.Sharplasu.Parsing
         {
             return ParseFirstStage(CharStreams.fromStream(inputStream, encoding ?? Encoding.UTF8), measureLexingTime);
         }
-
-        /**
-         * Executes only the first stage of the parser, i.e., the production of a parse tree. 
-         * Usually, you'll want to use the parse method, that returns an AST which is simpler 
-         * to use and query.
-         */
+        
+        /// <summary>
+        /// Executes only the first stage of the parser, i.e., the production of a parse tree. 
+        /// Usually, you'll want to use the parse method, that returns an AST which is simpler  
+        /// to use and query.
+        /// </summary>
         public FirstStageParsingResult<C> ParseFirstStage(ICharStream inputStream, bool measureLexingTime = false)
         {
             var issues = new List<Issue>();
@@ -327,12 +327,12 @@ namespace Strumenta.Sharplasu.Parsing
             HashSet<string> propertiesToIgnore
             ) => node.ProcessProperties(propertiesToIgnore, propertyOperation);
 
-        /**
-         * Traverses the AST to ensure that parent nodes are correctly assigned.
-         *
-         * If you're already assigning the parents correctly when you build the AST, or you're not interested in tracking
-         * child-parent relationships, you can override this method to do nothing to improve performance.
-         */
+        /// <summary>
+        /// <para>Traverses the AST to ensure that parent nodes are correctly assigned.</para>
+        /// 
+        /// <para>If you're already assigning the parents correctly when you build the AST, or you're not interested in tracking
+        /// child-parent relationships, you can override this method to do nothing to improve performance.</para>
+        /// </summary>
         protected virtual void AssignParents(R ast)
         {
             ast.AssignParents();

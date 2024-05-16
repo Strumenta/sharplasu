@@ -75,10 +75,10 @@ namespace Strumenta.Sharplasu.Parsing
             Type = type;
         }
     }
-
-    /**
-     * A token is a portion of text that has been assigned a category.
-     */
+    
+    /// <summary>
+    /// A token is a portion of text that has been assigned a category. 
+    /// </summary>
     [Serializable]
     public class KolasuToken
     {
@@ -94,10 +94,10 @@ namespace Strumenta.Sharplasu.Parsing
         }
     }
 
-    /**
-     * A [KolasuToken] generated from a [Token]. The [token] contains additional information that is specific to ANTLR,
-     * such as type and channel.
-     */
+    /// <summary>
+    /// A  <c>KolasuToken</c> generated from a <c>Token</c>. The <c>token</c> contains additional information that is specific to ANTLR,
+    /// such as type and channel.
+    /// </summary>
     public class SharplasuANTLRToken : KolasuToken
     {
         public IToken Token { get; private set; }
@@ -105,10 +105,10 @@ namespace Strumenta.Sharplasu.Parsing
         public SharplasuANTLRToken(TokenCategory category, IToken token)
             : base(category, token.Position(), token.Text) { }
     }
-
-    /**
-     * The result of lexing (tokenizing) a stream.
-     */
+    
+    /// <summary>
+    /// The result of lexing (tokenizing) a stream.     
+    /// </summary>
     public class LexingResult<T> : CodeProcessingResult<List<T>>
         where T : KolasuToken
     {
@@ -135,10 +135,10 @@ namespace Strumenta.Sharplasu.Parsing
             return hashCode;
         }
     }
-
-    /**
-     * The result of first-stage parsing: from source code to a parse tree.
-     */
+    
+    /// <summary>
+    /// The result of first-stage parsing: from source code to a parse tree. 
+    /// </summary>
     public class FirstStageParsingResult<C> : CodeProcessingResult<C> where C : ParserRuleContext
     {
         public C Root { get; }        
@@ -183,16 +183,16 @@ namespace Strumenta.Sharplasu.Parsing
             return hashCode;
         }
     }
-
-    /**
-     * The complete result of parsing a piece of source code into an AST.     
-     * <param name="RootNode">RootNode - the type of the root AST node.</param>
-     * <param name="Issues">issues - a list of issues encountered while processing the code.</param>
-     * <param name="Root">root - the resulting AST.</param>
-     * <param name="Code">code - the processed source code.</param>
-     * <param name="FirstStage">firstStage - the result of the first parsing stage (from source code to parse tree).</param>
-     * <param name="Time">time - the time spent in the entire parsing process.</param>
-    */
+    
+    /// <summary>
+    /// The complete result of parsing a piece of source code into an AST.     
+    /// <param name="RootNode">RootNode - the type of the root AST node.</param>
+    /// <param name="Issues">issues - a list of issues encountered while processing the code.</param>
+    /// <param name="Root">root - the resulting AST.</param>
+    /// <param name="Code">code - the processed source code.</param>
+    /// <param name="FirstStage">firstStage - the result of the first parsing stage (from source code to parse tree).</param>
+    /// <param name="Time">time - the time spent in the entire parsing process.</param>
+    /// </summary>
     [Serializable]
     public class ParsingResult<RootNode, C> : CodeProcessingResult<RootNode>
         where RootNode : Node

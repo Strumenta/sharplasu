@@ -38,20 +38,7 @@ namespace Strumenta.Sharplasu.Model
         [XmlIgnore]
         [Internal]
         public IEnumerable<PropertyInfo> NotDerivedProperties =>
-            GetType().GetProperties().Where(p => !ignore.Contains(p.Name));
-
-        /*[Internal]
-        public List<Node> Children
-        {
-            get
-            {
-                List<Node> properties = GetType().GetProperties().Where(x => typeof(Node).IsAssignableFrom(x.PropertyType) && !ignore.Contains(x.Name) && x.GetValue(this) != null).Select(x => x.GetValue(this) as Node).ToList();
-
-                GetType().GetProperties().Where(x => typeof(IEnumerable<Node>).IsAssignableFrom(x.PropertyType) && !ignore.Contains(x.Name) && x.GetValue(this) != null).Select(x => x.GetValue(this) as IEnumerable<Node>).ToList().ForEach(p => properties.AddRange(p));
-
-                return properties ?? new List<Node>();
-            }
-        }*/        
+            GetType().GetProperties().Where(p => !ignore.Contains(p.Name));    
 
         protected Position PositionOverride = null;
 

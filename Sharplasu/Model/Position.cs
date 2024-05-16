@@ -90,11 +90,11 @@ namespace Strumenta.Sharplasu.Model
         public static bool operator <=(Point left, Point right)
         {
             return left.CompareTo(right) <= 0;
-        }            
-
-        /**
-         * Translate the Point to an offset in the original code stream.
-         */
+        }
+        
+        /// <summary>
+        /// Translate the Point to an offset in the original code stream. 
+        /// </summary>
         public int Offset(string code)
         {
             var lines = code.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
@@ -108,23 +108,23 @@ namespace Strumenta.Sharplasu.Model
             var newLines = Line - 1;
             return lines.Take(Line - 1).Sum((it) => it.Length) + newLines + Column;
         }
-
-        /**
-         * Computes whether this point comes strictly before another point.
-         * <param name="other">the other point</param>
-         */
+        
+        /// <summary>
+        /// Computes whether this point comes strictly before another point.
+        /// </summary>
+        /// <param name="other">the other point</param>
         public bool IsBefore(Point other) => this < other;
-
-        /**
-         * Computes whether this point is the same as, or comes before, another point.
-         * <param name="other">the other point</param>
-         */
+        
+        /// <summary>
+        /// Computes whether this point is the same as, or comes before, another point. 
+        /// </summary>
+        /// <param name="other">the other point</param>
         public bool IsSameOrBefore(Point other) => this <= other;
-
-        /**
-         * Computes whether this point is the same as, or comes after, another point.
-         * <param name="other">the other point</param>
-         */
+        
+        /// <summary>
+        /// Computes whether this point is the same as, or comes after, another point. 
+        /// </summary>
+        /// <param name="other">the other point</param>
         public bool IsSameOrAfter(Point other) => this >= other;
 
         public static Point operator +(Point point, int length)
@@ -265,15 +265,14 @@ namespace Strumenta.Sharplasu.Model
             Url = url;
         }
     }
-
-    /**
-     * This source is intended to be used for nodes that are "calculated".
-     * For example, nodes representing types that are derived by examining the code
-     * but cannot be associated to any specific point in the code.
-     *
-     * <param name="desciption">this is a description of the source. It is used to describe the process that calculated the node.
-     *                    Examples of values could be "type inference".</param>
-     */
+    
+    /// <summary>
+    /// This source is intended to be used for nodes that are "calculated". 
+    /// For example, nodes representing types that are derived by examining the code
+    /// but cannot be associated to any specific point in the code.
+    /// </summary>
+    /// <param name="desciption">this is a description of the source. It is used to describe the process that calculated the node.
+    /// Examples of values could be "type inference".</param>
     public class SyntheticSource : Source
     {
         public string Description { get; private set; }
@@ -284,15 +283,16 @@ namespace Strumenta.Sharplasu.Model
         }
     }
 
-    /**
-     * An area in a source file, from start to end.
-     * The start point is the point right before the starting character.
-     * The end point is the point right after the last character.
-     * An empty position will have coinciding points.
-     *
-     * Consider a file with one line, containing text "HELLO".
-     * The Position of such text will be Position(Point(1, 0), Point(1, 5)).
-     */
+    /// <summary>
+    /// <para>An area in a source file, from start to end. 
+    /// The start point is the point right before the starting character.
+    /// The end point is the point right after the last character.</para>
+    /// 
+    /// <para>An empty position will have coinciding points.</para>
+    /// 
+    /// <para>Consider a file with one line, containing text "HELLO".
+    /// The Position of such text will be Position(Point(1, 0), Point(1, 5)).</para>
+    /// </summary>
 
     [Serializable]
     public class Position : IComparable<Position>
@@ -354,56 +354,57 @@ namespace Strumenta.Sharplasu.Model
                 return cmp;
             }
         }
-
-        /**
-         * Given the whole code extract the portion of text corresponding to this position
-         */
+        
+        /// <summary>
+        /// Given the whole code extract the portion of text corresponding to this position 
+        /// </summary>
         public string Text(string wholeText)
         {
             return wholeText.Substring(Start.Offset(wholeText), End.Offset(wholeText));
         }
-
-        /**
-         * The length in characters of the text under this position in the provided source.
-         * <param name="code">the source text.</param>
-         */
+        
+        /// <summary>
+        /// The length in characters of the text under this position in the provided source. 
+        /// </summary>
+        /// <param name="code">the source text.</param>
         public int Length(string code) => End.Offset(code) - Start.Offset(code);
 
         public bool IsEmpty => Start == End;
-
-        /**
-         * Tests whether the given point is contained in the interval represented by this object.
-         * <param name="point">the point.</param>
-         */
+        
+        /// <summary>
+        /// Tests whether the given point is contained in the interval represented by this object. 
+        /// </summary>
+        /// <param name="point">the point.</param>
         public bool Contains(Point point)
         {
             return ((point == Start || Start.IsBefore(point)) && (point == End || point.IsBefore(End)));
         }
 
-        /**
-         * Tests whether the given point is contained in the interval represented by this object.
-         * <param name="point">the point.</param>
-         */
+        
+        /// <summary>
+        /// Tests whether the given point is contained in the interval represented by this object. 
+        /// </summary>
+        /// Tests whether the given point is contained in the interval represented by this object.
         public bool Contains(Position position)
         {
             return (position != null) &&
                 Start.IsSameOrBefore(position.Start) &&
                 End.IsSameOrAfter(position.End);
         }
-
-        /**
-         * Tests whether the given node is contained in the interval represented by this object.
-         * <param name="node">the node.</param>
-         */
+        
+        /// <summary>
+        /// Tests whether the given node is contained in the interval represented by this object. 
+        /// </summary>
+        /// <param name="node">the node.</param>
         public bool Contains(Node node)
         {
             return Contains(node.Position);
         }
 
-        /**
-         * Tests whether the given position overlaps the interval represented by this object.
-         * <param name="position">the position.</param>
-         */
+        /// <summary>
+        /// Tests whether the given position overlaps the interval represented by this object. 
+        /// <param name="position">the position.</param>
+        /// </summary>
         public bool Overlaps(Position position)
         {
             return (position != null) && (
