@@ -252,7 +252,7 @@ namespace Strumenta.Sharplasu.Model
 
         public StringSource(string code = null)
         {
-            Code = Code;
+            Code = code;
         }
     }
 
