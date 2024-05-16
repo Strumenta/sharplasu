@@ -62,9 +62,15 @@ namespace Strumenta.Sharplasu.Model
     public class SimpleOrigin : Origin
     {
         public Position Position { get; set; }
-        public string SourceText { get; }
+        public string SourceText { get; private set; }
 
         public Source Source => Position?.Source;
+
+        public SimpleOrigin(Position position, string sourceText)
+        {
+            Position = position;
+            SourceText = sourceText;
+        }
     }
 
     public static class ModelExtensions
