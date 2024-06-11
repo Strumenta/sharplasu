@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 0.9.4
+- Downgrade MSTest and remove support for .NETStandard 2.1 to solve potential compatibility issues with some platforms, IDEs
+- Remove automatically-added dependency to Microsoft.CSharp
+- Fix bugs in StringSource and SimpleOrigin
+
 ## 0.9.3
 - Fix bugs in Origin and StringSource classes
 - Fix documentation format
