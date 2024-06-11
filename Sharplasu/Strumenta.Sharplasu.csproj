@@ -7,13 +7,14 @@
 	<PackageProjectUrl>https://github.com/Strumenta/sharplasu</PackageProjectUrl>
 	<PackageId>Strumenta.Sharplasu</PackageId>
     <PackageTags>ast; starlasu; antlr; parsing; language; antlr4; transpilers; interpreters;</PackageTags>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Version>0.9.4</Version>
 	<Company>Strumenta</Company>
 	<Description>A .NET Standard library to build a custom, possibly mutable, Abstract Syntax Tree (AST)</Description>
 	<Authors>Strumenta</Authors>
 	<RepositoryType>git</RepositoryType>
 	<OutputType>Library</OutputType>
+	<Copyright>Strumenta</Copyright>
+	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
