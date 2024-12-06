@@ -160,8 +160,14 @@ namespace Strumenta.Sharplasu.CodeGeneration
             var endPoint = currentPoint;
             ast.Destination = new TextFileDestination(new Position(startPoint, endPoint));
         }
+        
+        public void PrintList<T>(IList<T> elements, string separator = ", ") where T : Node
+        {
+            Action<T> elementPrinter = (node) => Print(node);
+            PrintList(elements, elementPrinter, separator: separator);
+        }
 
-        public void PrintList<T>(IList<T> elements, string separator = ", ", Action<T> elementPrinter = null) where T : Node
+        public void PrintList<T>(IList<T> elements, Action<T> elementPrinter, string separator = ", ") where T : Node
         {
             for (int i = 0; i < elements.Count; i++)
             {
@@ -169,13 +175,19 @@ namespace Strumenta.Sharplasu.CodeGeneration
                 elementPrinter(elements[i]);
             }
         }
+        
+        public void PrintList<T>(string prefix, IList<T> elements, string postfix, bool printEvenIfEmpty = false, string separator = ", ") where T : Node
+        {
+            Action<T> elementPrinter = (node) => Print(node);
+            PrintList(prefix, elements,  postfix, elementPrinter, printEvenIfEmpty, separator);
+        }
 
-        public void PrintList<T>(string prefix, IList<T> elements, string postfix, bool printEvenIfEmpty = false, string separator = ", ", Action<T> elementPrinter = null) where T : Node
+        public void PrintList<T>(string prefix, IList<T> elements, string postfix, Action<T> elementPrinter, bool printEvenIfEmpty = false, string separator = ", ") where T : Node
         {
             if (elements.Count > 0 || printEvenIfEmpty)
             {
                 Print(prefix);
-                PrintList(elements, separator, elementPrinter);
+                PrintList(elements, elementPrinter, separator);
                 Print(postfix);
             }
         }

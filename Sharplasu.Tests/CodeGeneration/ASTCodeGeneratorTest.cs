@@ -45,7 +45,6 @@ import my.imported.stuff
 |
 fun foo() {
 }
-|
 ".Replace("|", ""), code);
     }
 
@@ -84,10 +83,8 @@ fun foo() {
     [TestMethod]
     public void PrintUntranslatedNodes()
     {
-        var failedNode = new KImport("my.imported.stuff")
-        {
-            Origin = new MissingASTTransformation(null)
-        };
+        var failedNode = new KImport("my.imported.stuff");
+        failedNode.Origin = new MissingASTTransformation(failedNode);
 
         var cu = new KCompilationUnit(
             new KPackageDecl("my.splendid.packag"),
@@ -103,7 +100,6 @@ fun foo() {
 |
 fun foo() {
 }
-|
 ".Replace("|", ""), code);
     }
 
@@ -129,7 +125,6 @@ fun foo() {
 |
 fun foo() {
 }
-|
 ".Replace("|", ""), code);
     }
 }
