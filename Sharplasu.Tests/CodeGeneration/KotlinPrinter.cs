@@ -5,7 +5,7 @@ namespace Strumenta.Sharplasu.Tests.CodeGeneration;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Transformation;
 
-public class KotlinPrinter : ASTCodeGenerator<KCompilationUnit>
+public class KotlinPrinter : AstCodeGenerator<KCompilationUnit>
 {
     protected override INodePrinter PlaceholderNodePrinter =>
         new ActionNodePrinter<Node>((output, ast) =>

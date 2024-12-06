@@ -22,7 +22,7 @@ namespace Strumenta.Sharplasu.Transformation
             get => Origin?.Position;
             set => throw new NotImplementedException();
         }
-        
+
         public string SourceText => Origin?.SourceText;
 
         public Source Source { get; set; }
@@ -45,8 +45,8 @@ namespace Strumenta.Sharplasu.Transformation
             : base(
                 origin,
                 message ?? $"Translation of a node is not yet implemented: " +
-                          $"{(transformationSource is Node node ? node.SimpleNodeType : transformationSource)}" +
-                          $"{(expectedType != null ? $" into {expectedType}" : string.Empty)}"
+                $"{(transformationSource is Node node ? node.SimpleNodeType : transformationSource)}" +
+                $"{(expectedType != null ? $" into {expectedType}" : string.Empty)}"
             )
         {
             TransformationSource = transformationSource;

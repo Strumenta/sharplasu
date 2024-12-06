@@ -10,8 +10,8 @@ namespace Strumenta.Sharplasu.Tests.CodeGeneration;
 
 public class KCompilationUnit : Node
 {
-    public KCompilationUnit(KPackageDecl packageDecl, 
-        List<KImport> imports, 
+    public KCompilationUnit(KPackageDecl packageDecl,
+        List<KImport> imports,
         List<KTopLevelDeclaration> elements)
     {
         PackageDecl = packageDecl;
@@ -44,7 +44,9 @@ public class KPackageDecl : Node
     }
 }
 
-public abstract class KTopLevelDeclaration : Node { }
+public abstract class KTopLevelDeclaration : Node
+{
+}
 
 public class KClassDeclaration : KTopLevelDeclaration, Named
 {
@@ -89,7 +91,9 @@ public class KExtensionMethod : KTopLevelDeclaration, Named
     }
 }
 
-public abstract class KStatement : Node { }
+public abstract class KStatement : Node
+{
+}
 
 public class KExpressionStatement : KStatement
 {
@@ -150,9 +154,13 @@ public class KThrowStatement : KStatement
     }
 }
 
-public abstract class KExpression : Node { }
+public abstract class KExpression : Node
+{
+}
 
-public class KThisExpression : KExpression { }
+public class KThisExpression : KExpression
+{
+}
 
 public class KReferenceExpr : KExpression
 {
@@ -211,21 +219,20 @@ public class KMethodCallExpression : KExpression
     public List<KExpression> Args { get; } = new();
     public KLambda? Lambda { get; set; }
 
-    public KMethodCallExpression(KExpression qualifier, ReferenceByName<KMethodSymbol> method, 
+    public KMethodCallExpression(KExpression qualifier, ReferenceByName<KMethodSymbol> method,
         List<KExpression> args)
     {
         Qualifier = qualifier;
         Method = method;
         Args = args;
     }
-    
+
     public KMethodCallExpression(KExpression qualifier, ReferenceByName<KMethodSymbol> method)
     {
         Qualifier = qualifier;
         Method = method;
         Args = new List<KExpression>();
     }
-    
 }
 
 public class KFieldAccessExpr : KExpression
@@ -267,8 +274,13 @@ public class KInstantiationExpression : KExpression
     }
 }
 
-public interface KFunctionSymbol : Named { }
-public interface KMethodSymbol : Named { }
+public interface KFunctionSymbol : Named
+{
+}
+
+public interface KMethodSymbol : Named
+{
+}
 
 public class KFunctionCall : KExpression
 {
@@ -326,7 +338,9 @@ public class KPrimaryConstructor : Node
 {
     public List<KParameterDeclaration> Params { get; } = new();
 
-    public KPrimaryConstructor() { }
+    public KPrimaryConstructor()
+    {
+    }
 }
 
 public enum KPersistence
@@ -355,7 +369,9 @@ public interface KTyped
     KType Type { get; }
 }
 
-public abstract class KType : Node { }
+public abstract class KType : Node
+{
+}
 
 public class KRefType : KType
 {

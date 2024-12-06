@@ -7,39 +7,38 @@ using Strumenta.Sharplasu.Transformation;
 
 namespace Strumenta.Sharplasu.CodeGeneration
 {
-
     public class PrinterOutput
     {
-        private readonly Dictionary<Type, INodePrinter> nodePrinters;
-        private readonly Func<Node, INodePrinter> nodePrinterOverrider;
-        private readonly INodePrinter placeholderNodePrinter;
-        private readonly StringBuilder sb = new StringBuilder();
-        private Point currentPoint = Point.START_POINT;
-        private int indentationLevel = 0;
-        private bool onNewLine = true;
-        private string indentationBlock = "    ";
-        private string newLineStr = "\n";
+        private readonly Dictionary<Type, INodePrinter> _nodePrinters;
+        private readonly Func<Node, INodePrinter> _nodePrinterOverrider;
+        private readonly INodePrinter _placeholderNodePrinter;
+        private readonly StringBuilder _sb = new StringBuilder();
+        private Point _currentPoint = Point.START_POINT;
+        private int _indentationLevel = 0;
+        private bool _onNewLine = true;
+        private const string IndentationBlock = "    ";
+        private const string NewLineStr = "\n";
 
         public PrinterOutput(
             Dictionary<Type, INodePrinter> nodePrinters,
             Func<Node, INodePrinter> nodePrinterOverrider = null,
             INodePrinter placeholderNodePrinter = null)
         {
-            this.nodePrinters = nodePrinters;
-            this.nodePrinterOverrider = nodePrinterOverrider ?? (_ => null);
-            this.placeholderNodePrinter = placeholderNodePrinter;
+            _nodePrinters = nodePrinters;
+            _nodePrinterOverrider = nodePrinterOverrider ?? (_ => null);
+            _placeholderNodePrinter = placeholderNodePrinter;
         }
 
-        public string Text() => sb.ToString();
+        public string Text() => _sb.ToString();
 
         public void Println() => Println("");
 
         public void Println(string text)
         {
             Print(text);
-            sb.Append(newLineStr);
-            currentPoint += newLineStr.Length;
-            onNewLine = true;
+            _sb.Append(NewLineStr);
+            _currentPoint += NewLineStr.Length;
+            _onNewLine = true;
         }
 
         public void PrintFlag(bool flag, string text)
@@ -72,8 +71,8 @@ namespace Strumenta.Sharplasu.CodeGeneration
                 throw new ArgumentException($"Given text spans multiple lines: {adaptedText}");
             }
 
-            sb.Append(adaptedText);
-            currentPoint += adaptedText.Length;
+            _sb.Append(adaptedText);
+            _currentPoint += adaptedText.Length;
 
             if (needPrintln)
             {
@@ -87,15 +86,15 @@ namespace Strumenta.Sharplasu.CodeGeneration
 
         private void ConsiderIndentation()
         {
-            if (onNewLine)
-            {
-                onNewLine = false;
-                sb.Append(new string(' ', indentationLevel * indentationBlock.Length));
-            }
+            if (!_onNewLine) return;
+            _onNewLine = false;
+            _sb.Append(new string(' ', _indentationLevel * IndentationBlock.Length));
         }
 
         public void Print(string text, string prefix = "", string postfix = "")
         {
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+            if (postfix == null) throw new ArgumentNullException(nameof(postfix));
             if (text == null) return;
             Print(prefix);
             Print(text);
@@ -104,15 +103,15 @@ namespace Strumenta.Sharplasu.CodeGeneration
 
         private INodePrinter FindPrinter(Node ast, Type type)
         {
-            var overrider = nodePrinterOverrider(ast);
+            var overrider = _nodePrinterOverrider(ast);
             if (overrider != null) return overrider;
 
-            if (ast.Origin is PlaceholderAstTransformation && placeholderNodePrinter != null)
+            if (ast.Origin is PlaceholderAstTransformation && _placeholderNodePrinter != null)
             {
-                return placeholderNodePrinter;
+                return _placeholderNodePrinter;
             }
 
-            if (nodePrinters.TryGetValue(type, out var printer))
+            if (_nodePrinters.TryGetValue(type, out var printer))
             {
                 return printer;
             }
@@ -123,13 +122,15 @@ namespace Strumenta.Sharplasu.CodeGeneration
 
         private INodePrinter GetPrinter(Node ast, Type type = null)
         {
-            type = ast.GetType();
+            type = type ?? ast.GetType();
             var printer = FindPrinter(ast, type);
             return printer ?? throw new ArgumentException($"Unable to print {ast}");
         }
 
         public void Print(Node ast, string prefix = "", string postfix = "")
         {
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+            if (postfix == null) throw new ArgumentNullException(nameof(postfix));
             if (ast == null) return;
 
             Print(prefix);
@@ -140,6 +141,9 @@ namespace Strumenta.Sharplasu.CodeGeneration
 
         public void Println(Node ast, string prefix = "", string postfix = "")
         {
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+            if (postfix == null) throw new ArgumentNullException(nameof(postfix));
+
             Print(ast, prefix, postfix + "\n");
         }
 
@@ -149,18 +153,21 @@ namespace Strumenta.Sharplasu.CodeGeneration
             Println();
         }
 
-        public void Indent() => indentationLevel++;
+        public void Indent() => _indentationLevel++;
 
-        public void Dedent() => indentationLevel--;
+        public void Dedent() => _indentationLevel--;
 
         public void Associate(Node ast, Action generation)
         {
-            var startPoint = currentPoint;
+            if (ast == null) throw new ArgumentNullException(nameof(ast));
+            if (generation == null) throw new ArgumentNullException(nameof(generation));
+
+            var startPoint = _currentPoint;
             generation();
-            var endPoint = currentPoint;
+            var endPoint = _currentPoint;
             ast.Destination = new TextFileDestination(new Position(startPoint, endPoint));
         }
-        
+
         public void PrintList<T>(IList<T> elements, string separator = ", ") where T : Node
         {
             Action<T> elementPrinter = (node) => Print(node);
@@ -169,27 +176,32 @@ namespace Strumenta.Sharplasu.CodeGeneration
 
         public void PrintList<T>(IList<T> elements, Action<T> elementPrinter, string separator = ", ") where T : Node
         {
-            for (int i = 0; i < elements.Count; i++)
+            for (var i = 0; i < elements.Count; i++)
             {
                 if (i > 0) Print(separator);
                 elementPrinter(elements[i]);
             }
         }
-        
-        public void PrintList<T>(string prefix, IList<T> elements, string postfix, bool printEvenIfEmpty = false, string separator = ", ") where T : Node
+
+        public void PrintList<T>(string prefix, IList<T> elements, string postfix, bool printEvenIfEmpty = false,
+            string separator = ", ") where T : Node
         {
             Action<T> elementPrinter = (node) => Print(node);
-            PrintList(prefix, elements,  postfix, elementPrinter, printEvenIfEmpty, separator);
+            PrintList(prefix, elements, postfix, elementPrinter, printEvenIfEmpty, separator);
         }
 
-        public void PrintList<T>(string prefix, IList<T> elements, string postfix, Action<T> elementPrinter, bool printEvenIfEmpty = false, string separator = ", ") where T : Node
+        public void PrintList<T>(string prefix, IList<T> elements, string postfix, Action<T> elementPrinter,
+            bool printEvenIfEmpty = false, string separator = ", ") where T : Node
         {
-            if (elements.Count > 0 || printEvenIfEmpty)
-            {
-                Print(prefix);
-                PrintList(elements, elementPrinter, separator);
-                Print(postfix);
-            }
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+            if (postfix == null) throw new ArgumentNullException(nameof(postfix));
+            if (separator == null) throw new ArgumentNullException(nameof(separator));
+
+            if (elements.Count <= 0 && !printEvenIfEmpty) return;
+
+            Print(prefix);
+            PrintList(elements, elementPrinter, separator);
+            Print(postfix);
         }
 
         public void PrintOneOf(params Node[] alternatives)
@@ -197,8 +209,10 @@ namespace Strumenta.Sharplasu.CodeGeneration
             var notNull = alternatives.Where(x => x != null).ToList();
             if (notNull.Count != 1)
             {
-                throw new InvalidOperationException($"Expected exactly one alternative to be not null. Not null alternatives: {string.Join(", ", notNull)}");
+                throw new InvalidOperationException(
+                    $"Expected exactly one alternative to be not null. Not null alternatives: {string.Join(", ", notNull)}");
             }
+
             Print(notNull.First());
         }
     }
