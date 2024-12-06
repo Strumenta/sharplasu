@@ -1,12 +1,7 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Strumenta.Sharplasu.Parsing;
-using Strumenta.Sharplasu.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
@@ -22,6 +17,11 @@ namespace Strumenta.Sharplasu.Model
         [XmlIgnore]
         [Internal]
         public Origin Origin { get; set; } = null;
+        
+        [JsonIgnore]
+        [XmlIgnore]
+        [Internal]
+        public IDestination Destination { get; set; } = null;
 
         private IEnumerable<string> ignore = typeof(Node).GetProperties()
                 .Where(it => it.GetCustomAttribute(typeof(InternalAttribute)) != null
