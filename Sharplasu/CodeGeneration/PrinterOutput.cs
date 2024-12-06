@@ -107,7 +107,7 @@ namespace Strumenta.Sharplasu.CodeGeneration
             var overrider = nodePrinterOverrider(ast);
             if (overrider != null) return overrider;
 
-            if (ast.Origin is PlaceholderASTTransformation && placeholderNodePrinter != null)
+            if (ast.Origin is PlaceholderAstTransformation && placeholderNodePrinter != null)
             {
                 return placeholderNodePrinter;
             }

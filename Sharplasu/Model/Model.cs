@@ -1,13 +1,9 @@
-﻿using Strumenta.Sharplasu.Model;
-using Strumenta.Sharplasu.Traversing;
+﻿using Strumenta.Sharplasu.Traversing;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using static Antlr4.Runtime.Atn.SemanticContext;
 
 namespace Strumenta.Sharplasu.Model
 {
@@ -76,16 +72,9 @@ namespace Strumenta.Sharplasu.Model
 
     public static class ModelExtensions
     {
-        public static N WithOrigin<N> (this N node, Origin origin) where N : Node 
+        public static N WithOrigin<N> (this N node, Origin origin) where N : Node
         {
-            if (origin == node) 
-            {
-                node.Origin = null;
-            } 
-            else 
-            {
-                node.Origin = origin;
-            }            
+            node.Origin = origin == node ? null : origin;
             return node;
         }
 

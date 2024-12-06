@@ -13,6 +13,7 @@ namespace Strumenta.Sharplasu.Model
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         [Internal]
         public Node Parent { get; set; } = null;
+        
         [JsonIgnore]
         [XmlIgnore]
         [Internal]

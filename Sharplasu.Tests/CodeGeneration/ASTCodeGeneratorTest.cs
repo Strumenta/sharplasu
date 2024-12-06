@@ -84,7 +84,7 @@ fun foo() {
     public void PrintUntranslatedNodes()
     {
         var failedNode = new KImport("my.imported.stuff");
-        failedNode.Origin = new MissingASTTransformation(failedNode);
+        failedNode.Origin = new MissingAstTransformation(failedNode);
 
         var cu = new KCompilationUnit(
             new KPackageDecl("my.splendid.packag"),
@@ -108,7 +108,7 @@ fun foo() {
     {
         var failedNode = new KImport("my.imported.stuff")
         {
-            Origin = new FailingASTTransformation(null, "Something made BOOM!")
+            Origin = new FailingAstTransformation(null, "Something made BOOM!")
         };
 
         var cu = new KCompilationUnit(

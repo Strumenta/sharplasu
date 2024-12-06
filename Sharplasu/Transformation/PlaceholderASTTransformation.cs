@@ -6,12 +6,12 @@ namespace Strumenta.Sharplasu.Transformation
     /// <summary>
     /// This is used to indicate that a Node represents some form of placeholders to be used in transformation.
     /// </summary>
-    public class PlaceholderASTTransformation : Origin
+    public class PlaceholderAstTransformation : Origin
     {
         public Origin Origin { get; }
         public string Message { get; }
 
-        public PlaceholderASTTransformation(Origin origin, string message)
+        public PlaceholderAstTransformation(Origin origin, string message)
         {
             Origin = origin;
             Message = message;
@@ -19,23 +19,11 @@ namespace Strumenta.Sharplasu.Transformation
 
         public Position Position
         {
-            get
-            {
-                return Origin?.Position;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get => Origin?.Position;
+            set => throw new NotImplementedException();
         }
         
-        public string SourceText
-        {
-            get
-            {
-                return Origin?.SourceText;
-            }
-        }
+        public string SourceText => Origin?.SourceText;
 
         public Source Source { get; set; }
     }
@@ -43,12 +31,12 @@ namespace Strumenta.Sharplasu.Transformation
     /// <summary>
     /// This is used to indicate that we do not know how to transform a certain node.
     /// </summary>
-    public class MissingASTTransformation : PlaceholderASTTransformation
+    public class MissingAstTransformation : PlaceholderAstTransformation
     {
         public object TransformationSource { get; }
         public Type ExpectedType { get; }
 
-        public MissingASTTransformation(
+        public MissingAstTransformation(
             Origin origin,
             object transformationSource,
             Type expectedType = null,
@@ -65,7 +53,7 @@ namespace Strumenta.Sharplasu.Transformation
             ExpectedType = expectedType;
         }
 
-        public MissingASTTransformation(Node transformationSource, Type expectedType = null)
+        public MissingAstTransformation(Node transformationSource, Type expectedType = null)
             : this(transformationSource, transformationSource, expectedType)
         {
         }
@@ -76,9 +64,9 @@ namespace Strumenta.Sharplasu.Transformation
     /// This is typically the case because the transformation covers only certain cases and we encountered
     /// one that was not covered.
     /// </summary>
-    public class FailingASTTransformation : PlaceholderASTTransformation
+    public class FailingAstTransformation : PlaceholderAstTransformation
     {
-        public FailingASTTransformation(Origin origin, string message)
+        public FailingAstTransformation(Origin origin, string message)
             : base(origin, message)
         {
         }

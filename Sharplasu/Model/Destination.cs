@@ -14,7 +14,9 @@ namespace Strumenta.Sharplasu.Model
 
         public CompositeDestination(IEnumerable<IDestination> elements)
         {
-            Elements = new List<IDestination>(elements);
+            Elements = elements == null
+                ? throw new ArgumentNullException(nameof(elements))
+                : new List<IDestination>(elements);
         }
 
         public CompositeDestination(params IDestination[] elements)
@@ -30,7 +32,7 @@ namespace Strumenta.Sharplasu.Model
 
         public TextFileDestination(Position position)
         {
-            Position = position;
+            Position = position ?? throw new ArgumentNullException(nameof(position));
         }
     }
 }

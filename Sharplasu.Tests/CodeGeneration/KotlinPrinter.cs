@@ -10,7 +10,7 @@ public class KotlinPrinter : ASTCodeGenerator<KCompilationUnit>
     protected override INodePrinter PlaceholderNodePrinter =>
         new ActionNodePrinter<Node>((output, ast) =>
         {
-            var placeholder = (PlaceholderASTTransformation)ast.Origin!;
+            var placeholder = (PlaceholderAstTransformation)ast.Origin!;
             output.Print($"/* {placeholder.Message} */");
         });
 
