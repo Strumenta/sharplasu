@@ -16,8 +16,9 @@ namespace Strumenta.Sharplasu.CodeGeneration
         private Point _currentPoint = Point.START_POINT;
         private int _indentationLevel = 0;
         private bool _onNewLine = true;
-        private const string IndentationBlock = "    ";
-        private const string NewLineStr = "\n";
+        private const string _indentationBlock = "    ";
+        private const string _newLineStr = "\n";
+        private const char _newLineChar = '\n';
 
         public PrinterOutput(
             Dictionary<Type, INodePrinter> nodePrinters,
@@ -36,8 +37,8 @@ namespace Strumenta.Sharplasu.CodeGeneration
         public void Println(string text)
         {
             Print(text);
-            _sb.Append(NewLineStr);
-            _currentPoint += NewLineStr.Length;
+            _sb.Append(_newLineStr);
+            _currentPoint += _newLineStr.Length;
             _onNewLine = true;
         }
 
@@ -59,14 +60,14 @@ namespace Strumenta.Sharplasu.CodeGeneration
             if (string.IsNullOrEmpty(text)) return;
 
             var adaptedText = text;
-            var needPrintln = adaptedText.EndsWith("\n");
+            var needPrintln = adaptedText.EndsWith(_newLineStr);
             if (needPrintln)
             {
-                adaptedText = adaptedText.TrimEnd('\n');
+                adaptedText = adaptedText.TrimEnd(_newLineChar);
             }
 
             ConsiderIndentation();
-            if (adaptedText.Split('\n').Length > 1 && !allowMultiLine)
+            if (adaptedText.Split(_newLineChar).Length > 1 && !allowMultiLine)
             {
                 throw new ArgumentException($"Given text spans multiple lines: {adaptedText}");
             }
@@ -88,7 +89,7 @@ namespace Strumenta.Sharplasu.CodeGeneration
         {
             if (!_onNewLine) return;
             _onNewLine = false;
-            _sb.Append(new string(' ', _indentationLevel * IndentationBlock.Length));
+            _sb.Append(new string(' ', _indentationLevel * _indentationBlock.Length));
         }
 
         public void Print(string text, string prefix = "", string postfix = "")
@@ -144,7 +145,7 @@ namespace Strumenta.Sharplasu.CodeGeneration
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             if (postfix == null) throw new ArgumentNullException(nameof(postfix));
 
-            Print(ast, prefix, postfix + "\n");
+            Print(ast, prefix, postfix + _newLineStr);
         }
 
         public void PrintEmptyLine()
