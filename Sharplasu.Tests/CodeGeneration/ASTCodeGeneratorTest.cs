@@ -3,6 +3,7 @@ using Strumenta.Sharplasu.CodeGeneration;
 namespace Strumenta.Sharplasu.Tests.CodeGeneration;
 
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Tests.Transformation;
 using Strumenta.Sharplasu.Transformation;
@@ -43,13 +44,38 @@ public class ASTCodeGeneratorTest
         TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
-|
+
 import my.imported.stuff
-|
-|
+
+
 fun foo() {
 }
-".Replace("|", ""), code);
+".ReplaceLineEndings("\n"), code);
+    }
+
+    public void PrintIndentation()
+    {
+        var em = new KExtensionMethod(new KSimpleName("magic"), "foo");
+        em.Body.Add(new KExpressionStatement(new KFunctionCall(new ReferenceByName<KFunctionSymbol>("hello"))));
+        var cu = new KCompilationUnit(
+            new KPackageDecl("my.splendid.packag"),
+            new List<KImport> { new KImport("my.imported.stuff") },
+            new List<KTopLevelDeclaration> { em }
+        );
+
+        TestUtils.CheckDestinationIsNull(cu);
+        var code = new KotlinPrinter().PrintToString(cu);
+        TestUtils.CheckDestinationIsNotNull(cu);
+        Assert.AreEqual(
+            @"package my.splendid.packag
+
+import my.imported.stuff
+
+
+fun foo() {
+    hello()
+}
+".ReplaceLineEndings("\n"), code);
     }
 
     [TestMethod]
@@ -103,12 +129,12 @@ fun foo() {
         TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
-|
+
 /* Translation of a node is not yet implemented: KImport */
-|
+
 fun foo() {
 }
-".Replace("|", ""), code);
+".ReplaceLineEndings("\n"), code);
     }
 
     [TestMethod]
@@ -130,11 +156,11 @@ fun foo() {
         TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
-|
+
 /* Something made BOOM! */
-|
+
 fun foo() {
 }
-".Replace("|", ""), code);
+".ReplaceLineEndings("\n"), code);
     }
 }
