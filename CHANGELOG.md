@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.0.0
+- Added Code Generation support
+
 ## 0.9.4
 - Downgrade MSTest and remove support for .NETStandard 2.1 to solve potential compatibility issues with some platforms, IDEs
 - Remove automatically-added dependency to Microsoft.CSharp
