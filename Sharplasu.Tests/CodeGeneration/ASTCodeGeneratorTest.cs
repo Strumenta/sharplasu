@@ -4,6 +4,7 @@ namespace Strumenta.Sharplasu.Tests.CodeGeneration;
 
 using System.Collections.Generic;
 using Strumenta.Sharplasu.Model;
+using Strumenta.Sharplasu.Tests.Transformation;
 using Strumenta.Sharplasu.Transformation;
 
 [TestClass]
@@ -11,7 +12,7 @@ public class ASTCodeGeneratorTest
 {
     [TestMethod]
     public void PrintSimpleKotlinExpression()
-    {
+    {        
         var ex = new KMethodCallExpression(
             new KThisExpression(),
             new ReferenceByName<KMethodSymbol>("myMethod"),
@@ -22,8 +23,9 @@ public class ASTCodeGeneratorTest
                 new KStringLiteral("qer")
             }
         );
-
+        TestUtils.CheckDestinationIsNull(ex);
         var code = new KotlinPrinter().PrintToString(ex);
+        TestUtils.CheckDestinationIsNotNull(ex);
         Assert.AreEqual(@"this.myMethod(""abc"", 123, ""qer"")", code);
     }
 
@@ -36,7 +38,9 @@ public class ASTCodeGeneratorTest
             new List<KTopLevelDeclaration> { new KFunctionDeclaration("foo") }
         );
 
+        TestUtils.CheckDestinationIsNull(cu);
         var code = new KotlinPrinter().PrintToString(cu);
+        TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
 |
@@ -62,7 +66,9 @@ fun foo() {
             }
         );
 
+        TestUtils.CheckDestinationIsNull(ex);
         var code = new KotlinPrinter().PrintToString(ex);
+        TestUtils.CheckDestinationIsNotNull(ex);
         Assert.AreEqual(@"this.myMethod(""abc"", 123, ""qer"")", code);
 
         var printer = new KotlinPrinter();
@@ -91,8 +97,10 @@ fun foo() {
             new List<KImport> { failedNode },
             new List<KTopLevelDeclaration> { new KFunctionDeclaration("foo") }
         );
+        TestUtils.CheckDestinationIsNull(cu);
 
         var code = new KotlinPrinter().PrintToString(cu);
+        TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
 |
@@ -116,8 +124,10 @@ fun foo() {
             new List<KImport> { failedNode },
             new List<KTopLevelDeclaration> { new KFunctionDeclaration("foo") }
         );
+        TestUtils.CheckDestinationIsNull(cu);
 
         var code = new KotlinPrinter().PrintToString(cu);
+        TestUtils.CheckDestinationIsNotNull(cu);
         Assert.AreEqual(
             @"package my.splendid.packag
 |
