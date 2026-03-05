@@ -17,7 +17,7 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
     {
         public class CompilationUnit : Node
         {
-            public List<TypeDecl> Content { get; set; } = new List<TypeDecl>();            
+            public List<TypeDecl> Content { get; set; } = new List<TypeDecl>();
 
             public CompilationUnit(List<TypeDecl>? content = null)
             {
