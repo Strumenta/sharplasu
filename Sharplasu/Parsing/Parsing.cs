@@ -67,6 +67,11 @@ namespace Strumenta.Sharplasu.Parsing
         public static TokenCategory NUMERIC_LITERAL = new TokenCategory("Numeric literal");
         public static TokenCategory STRING_LITERAL = new TokenCategory("String literal");
         public static TokenCategory PLAIN_TEXT = new TokenCategory("Plain text");
+        public static TokenCategory WHITESPACE = new TokenCategory("Whitespace");
+        public static TokenCategory OTHER_LITERAL = new TokenCategory("Other literal");
+        public static TokenCategory OPERATOR = new TokenCategory("Operator");
+        public static TokenCategory IDENTIFIER = new TokenCategory("Identifier");
+        public static TokenCategory PUNCTUATION = new TokenCategory("Punctuation");
 
         public string Type { get; private set; }
 

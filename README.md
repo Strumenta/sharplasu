@@ -17,3 +17,7 @@ To run the included tests you need to have ANTLR installed to compile an example
 ## Tutorial
 
 You can read our tutorial on how to use SharpLasu: [Building advanced parsers using Sharplasu](https://tomassetti.me/building-advanced-parsers-using-sharplasu/). In the tutorial we are going to build a parser for Python 3, but the information can applied to parse any language.
+
+## Nuget
+
+Sharplasu is distributed on [Nuget](https://www.nuget.org/packages/Strumenta.Sharplasu/).
