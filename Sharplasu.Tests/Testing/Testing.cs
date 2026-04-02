@@ -86,7 +86,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertParsingResultsAreEqual(result1, result2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertParsingResultsAreEqual(result1, result2));
     }
     
     [TestMethod]
@@ -214,7 +214,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
@@ -268,7 +268,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
@@ -335,13 +335,13 @@ public class Testing
                     }
                 }
         };
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
     public void CheckRequire()
     {
-        Assert.ThrowsException<InvalidOperationException>(() => Require(false));
-        Assert.ThrowsException<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => Require(false));
+        Assert.ThrowsExactly<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
     }
 }

@@ -34,8 +34,8 @@ third line";
             Assert.AreEqual(5, new Point(1, 5).Offset(code));
             Assert.AreEqual(17, new Point(1, 17).Offset(code));
             Assert.AreEqual(18, new Point(2, 0).Offset(code));
-            Assert.ThrowsException<InvalidOperationException>(() => new Point(1, 18).Offset(code));
-            Assert.ThrowsException<InvalidOperationException>(() => new Point(4, 0).Offset(code));
+            Assert.ThrowsExactly<InvalidOperationException>(() => new Point(1, 18).Offset(code));
+            Assert.ThrowsExactly<InvalidOperationException>(() => new Point(4, 0).Offset(code));
         }
 
         [TestMethod]
@@ -200,10 +200,13 @@ third line".ReplaceLineEndings("\n");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        
         public void IllegalPositionNotAccepted()
         {
-            var position = new Position(new Point(10, 1), new Point(5, 2), validate: true);
+            Assert.ThrowsExactly<InvalidOperationException>(() =>
+            {
+                var position = new Position(new Point(10, 1), new Point(5, 2), validate: true);
+            });
         }
 
         [TestMethod]
