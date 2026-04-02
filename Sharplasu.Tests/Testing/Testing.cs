@@ -1,9 +1,18 @@
 using Antlr4.Runtime;
+using LionWeb.Core;
+using LionWeb.Core.M2;
+using LionWeb.Core.M3;
+using LionWeb.Core.Serialization;
+using LionWeb.Core.VersionSpecific.V2023_1;
+using LionWeb.Generator;
+using LionWeb.Generator.GeneratorExtensions;
+using LionWeb.Generator.Names;
 using Strumenta.Sharplasu.Model;
 using Strumenta.Sharplasu.Parsing;
 using Strumenta.Sharplasu.Testing;
 using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Validation;
+using System.Reflection;
 using static Strumenta.Sharplasu.Testing.Asserts;
 using Statement = Strumenta.Sharplasu.Tests.Models.SimpleLang.Statement;
 
@@ -86,7 +95,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertParsingResultsAreEqual(result1, result2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertParsingResultsAreEqual(result1, result2));
     }
     
     [TestMethod]
@@ -214,7 +223,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
@@ -268,7 +277,7 @@ public class Testing
             }
         };
 
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
@@ -335,13 +344,65 @@ public class Testing
                     }
                 }
         };
-        Assert.ThrowsException<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
+        Assert.ThrowsExactly<ASTDifferenceException>(() => AssertASTsAreEqual(ast1, ast2));
     }
 
     [TestMethod]
     public void CheckRequire()
     {
-        Assert.ThrowsException<InvalidOperationException>(() => Require(false));
-        Assert.ThrowsException<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => Require(false));
+        Assert.ThrowsExactly<InvalidOperationException>(() => Require(false, () => "Hello. I'm an error"));
+    }
+
+    DynamicLanguage[] DeserializeExternalLanguage(string location,
+    params Language[] dependentLanguages)
+    {
+        SerializationChunk serializationChunk =
+            JsonUtils.ReadJsonFromString<SerializationChunk>(
+                File.ReadAllText(location));
+        return new LanguageDeserializerBuilder()
+            .WithLionWebVersion(LionWebVersions.v2023_1)
+            .WithCompressedIds(new(KeepOriginal: true))
+            .Build()
+            .Deserialize(serializationChunk, dependentLanguages).ToArray();
+    }
+
+    [TestMethod]
+    public void CheckGeneration()
+    {
+        var language = DeserializeExternalLanguage("../../../ast.language.v2.json", 
+            LionWebVersions.v2023_1.BuiltIns).First();
+        
+        Names ourName = new Names(language, "ns")
+        {
+            //{ aLang.FindByKey<PrimitiveType>("key-AType"), typeof(CustomType)},
+            PrimitiveTypeMappings = {
+                {   LionWebVersions.v2023_1.BuiltIns.FindByKey<PrimitiveType>("LionCore-builtins-String"), typeof(String) }
+            }
+        };
+
+        var generator = new GeneratorFacade { Names = ourName, LionWebVersion = LionWebVersions.v2023_1 };
+
+        using (StreamWriter writer = File.CreateText("../../../ast.cs"))
+        {
+            generator.Generate().WriteTo(writer);
+        }
+        generator.Persist("../../../ast2.cs");
+        /*using (var stream = File.Open("../../../ast.language.v2.json", FileMode.Open))
+        {
+            var language = JsonUtils.ReadNodesFromStream(stream,
+            new LanguageDeserializerBuilder().WithLionWebVersion(LionWebVersions.v2023_1).Build())
+            .Cast<DynamicLanguage>().First();
+            language.AddDependsOn(new List<Language>() { BuiltInsLanguage_2023_1.Instance.GetLanguage() });
+            var settings = new GeneratorConfig() { UnresolvedReferenceHandling = UnresolvedReferenceHandling.ReturnAsNull };
+           
+            // Map the LionCore universal types to C# syntax            
+            var generator = new GeneratorFacade { Names = new Names(language, "ns"), Config = settings };
+           
+            using (StreamWriter writer = File.CreateText("../../../ast.cs"))
+            {
+                generator.Generate();
+            }            
+        }        */
     }
 }

@@ -14,9 +14,9 @@ namespace Strumenta.Sharplasu.Tests.SymbolResolution
         public void TestAssertion()
         {
             var cu = DeclarativeLocalSymbolResolverTest.GetCompilationUnit();
-            Assert.ThrowsException<SymbolResolutionException>(() => cu.AssertAllReferencesResolved());
+            Assert.ThrowsExactly<SymbolResolutionException>(() => cu.AssertAllReferencesResolved());
             DeclarativeLocalSymbolResolverTest.GetFullSymbolResolver().ResolveSymbols(cu);
-            Assert.ThrowsException<SymbolResolutionException>(() => cu.AssertNotAllReferencesResolved());
+            Assert.ThrowsExactly<SymbolResolutionException>(() => cu.AssertNotAllReferencesResolved());
         }
 
         [TestMethod]
