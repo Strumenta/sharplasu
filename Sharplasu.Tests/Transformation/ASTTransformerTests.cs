@@ -268,7 +268,7 @@ namespace Strumenta.Sharplasu.Tests.Transformation
         }
 
         [TestMethod]
-        public void TestIdentitiyTransformer()
+        public void TestIdentityTransformer()
         {
             var transformer = new ASTTransformer();
             transformer.RegisterNodeFactory<CU>(typeof(CU), typeof(CU))

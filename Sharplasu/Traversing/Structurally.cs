@@ -49,8 +49,7 @@ namespace Strumenta.Sharplasu.Traversing
                         if (item is Node)
                             children.Add(item as Node);
                     }
-                }
-                                    
+                }                                    
             });
             return children.AsEnumerable<Node>();
         }

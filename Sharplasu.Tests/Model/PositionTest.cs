@@ -199,12 +199,14 @@ third line".ReplaceLineEndings("\n");
             var position = new Position(new Point(10, 1), new Point(5, 2), validate: false);
         }
 
-        [TestMethod]        
+        [TestMethod]
+        
         public void IllegalPositionNotAccepted()
         {
             Assert.ThrowsExactly<InvalidOperationException>(() =>
-                new Position(new Point(10, 1), new Point(5, 2), validate: true)
-            );            
+            {
+                var position = new Position(new Point(10, 1), new Point(5, 2), validate: true);
+            });
         }
 
         [TestMethod]

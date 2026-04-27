@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## 1.0.1
-- Added new categories
+- Added new values for TokenCategory
 
 ## 1.0.0
 - Added Code Generation support

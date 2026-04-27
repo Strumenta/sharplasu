@@ -3,6 +3,8 @@ using Strumenta.Sharplasu.Tests.Models.SimpleLang;
 using Strumenta.Sharplasu.Traversing;
 using Type = System.Type;
 using Expression = Strumenta.Sharplasu.Tests.Models.SimpleLang.Expression;
+using System;
+using static Strumenta.Sharplasu.Tests.Models.SimpleLang.Models;
 
 namespace Strumenta.Sharplasu.Tests
 {
@@ -29,7 +31,7 @@ namespace Strumenta.Sharplasu.Tests
         [TestMethod]
         public void TestWalkLeavesFirst()
         {
-            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
+            var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();            
             TestSequences(
                 MapNodesToTypes(cu.WalkLeavesFirst()),
                     new List<System.Type>
@@ -145,11 +147,37 @@ namespace Strumenta.Sharplasu.Tests
                 });
         }
 
+        public IEnumerable<Node> GetNotEncodingChildren(Node x)
+        {
+            if (x is FileRoot)
+            {
+                List<Node> children = new List<Node>();
+                x.WalkDescendants().ToList().ForEach(t =>
+                {
+                    children.AddRange(GetNotEncodingChildren(t));
+                });
+                return children;
+            }
+            else if (x is EncodingFunction)
+                return x.WalkChildren();
+            else
+                return Enumerable.Empty<Node>();
+        }
+        
+
         [TestMethod]
         public void TestFindAncestorOfType()
         {
             var cu = Tests.Models.SimpleLang.Models.GetCompilationUnit();
             var identifier = cu.WalkDescendants().First(n => n.GetType() == typeof(Identifier));
+            var ast = Tests.Models.SimpleLang.Models.GetExampleCompilationUnit();
+            var nodes = ast.WalkDescendants(x => {
+                return GetNotEncodingChildren(x);
+            });
+            foreach (var node in nodes)
+            {
+                Console.WriteLine(node.ToString());
+            }
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<CompilationUnit>(), typeof(CompilationUnit));
             Assert.IsInstanceOfType(identifier.FindAncestorOfType<SetStatement>(), typeof(SetStatement));
             Assert.IsNull(identifier.FindAncestorOfType<DisplayStatement>());
@@ -157,6 +185,7 @@ namespace Strumenta.Sharplasu.Tests
 
         private List<Type> MapNodesToTypes(IEnumerable<Node> nodeSequence)
         {
+            
             return nodeSequence.Select(node => node.GetType()).ToList();
         }
 

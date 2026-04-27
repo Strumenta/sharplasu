@@ -3,6 +3,25 @@ using Strumenta.Sharplasu.Model;
 
 public static class Models
 {
+    public class EFunc : Node { };
+
+    public class EncodingFunction : EFunc
+    {
+        public string Name { get; set; }
+        public StringLiteral String { get; set; }
+    }
+
+    public class CapitalizeFunction : EFunc
+    {
+        public string Name { get; set; }
+        public StringLiteral String { get; set; }
+    }
+
+    public class FileRoot : Node
+    {
+        public List<EFunc> eFuncs { get; set; }
+    }
+
     public static CompilationUnit GetCompilationUnit()
     {
         var cu = new CompilationUnit
@@ -17,6 +36,34 @@ public static class Models
                 {
                     Id = new Identifier { Name = "foo" },
                     Expression = new StringLiteral
+                    {
+                        Value = "bar"
+                    }
+                }
+            }
+        };
+        cu.AssignParents();
+        return cu;
+    }
+
+    public static FileRoot GetExampleCompilationUnit()
+    {
+        var cu = new FileRoot()
+        {
+            eFuncs = new List<EFunc>
+            {
+                new EncodingFunction()
+                {
+                    Name = "",
+                    String = new StringLiteral
+                    {
+                        Value = "bar"
+                    }
+                },
+                new CapitalizeFunction()
+                {
+                    Name = "",
+                    String = new StringLiteral
                     {
                         Value = "bar"
                     }
