@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.1.2
+- Added Starlasu compatibility to base Node class
+
 ## 1.0.1
 - Added new values for TokenCategory
 
