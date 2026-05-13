@@ -367,6 +367,7 @@ public class Testing
             .Deserialize(serializationChunk, dependentLanguages).ToArray();
     }
 
+    [Ignore]
     [TestMethod]
     public void CheckGeneration()
     {

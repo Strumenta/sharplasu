@@ -1,4 +1,6 @@
-﻿using System;
+﻿using com.strumenta.starlasu;
+using LionWeb.Core.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +10,7 @@ using System.Xml.Serialization;
 namespace Strumenta.Sharplasu.Model
 {
     [Serializable]
-    public class Node : Origin
+    public class Node : ASTNode, Origin
     {
         [field: NonSerialized][JsonIgnore][XmlIgnore]
         [Internal]
@@ -41,18 +43,17 @@ namespace Strumenta.Sharplasu.Model
         public IEnumerable<PropertyInfo> NotDerivedProperties =>
             GetType().GetProperties().Where(p => !ignore.Contains(p.Name));    
 
-        protected Position PositionOverride = null;
-
+       
         [Internal]
-        public Position Position
+        public override Position Position
         {
             get
             {
-                return PositionOverride ?? Origin?.Position;
+                return _position ?? Origin?.Position;
             }
             set 
             {
-                PositionOverride = value;
+                _position = value;
             }
         }
 
@@ -68,9 +69,11 @@ namespace Strumenta.Sharplasu.Model
         [Internal]
         public Source Source => Origin?.Source;
 
-        public Node() {}
+        public Node() : base(IdUtils.NewId())  {}
 
-        public Node(Origin origin)
+        public Node(string id) : base(id) { }
+
+        public Node(Origin origin) : this()
         {
             if (origin != null)
             {
@@ -78,7 +81,7 @@ namespace Strumenta.Sharplasu.Model
             }
         }
 
-        public Node(Position position)
+        public Node(Position position) : this()
         {
             Position = position;
         }

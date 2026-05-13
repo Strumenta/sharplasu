@@ -113,6 +113,7 @@ namespace Strumenta.Sharplasu.Model
             var properties = node.GetType().GetProperties()
                 .Where(x => !ignore.Contains(x.Name)
                             && x.GetValue(node) != null
+                            && x.Name != "TranspiledNodes"
                             && !typeof(Node).IsAssignableFrom(x.PropertyType)
                             && !typeof(IEnumerable<Node>).IsAssignableFrom(x.PropertyType));
             foreach (PropertyInfo prp in properties)
